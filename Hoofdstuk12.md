@@ -9,7 +9,6 @@ Dit hoofdstuk behandelt technieken om data (voorgesteld als een matrix) compact 
 | 12.1 | Singuliere-waardenontbinding (SVD) | Hoe ontbind ik een willekeurige matrix in orthogonale factoren? |
 | 12.2 | Lage-rangbenaderingen | Hoe benader ik een matrix $A$ het best door een matrix van lage rang? |
 | 12.3 | Principal component analysis (PCA) | Hoe reduceer ik de dimensie van een dataset? |
-| 12.4 | DCT en wavelets | Hoe benut ik frequentie- of resolutiestructuur voor compressie? |
 
 **Rode draad:** Als de singuliere waarden van een matrix snel dalen, dan zit de meeste informatie in de eerste paar singuliere vectoren. Dit kan benut worden voor compressie, dimensiereductie, en efficiënte rekenmethodes.
 
@@ -248,59 +247,13 @@ $$X \approx X_k^{svo} = \sum_{i=1}^k \sigma_i u_i v_i^T.$$
 
 ---
 
-## 12.4 Andere ijle representaties en benaderingen
-
-Naast de SVD bestaan er transformaties gebaseerd op frequentie- of resolutiestructuur die voor bepaalde typen data (beelden, signalen) tot efficiëntere ijle representaties leiden.
-
-### 12.4.1 Fourier-benaderingen — de Discrete Cosinustransformatie (DCT)
-
-De **tweedimensionale DCT** ontbindt de matrix $A \in \mathbb{R}^{m \times n}$ in periodieke basisfuncties:
-
-$$A_{ij} = \sum_{k=0}^{m-1} \sum_{l=0}^{n-1} c_k d_l B_{kl} \cos\!\left(\frac{(i+\tfrac{1}{2})k\pi}{m}\right) \cos\!\left(\frac{(j+\tfrac{1}{2})l\pi}{n}\right), \tag{12.11}$$
-
-met $c_k = \tfrac{1}{\sqrt{m}}$ voor $k=0$ en $\sqrt{\tfrac{2}{m}}$ anders (analoog voor $d_l$).
-
-De **coëfficiënten** $B_{kl}$ worden berekend als de gewogen innerproducten van $A$ met de cosinusbasisf uncties.
-
-**Sleutelobservatie:** De transformatie van $A$ naar $B$ brengt **spaarsheid** aan het licht — de meeste coëfficiënten zijn klein in vergelijking met de dominante paar. Door enkel de $K$ grootste coëfficiënten te behouden en de inverse DCT toe te passen, bekomt men een goede benadering van $A$.
-
-**Praktische eigenschappen:**
-- De DCT (en haar inverse) zijn rekenkundig efficiënt via de **Fast Fourier Transform (FFT)** als $m$ en $n$ machten van twee zijn.
-- De originele **JPEG-standaard** past de DCT toe op $8 \times 8$ blokken van het beeld.
-- Voor gelijke compressieverhouding is de DCT efficiënter dan lage-rangbenaderingen voor typische fotografie.
-
-### 12.4.2 Wavelets
-
-Een **wavelettransformatie** geeft een ontbinding op basis van **resolutie**: alle basisfuncties zijn verschoven en/of geschaalde kopieën van één **mother wavelet** met compact drager.
-
-**Haar-wavelettransformatie (eenvoudigste geval):**
-
-Veronderstel $m = n$ en $m$ een macht van 2. De transformatie verloopt stapsgewijs:
-
-**Stap 1:**
-- Middel de grijswaarden in blokken van $2 \times 2$ pixels → benadering met resolutie $m/2 \times m/2$ ($m^2/4$ coëfficiënten)
-- Sla de **verschilwaarden** op die reconstructie mogelijk maken ($3m^2/4$ coëfficiënten)
-
-**Stap 2:** Herhaal stap 1 op de $m/2 \times m/2$ uitgemiddelde matrix → resolutie $m/4 \times m/4$.
-
-**Itereer** tot volledig uitgemiddeld. Het resultaat is een hiërarchische structuur waarbij grovere resoluties hersteld worden uit steeds minder coëfficiënten.
-
-**Ijle representatie:** Typisch zijn de meeste verschilcoëfficiënten klein (vlakke gebieden in een beeld). Door kleine coëfficiënten op nul te zetten en de inverse transformatie toe te passen, bekomt men een gecomprimeerde benadering.
-
-**Standaarden:** De **JPEG2000-standaard** gebruikt de Daubechies-wavelettransformatie, die betere visuele kwaliteit geeft bij hoge compressie dan de JPEG-standaard (DCT).
-
----
-
 ## Samenvatting en vergelijking
 
 | Methode | Basisidee | Sterktes | Zwaktes |
 |---|---|---|---|
 | **SVD → getrunceerde SVD** | Rang-1 ontbinding, knip af na $k$ termen | Optimaal (Eckart-Young-Mirsky); PCA; universeel | Duur om te berekenen |
 | **QR met kolomverwisselingen** | Pivot op grootste kolom, knip af na $k$ rijen/kolommen | Goedkoper dan SVD | Suboptimaal |
-| **DCT** | Ontbinding in cosinusbasisfuncties | Efficiënt voor beelden (JPEG); FFT-gebaseerd | Niet optimaal voor niet-periodieke data |
-| **Wavelets** | Multi-resolutie ontbinding | Goede lokalisatie in tijd én frequentie (JPEG2000) | Complexer te begrijpen en implementeren |
 
 **Verbanden:**
 - PCA = getrunceerde SVD van de gecentreerde datamatrix $X$.
 - De beste rang-$k$ benadering in spectrale en Frobenius-norm wordt steeds gegeven door de getrunceerde SVD (Stelling 12.2.1 — Eckart–Young–Mirsky).
-- DCT en wavelets zijn beter dan SVD voor beeldcompressie omdat ze de **lokale** structuur van een beeld benutten (blokken, randen), terwijl de SVD de **globale** structuur benut.

@@ -262,9 +262,9 @@ Beschouw het geval $n = 2$ (twee coëfficiënten $c_1, c_2$):
 
            *                        /\
          *   *                     /  \
-        *  c* *     c* toevallig  * c* \   c* raakt hoek
-         *   *      op rand         \  /   → c_2 = 0
-           *                        \/
+        *  c* *     c* toevallig  / *c*\   c* raakt hoek
+         *   *      op rand       \    /   → c_2 = 0
+           *                       \  /
 ```
 
 > ⚠️ **Belangrijk voor examen:** Dit geometrische argument is het kernargument waarom LASSO schaarse oplossingen geeft. Ken het en kun je het uitleggen aan de hand van een schets.
