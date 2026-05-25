@@ -1,0 +1,273 @@
+
+<style>
+/* TABS */
+.tab-bar{display:flex;gap:0;flex-wrap:wrap;margin-bottom:22px;border-bottom:2px solid var(--color-border-tertiary)}
+.tab{padding:9px 17px 11px;font-size:13px;cursor:pointer;border:0;background:transparent;color:var(--color-text-secondary);border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;border-radius:0}
+.tab:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.tab.on{font-weight:600}
+.tab.t0.on{border-bottom-color:#1E40AF;color:#1E40AF}
+.tab.t1.on{border-bottom-color:#166534;color:#166534}
+.tab.t2.on{border-bottom-color:#92400E;color:#92400E}
+.tab.t3.on{border-bottom-color:#3C3489;color:#3C3489}
+.tab.t4.on{border-bottom-color:#712B13;color:#712B13}
+
+/* CARD */
+.card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.card-head{padding:16px 20px 14px;border-bottom:1px solid var(--color-border-tertiary)}
+h3{font-size:17px;font-weight:600;margin:0 0 10px;color:var(--color-text-primary)}
+.card-body{padding:16px 20px}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11.5px;padding:3px 10px;border-radius:20px;margin-right:5px;margin-bottom:4px;font-weight:500}
+
+/* SECTION LABEL */
+.sec{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--color-text-tertiary);margin:14px 0 8px}
+
+/* KERNIDEE */
+.kernidee{font-size:13.5px;color:var(--color-text-secondary);line-height:1.65;padding:10px 13px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin:10px 0 4px}
+
+/* STEPS */
+.step-row{display:flex;align-items:flex-start;gap:11px;margin:7px 0}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.step-txt{font-size:13px;color:var(--color-text-secondary);line-height:1.55;flex:1;padding-top:3px}
+
+/* FORMULA */
+.formula{font-family:var(--font-mono);font-size:12.5px;background:var(--color-background-secondary);padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);border-left:3px solid var(--color-border-secondary);color:var(--color-text-primary);margin:8px 0;line-height:1.8;overflow-x:auto;white-space:pre-wrap}
+
+/* SEPARATOR */
+.sep{border:none;border-top:1px solid var(--color-border-tertiary);margin:16px 0}
+
+/* PROPERTIES */
+.prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.prop{padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.prop-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin-bottom:4px}
+.prop-val{font-size:13px;color:var(--color-text-primary);font-weight:500}
+
+/* PROS/CONS */
+.vs-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.vs-cell{padding:10px 12px;border-radius:var(--border-radius-md);font-size:12.5px;line-height:1.5}
+.good{background:var(--color-background-success);color:var(--color-text-success)}
+.bad{background:var(--color-background-danger);color:var(--color-text-danger)}
+
+/* FLOW */
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
+.fnode{padding:5px 11px;border-radius:6px;font-size:12px;font-family:var(--font-mono);font-weight:500}
+.farr{color:var(--color-text-tertiary);font-size:16px}
+</style>
+
+<h2 class="sr-only">Overzicht eigenwaarde-methodes: QR, verschoven QR, machtsmethode, deelruimte-iteratie, Lanczos, Arnoldi</h2>
+
+<div class="tab-bar">
+  <button class="tab t0 on" onclick="show(0)">QR-algoritme</button>
+  <button class="tab t1" onclick="show(1)">Verschoven QR</button>
+  <button class="tab t2" onclick="show(2)">Machtsmethode</button>
+  <button class="tab t3" onclick="show(3)">Deelruimte-iter.</button>
+  <button class="tab t4" onclick="show(4)">Lanczos / Arnoldi</button>
+</div>
+
+<div id="panels"></div>
+
+<script>
+const C={
+  info:'#EEF3FE',
+  success:'#EEFAF3',
+  warning:'#FEF5E7',
+  purple:'#EEEDFE',
+  coral:'#FAECE7',
+};
+const CT={
+  info:'#1E40AF',
+  success:'#166534',
+  warning:'#92400E',
+  purple:'#3C3489',
+  coral:'#712B13',
+};
+const CB={
+  info:'#1E40AF',
+  success:'#166534',
+  warning:'#92400E',
+  purple:'#3C3489',
+  coral:'#712B13',
+};
+
+function badge(txt,col){return `<span class="badge" style="background:${C[col]};color:${CT[col]}">${txt}</span>`}
+function stepNum(n,col){return `<div class="step-num" style="background:${C[col]};color:${CT[col]}">${n}</div>`}
+function step(n,col,txt){return `<div class="step-row">${stepNum(n,col)}<div class="step-txt">${txt}</div></div>`}
+function fnode(txt,col){return `<div class="fnode" style="background:${C[col]};color:${CT[col]}">${txt}</div>`}
+function formula(txt,col){return `<div class="formula" style="border-left-color:${CB[col]}">${txt}</div>`}
+function sec(txt){return `<span class="sec">${txt}</span>`}
+
+const panels=[
+`<div class="card">
+  <div class="card-head" style="border-top:3px solid #1E40AF">
+    <h3>QR-algoritme</h3>
+    ${badge('Kleine matrix','info')} ${badge('Alle eigenwaarden','info')} ${badge('Dichte matrix','info')}
+  </div>
+  <div class="card-body">
+    <div class="kernidee">Herhaal: decomponeer A = Q·R, vervang A ← R·Q. De matrix convergeert naar een driehoeksmatrix met eigenwaarden op de diagonaal.</div>
+    ${sec('Stappenplan')}
+    ${step(1,'info','Start met matrix A')}
+    ${step(2,'info','Bereken QR-factorisatie: A = Q·R')}
+    ${step(3,'info','Vervang: A ← R·Q &nbsp;(volgorde omgedraaid!)')}
+    ${step(4,'info','Herhaal tot off-diagonaal ≈ 0')}
+    ${step(5,'info','Lees eigenwaarden af van de diagonaal')}
+    ${sec('Sleutelformule')}
+    ${formula('A_k = Q_k · R_k\nA_{k+1} = R_k · Q_k\n→ A_k convergeert naar bovendriehoekse matrix T\n→ eigenwaarden = diag(T)','info')}
+    <hr class="sep">
+    ${sec('Eigenschappen')}
+    <div class="prop-grid">
+      <div class="prop"><div class="prop-lbl">Convergentie</div><div class="prop-val">Lineair: |λₙ/λₙ₋₁|ᵏ</div></div>
+      <div class="prop"><div class="prop-lbl">Kostprijs</div><div class="prop-val">O(n³) per iteratie</div></div>
+      <div class="prop"><div class="prop-lbl">Geschikt voor</div><div class="prop-val">n &lt; 1000, alle λ</div></div>
+      <div class="prop"><div class="prop-lbl">Nadeel</div><div class="prop-val">Traag bij dichte eigenwaarden</div></div>
+    </div>
+  </div>
+</div>`,
+
+`<div class="card">
+  <div class="card-head" style="border-top:3px solid #166534">
+    <h3>Verschoven QR</h3>
+    ${badge('Standaardkeuze','success')} ${badge('Kubische convergentie','success')} ${badge('Wilkinson-shift','success')}
+  </div>
+  <div class="card-body">
+    <div class="kernidee">Zelfde als QR maar met een slimme shift μ die de te vinden eigenwaarde naar nul trekt. Convergeert kubisch i.p.v. lineair.</div>
+    ${sec('Stappenplan')}
+    ${step(1,'success','Kies shift μ = eigenwaarde van 2×2 hoekblok dichtst bij A[n,n] (Wilkinson)')}
+    ${step(2,'success','Verschuif: bereken QR van (A − μI)')}
+    ${step(3,'success','Herstel: A ← R·Q + μI')}
+    ${step(4,'success','Herhaal — onderste rij convergeert razendsnel')}
+    ${step(5,'success','Deflateer: isoleer gevonden eigenwaarde, ga verder met (n−1)×(n−1) matrix')}
+    ${sec('Sleutelformule')}
+    ${formula('A − μI = Q · R\nA_nieuw  = R · Q + μI\n\nWilkinson-shift:\nδ = (A[n-1,n-1] − A[n,n]) / 2\nμ = A[n,n] − sign(δ)·c² / (|δ| + √(δ²+c²))','success')}
+    <hr class="sep">
+    <div class="vs-row">
+      <div class="vs-cell good">Kubische convergentie — extreem snel</div>
+      <div class="vs-cell good">Standaard in NumPy, LAPACK, MATLAB</div>
+    </div>
+    ${sec('Eigenschappen')}
+    <div class="prop-grid">
+      <div class="prop"><div class="prop-lbl">Convergentie</div><div class="prop-val">Kubisch: ε → ε³</div></div>
+      <div class="prop"><div class="prop-lbl">Shift keuze</div><div class="prop-val">Wilkinson (beste) of hoekstuk A[n,n]</div></div>
+      <div class="prop"><div class="prop-lbl">Gebruik</div><div class="prop-val">Na Hessenberg-reductie of Arnoldi</div></div>
+      <div class="prop"><div class="prop-lbl">Combinatie</div><div class="prop-val">Arnoldi → H klein → verschoven QR op H</div></div>
+    </div>
+  </div>
+</div>`,
+
+`<div class="card">
+  <div class="card-head" style="border-top:3px solid #92400E">
+    <h3>Machtsmethode</h3>
+    ${badge('Één eigenwaarde','warning')} ${badge('Grote matrix','warning')} ${badge('Eenvoudigst','warning')}
+  </div>
+  <div class="card-body">
+    <div class="kernidee">Herhaal vermenigvuldigen met A en normaliseren. De vector convergeert naar de dominante eigenvector (grootste |λ|).</div>
+    ${sec('Stappenplan')}
+    ${step(1,'warning','Start met willekeurige vector v₀')}
+    ${step(2,'warning','Vermenigvuldig: w = A·vₖ')}
+    ${step(3,'warning','Normaliseer: vₖ₊₁ = w / ||w||')}
+    ${step(4,'warning','Herhaal tot vₖ niet meer verandert')}
+    ${step(5,'warning','Eigenwaarde: λ ≈ vᵀ·A·v (Rayleigh-quotiënt)')}
+    ${sec('Sleutelformule')}
+    ${formula('v_{k+1} = A·v_k / ||A·v_k||\nλ ≈ vᵀ·A·v   (Rayleigh-quotiënt)\n\nConvergentie: |λ₂/λ₁|ᵏ\n→ traag als λ₁ ≈ λ₂','warning')}
+    <hr class="sep">
+    <div class="vs-row">
+      <div class="vs-cell good">Simpel, goedkoop per stap, werkt voor ijle matrices</div>
+      <div class="vs-cell bad">Geeft maar 1 eigenwaarde, traag bij dicht spectrum</div>
+    </div>
+    ${sec('Eigenschappen')}
+    <div class="prop-grid">
+      <div class="prop"><div class="prop-lbl">Geeft</div><div class="prop-val">Alleen de grootste λ</div></div>
+      <div class="prop"><div class="prop-lbl">Kostprijs</div><div class="prop-val">O(n²) per stap (matrix-vector)</div></div>
+      <div class="prop"><div class="prop-lbl">Variant</div><div class="prop-val">Inverse machtsmethode → kleinste λ</div></div>
+      <div class="prop"><div class="prop-lbl">Basis van</div><div class="prop-val">Deelruimte-iteratie (blok-versie)</div></div>
+    </div>
+  </div>
+</div>`,
+
+`<div class="card">
+  <div class="card-head" style="border-top:3px solid #3C3489">
+    <h3>Deelruimte-iteratie</h3>
+    ${badge('Top-k eigenwaarden','purple')} ${badge('Groot & ijl','purple')} ${badge('Blok machtsmethode','purple')}
+  </div>
+  <div class="card-body">
+    <div class="kernidee">Uitbreiding van de machtsmethode naar een blok van k vectoren tegelijk. Vindt de k dominante eigenparen zonder de volle matrix te ontbinden.</div>
+    ${sec('Stappenplan')}
+    ${step(1,'purple','Start met Q₀ ∈ ℝⁿˣᵏ (orthonormale kolommen)')}
+    ${step(2,'purple','Vermenigvuldig: P_k = A · Q_{k-1}')}
+    ${step(3,'purple','QR-factorisatie: P_k = Q_k · R_k → bewaar Q_k')}
+    ${step(4,'purple','Herhaal stap 2-3 tot convergentie')}
+    ${step(5,'purple','Eigenwaarden: diagonaal van Q_kᵀ · A · Q_k')}
+    ${sec('Sleutelformule')}
+    ${formula('P_k = A · Q_{k-1}          (vermenigvuldig)\nQ_k · R_k = P_k          (QR = orthogonaliseer)\nλ ≈ diag(Q_kᵀ · A · Q_k) (Rayleigh-matrix)','purple')}
+    <hr class="sep">
+    ${sec('Iteratiestroom')}
+    <div class="flow">
+      ${fnode('Q₀','purple')}
+      <span class="farr">→ A· →</span>
+      ${fnode('P_k','warning')}
+      <span class="farr">→ QR →</span>
+      ${fnode('Q_k','purple')}
+      <span class="farr">↻</span>
+    </div>
+    ${sec('Eigenschappen')}
+    <div class="prop-grid">
+      <div class="prop"><div class="prop-lbl">Geeft</div><div class="prop-val">Top-k eigenparen</div></div>
+      <div class="prop"><div class="prop-lbl">Convergentie</div><div class="prop-val">|λ_{k+1}/λ_k|ᵏ per blok</div></div>
+      <div class="prop"><div class="prop-lbl">Geschikt</div><div class="prop-val">Groot, ijl, niet-symm.</div></div>
+      <div class="prop"><div class="prop-lbl">Nadeel</div><div class="prop-val">Herstart nodig bij groot k</div></div>
+    </div>
+  </div>
+</div>`,
+
+`<div class="card">
+  <div class="card-head" style="border-top:3px solid #712B13">
+    <h3>Lanczos &amp; Arnoldi</h3>
+    ${badge('Krylov-methodes','coral')} ${badge('Groot & ijl','coral')} ${badge('Bouwt H op','coral')}
+  </div>
+  <div class="card-body">
+    <div class="kernidee">Beide methodes bouwen stap voor stap een kleine Hessenberg-matrix H op die dezelfde eigenwaarden heeft als A. Lanczos = Arnoldi voor symmetrische matrices (H wordt dan tridiagonaal).</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
+      <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:1px solid var(--color-border-tertiary)">
+        <div style="font-size:12px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--color-border-tertiary)">Arnoldi (algemeen)</div>
+        ${step(1,'coral','Start met vector q₁')}
+        ${step(2,'coral','w = A·qⱼ')}
+        ${step(3,'coral','hᵢⱼ = qᵢᵀ·w voor alle i ≤ j')}
+        ${step(4,'coral','w ← w − Σ hᵢⱼ·qᵢ')}
+        ${step(5,'coral','qⱼ₊₁ = w/||w||,  hⱼ₊₁,ⱼ = ||w||')}
+      </div>
+      <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:1px solid var(--color-border-tertiary)">
+        <div style="font-size:12px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--color-border-tertiary)">Lanczos (symm. A)</div>
+        ${step(1,'coral','Start met vector q₁')}
+        ${step(2,'coral','w = A·qⱼ')}
+        ${step(3,'coral','αⱼ = qⱼᵀ·w &nbsp;(alleen diagonaal!)')}
+        ${step(4,'coral','w ← w − αⱼ·qⱼ − βⱼ₋₁·qⱼ₋₁')}
+        ${step(5,'coral','βⱼ = ||w||,  qⱼ₊₁ = w/βⱼ')}
+      </div>
+    </div>
+
+    ${sec('Sleutelformule')}
+    ${formula('Arnoldi:  A · Q_k = Q_{k+1} · H̃_k    (H bovenste Hessenberg)\nLanczos: A · Q_k = Q_k · T_k + restterm  (T tridiagonaal)\n\nEigenwaarden(A) ≈ Ritz-waarden = eigenwaarden(H of T)\n→ los op met verschoven QR op de kleine matrix!','coral')}
+
+    <hr class="sep">
+    <div class="vs-row">
+      <div class="vs-cell good">Werkt met matrix-vector producten → ijle matrices OK</div>
+      <div class="vs-cell good">Kleine H/T → verschoven QR is goedkoop eindstap</div>
+    </div>
+    ${sec('Eigenschappen')}
+    <div class="prop-grid">
+      <div class="prop"><div class="prop-lbl">Lanczos</div><div class="prop-val">Symm. A → T tridiagonaal</div></div>
+      <div class="prop"><div class="prop-lbl">Arnoldi</div><div class="prop-val">Algemeen → H Hessenberg</div></div>
+      <div class="prop"><div class="prop-lbl">Kostprijs</div><div class="prop-val">k · O(n²) matrix-vec. prod.</div></div>
+      <div class="prop"><div class="prop-lbl">Eindstap</div><div class="prop-val">Verschoven QR op H of T</div></div>
+    </div>
+  </div>
+</div>`,
+];
+
+function show(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>{t.classList.toggle('on',i===j)});
+  document.getElementById('panels').innerHTML=panels[i];
+}
+show(0);
+</script>

@@ -1,0 +1,258 @@
+
+<style>
+.sdot{width:10px;height:10px;border-radius:50%;background:var(--color-border-secondary);display:inline-block;transition:background .3s}
+.sdot.on{background:var(--color-text-info)}
+.mc{width:58px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:11px;font-family:var(--font-mono);color:var(--color-text-primary);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);transition:background .4s,color .4s}
+.mc.hi{background:var(--color-background-info);color:var(--color-text-info)}
+.mc.hi2{background:var(--color-background-warning);color:var(--color-text-warning)}
+.mc.hi3{background:var(--color-background-success);color:var(--color-text-success)}
+.mc.dim{opacity:.3}
+.mat{display:inline-grid;gap:3px;vertical-align:middle}
+.lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:5px}
+.mwrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin:10px 0}
+.fbox{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;font-family:var(--font-mono);color:var(--color-text-primary);margin:8px 0;border:0.5px solid var(--color-border-tertiary)}
+.exp{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin:6px 0}
+.nbtn{padding:8px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;font-size:13px}
+.nbtn:hover{background:var(--color-background-secondary)}
+.nbtn:disabled{opacity:.35;cursor:default}
+.cbar{height:12px;border-radius:6px;transition:width .6s;margin:4px 0}
+</style>
+
+<h2 class="sr-only">Verschoven QR-algoritme: wat, wanneer en hoe werkt de shift?</h2>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+  <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)" id="stitle">Stap 1: het probleem met gewoon QR</div>
+  <div style="display:flex;gap:5px" id="dots"></div>
+</div>
+
+<div id="content"></div>
+
+<div style="display:flex;gap:8px;margin-top:14px">
+  <button class="nbtn" id="pb" onclick="go(-1)" disabled>Vorige</button>
+  <button class="nbtn" id="nb" onclick="go(1)">Volgende</button>
+</div>
+
+<script>
+function fmt(x,d=3){return x.toFixed(d);}
+function dot(a,b){return a.reduce((s,x,i)=>s+x*b[i],0)}
+function norm(v){return Math.sqrt(dot(v,v))}
+
+function qrStep(A,shift){
+  const n=A.length;
+  const B=A.map((r,i)=>r.map((v,j)=>v-(i===j?shift:0)));
+  let Q=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+  let R=B.map(r=>[...r]);
+  for(let j=0;j<n;j++){
+    for(let i=j+1;i<n;i++){
+      const a=R[j][j],b=R[i][j];
+      const r=Math.sqrt(a*a+b*b);
+      if(r<1e-14) continue;
+      const c=a/r,s=b/r;
+      for(let k=0;k<n;k++){
+        const rjk=R[j][k],rik=R[i][k];
+        R[j][k]=c*rjk+s*rik; R[i][k]=-s*rjk+c*rik;
+        const qkj=Q[k][j],qki=Q[k][i];
+        Q[k][j]=c*qkj+s*qki; Q[k][i]=-s*qkj+c*qki;
+      }
+    }
+  }
+  const RQ=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>R[i].reduce((s,_,k)=>s+R[i][k]*Q[k][j],0)));
+  return RQ.map((r,i)=>r.map((v,j)=>v+(i===j?shift:0)));
+}
+
+const A0=[[6,2,1],[2,3,1],[1,1,1]];
+
+function runQR(steps,useShift){
+  let A=A0.map(r=>[...r]);
+  const hist=[];
+  for(let k=0;k<steps;k++){
+    const shift=useShift?A[2][2]:0;
+    A=qrStep(A,shift);
+    hist.push(A.map(r=>[...r]));
+  }
+  return hist;
+}
+const histPlain=runQR(20,false);
+const histShift=runQR(20,true);
+
+function matHTML(M,hiDiag,dimBelow){
+  const n=M.length;
+  let h=`<div class="mat" style="grid-template-columns:repeat(${n},1fr)">`;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){
+    const isDiag=i===j;
+    const isBelow=i>j;
+    const isSmall=isBelow&&Math.abs(M[i][j])<0.01;
+    h+=`<div class="mc${isDiag&&hiDiag?' hi3':''} ${isBelow&&dimBelow&&isSmall?' dim':''} ${isBelow&&!isDiag&&hiDiag&&!isSmall?' hi2':''}">${fmt(M[i][j],3)}</div>`;
+  }
+  return h+'</div>';
+}
+
+function convBar(val,max,cls){
+  const pct=Math.min(100,Math.max(2,(1-Math.abs(val)/max)*100));
+  return `<div style="background:var(--color-border-tertiary);border-radius:6px;overflow:hidden;width:160px">
+    <div class="cbar ${cls}" style="width:${pct}%;background:var(--color-text-${cls==='hi3'?'success':'info'})"></div>
+  </div>`;
+}
+
+const stepDefs=[
+  {
+    title:'Het probleem met gewoon QR',
+    html(){
+      const A5=histPlain[4], A15=histPlain[14];
+      const sub5=Math.abs(A5[2][1]), sub15=Math.abs(A15[2][1]);
+      return `
+      <p class="exp">Gewoon QR convergeert traag als twee eigenwaarden dicht bij elkaar liggen. De subdiagonaalelementen naderen nul, maar dat kan vele tientallen iteraties duren.</p>
+      <div class="mwrap">
+        <div><div class="lbl">Na 5 iteraties</div>${matHTML(A5,true,false)}
+          <div class="exp" style="margin-top:4px">Subdiag: ${fmt(sub5,4)}</div>
+        </div>
+        <div><div class="lbl">Na 15 iteraties</div>${matHTML(A15,true,false)}
+          <div class="exp" style="margin-top:4px">Subdiag: ${fmt(sub15,4)}</div>
+        </div>
+      </div>
+      <p class="exp">De convergentiesnelheid is evenredig met |λₙ/λₙ₋₁| — als die verhouding dicht bij 1 ligt, gaat het erg traag. De shift lost dit op.</p>`
+    }
+  },
+  {
+    title:'De shift-truc: verschuif A tijdelijk',
+    html(){
+      const mu=A0[2][2];
+      const Ashifted=A0.map((r,i)=>r.map((v,j)=>v-(i===j?mu:0)));
+      return `
+      <p class="exp">Het idee: in plaats van QR toe te passen op A, pas je het toe op <strong>(A − μI)</strong> en tel je μ daarna weer op. Hierdoor komen de eigenwaarden van (A−μI) veel verder van nul te liggen, zodat QR veel sneller convergeert.</p>
+      <div class="fbox">(A − μI) = Q·R   →   A_nieuw = R·Q + μI</div>
+      <div class="mwrap">
+        <div>
+          <div class="lbl">A origineel</div>
+          ${matHTML(A0,false,false)}
+        </div>
+        <div style="align-self:center;font-size:18px;color:var(--color-text-secondary)">−</div>
+        <div>
+          <div class="lbl">μI  (shift = ${fmt(mu,2)})</div>
+          <div class="mat" style="grid-template-columns:repeat(3,1fr)">
+            ${[[mu,0,0],[0,mu,0],[0,0,mu]].flatMap(r=>r.map(v=>`<div class="mc hi2">${fmt(v,2)}</div>`)).join('')}
+          </div>
+        </div>
+        <div style="align-self:center;font-size:18px;color:var(--color-text-secondary)">=</div>
+        <div>
+          <div class="lbl">A − μI</div>
+          ${matHTML(Ashifted,false,false)}
+        </div>
+      </div>
+      <p class="exp">De shift μ wordt slim gekozen: typisch het hoekstuk A[n,n], want dat is al een ruwe schatting van de kleinste eigenwaarde. Dit is de <em>Wilkinson-shift</em>.</p>`
+    }
+  },
+  {
+    title:'Wilkinson-shift: de beste keuze voor μ',
+    html(){
+      const n=3,i=n-1;
+      const a=A0[i][i], b=A0[i-1][i-1], c=A0[i][i-1];
+      const delta=(b-a)/2;
+      const sign=delta>=0?1:-1;
+      const mu=a - sign*c*c/(Math.abs(delta)+Math.sqrt(delta*delta+c*c));
+      return `
+      <p class="exp">De Wilkinson-shift is de eigenwaarde van het 2×2 hoekblok rechtsonder die het dichtst bij A[n,n] ligt. Dit garandeert kubische convergentie — veel sneller dan lineair.</p>
+      <div class="fbox">Hoekblok 2×2:  [ ${fmt(b,2)}  ${fmt(c,2)} ]
+                      [ ${fmt(c,2)}  ${fmt(a,2)} ]
+
+δ = (A[n-1,n-1] − A[n,n]) / 2 = ${fmt(delta,3)}
+μ = A[n,n] − sign(δ)·c² / (|δ| + √(δ²+c²))
+μ = ${fmt(mu,4)}</div>
+      <div class="mwrap">
+        <div>
+          <div class="lbl">Convergentie-orde vergelijking</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);line-height:2">
+            <div>Gewoon QR:&nbsp;&nbsp;&nbsp; lineair &nbsp;&nbsp;|λₙ/λₙ₋₁|ᵏ</div>
+            <div>Shift (hoekstuk): kwadratisch</div>
+            <div style="color:var(--color-text-success)">Wilkinson-shift: <strong>kubisch</strong> &nbsp;(veel sneller!)</div>
+          </div>
+        </div>
+      </div>
+      <p class="exp">Kubische convergentie betekent: als de fout nu 0.1 is, is die na één stap al 0.001. Na twee stappen 0.000000001. De methode convergeert razendsnel.</p>`
+    }
+  },
+  {
+    title:'Vergelijking: gewoon QR vs. verschoven QR',
+    html(){
+      const plain=histPlain.map(A=>Math.abs(A[2][1]));
+      const shift=histShift.map(A=>Math.abs(A[2][1]));
+      const maxV=plain[0]||1;
+      const iters=[0,2,4,7,10,14,19];
+      return `
+      <p class="exp">Hieronder zie je hoe snel het subdiagonaalelement A[3,2] naar nul gaat — dat is het signaal dat de kleinste eigenwaarde geïsoleerd is.</p>
+      <div style="overflow-x:auto">
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr>
+          <th style="text-align:left;padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)">Iteratie</th>
+          <th style="padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)">Gewoon QR |subdiag|</th>
+          <th style="padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)">Verschoven QR |subdiag|</th>
+        </tr>
+        ${iters.map(k=>`
+        <tr style="border-bottom:0.5px solid var(--color-border-tertiary)">
+          <td style="padding:5px 8px;color:var(--color-text-secondary)">${k+1}</td>
+          <td style="padding:5px 8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:100px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden"><div style="height:8px;width:${Math.min(100,plain[k]/maxV*100)}%;background:var(--color-text-secondary);border-radius:4px"></div></div>
+              <span style="font-family:var(--font-mono);font-size:11px">${fmt(plain[k],4)}</span>
+            </div>
+          </td>
+          <td style="padding:5px 8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:100px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden"><div style="height:8px;width:${Math.min(100,shift[k]/maxV*100)}%;background:var(--color-text-success);border-radius:4px"></div></div>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-success)">${fmt(shift[k],4)}</span>
+            </div>
+          </td>
+        </tr>`).join('')}
+      </table>
+      </div>
+      <p class="exp">De verschoven versie bereikt machineprecisie al na een handvol iteraties, terwijl gewoon QR tientallen stappen nodig heeft.</p>`
+    }
+  },
+  {
+    title:'Wanneer gebruik je de verschoven QR?',
+    html(){
+      return `
+      <p class="exp">De verschoven QR is in de praktijk bijna altijd de standaardkeuze zodra je het gewone QR-algoritme zou inzetten. Hier is de beslisregel:</p>
+      <div style="display:grid;gap:10px;margin:10px 0">
+        <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)">
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-success);margin-bottom:4px">Gebruik verschoven QR wanneer...</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+            · Matrix klein en dicht (n &lt; ~1000) — QR-familie is dan de juiste keuze<br>
+            · Eigenwaarden liggen dicht bij elkaar (verhouding λₙ/λₙ₋₁ ≈ 1)<br>
+            · Je alle eigenwaarden nodig hebt, niet alleen de grootste<br>
+            · Matrix al in Hessenberg-vorm staat (bv. na Arnoldi)
+          </div>
+        </div>
+        <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)">
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-warning);margin-bottom:4px">Gebruik iets anders wanneer...</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+            · Matrix zeer groot of ijl (n &gt; 1000) → Arnoldi / Lanczos<br>
+            · Je alleen de top-k eigenwaarden nodig hebt → deelruimte-iteratie<br>
+            · Matrix symmetrisch en groot → Lanczos (snelste optie)
+          </div>
+        </div>
+        <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)">
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-info);margin-bottom:4px">Combinatie in de praktijk</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+            Arnoldi / Lanczos reduceert A naar een kleine Hessenberg-matrix H.<br>
+            Daarna lost verschoven QR die kleine H op.<br>
+            Zo combineer je het beste van beide werelden.
+          </div>
+        </div>
+      </div>`
+    }
+  }
+];
+
+let cur=0;
+function render(){
+  document.getElementById('stitle').textContent=stepDefs[cur].title;
+  document.getElementById('content').innerHTML=stepDefs[cur].html();
+  document.getElementById('pb').disabled=cur===0;
+  document.getElementById('nb').disabled=cur===stepDefs.length-1;
+  document.getElementById('nb').textContent=cur===stepDefs.length-1?'Klaar':'Volgende';
+  document.getElementById('dots').innerHTML=stepDefs.map((_,i)=>`<span class="sdot${i===cur?' on':''}"></span>`).join('');
+}
+function go(d){cur=Math.max(0,Math.min(stepDefs.length-1,cur+d));render();}
+render();
+</script>

@@ -46,8 +46,8 @@ $$r(\mathbf{x}) = \frac{\mathbf{x}^* A \mathbf{x}}{\mathbf{x}^* \mathbf{x}} \xri
 **Varianten:**
 
 | Variant | Aanpassing | Convergeert naar |
-|---|---|---|
-| **Inverse iteratie** | Vervang $A$ door $A^{-1}$ (los $A\mathbf{p}^{(k)} = \mathbf{x}^{(k-1)}$ op) | Eigenvector bij kleinste $|\lambda|$ |
+| --- | --- | --- |
+| **Inverse iteratie** | Vervang $A$ door $A^{-1}$ (los $A\mathbf{p}^{(k)} = \mathbf{x}^{(k-1)}$ op) | Eigenvector bij kleinste $\lvert\lambda\rvert$ |
 | **Inverse iteratie met verschuiving $\sigma$** | Vervang $A$ door $(A - \sigma I)^{-1}$ | Eigenvector bij eigenwaarde dichtstbij $\sigma$ |
 | **Rayleigh-quotiënt iteratie** | Pas $\sigma$ elke stap aan: $\sigma = r(\mathbf{x}^{(k-1)})$ | Asymptotisch **kubische** convergentie |
 
@@ -151,6 +151,12 @@ $$\min_{p \in \mathcal{M}_k} \|p(A)\mathbf{b}\|_2, \tag{9.10}$$
 **Stap 3:** De karakteristieke veelterm $\hat{p}$ van $H_k$ voldoet aan $\hat{p}(H_k) = 0$ (Cayley-Hamilton). Hieruit volgt via de Arnoldi-recursie dat $Q_k^*(A^k\mathbf{b} - Q_k\hat{\mathbf{y}}) = 0$: het residu is orthogonaal op $\mathcal{K}_k$. Per de karakterisering van de kleinste-kwadratenoplossing (§2.4.1) is dit de optimale $\mathbf{y}$. $\square$
 
 **Interpretatie:** De Ritz-waarden (nulpunten van de karakteristieke veelterm van $H_k$) zijn zo gekozen dat $|p(\lambda_i)|$ klein is voor zoveel mogelijk eigenwaarden $\lambda_i$ van $A$. De geïsoleerde extreme eigenwaarden worden als eerste "opgepikt" als afzonderlijke nulpunten.
+
+**Herschrijving via eigenwaardenontbinding (9.12):** Gebruik makend van (9.3), d.w.z. $p(A) = X\,\text{diag}(p(\lambda_1), \ldots, p(\lambda_m)) X^{-1}$, kunnen we het minimiseringsrobleem (9.10) herschrijven als:
+
+$$\min_{p \in \mathcal{M}_k} \left\| X \begin{pmatrix} p(\lambda_1) \\ & \ddots \\ & & p(\lambda_m) \end{pmatrix} X^{-1} \mathbf{b} \right\|_2. \tag{9.12}$$
+
+Dit maakt expliciet waarom **geclusterde of geïsoleerde eigenwaarden** de convergentie bepalen. Als één eigenwaarde $\lambda_j$ sterk geïsoleerd is van de rest, kan een nulpunt van $p$ dicht bij $\lambda_j$ gelegd worden zonder de andere termen te verstoren — en convergeert de overeenkomstige Ritz-waarde snel.
 
 #### 9.1.3.5 Lanczos' algoritme voor Hermitiaanse matrices
 
@@ -270,23 +276,75 @@ for k = 1, 2, ...:
 
 **Convergentiesnelheid:** de subdiagonaalelementen convergeren typisch **kwadratisch** naar nul (zoals het geval $3.1876 \times 10^{-1} \to 2.7305 \times 10^{-1} \to \cdots \to 1.9477 \times 10^{-19}$ in het voorbeeld toont).
 
-#### Verband met deelruimte-iteratie (Stelling 9.2.5)
+#### Stelling 9.2.5 — Verband met deelruimte-iteratie
 
-Het cumulatieve effect van $k$ iteratiestappen is:
+> ⚠️ **Belangrijk voor examen:** Ken de stelling en het bewijs.
 
-$$\langle \mathbf{q}_1^{(k)}, \ldots, \mathbf{q}_j^{(k)} \rangle = p^{(k)}(A^{(0)}) \cdots p^{(1)}(A^{(0)}) \langle \mathbf{e}_1, \ldots, \mathbf{e}_j \rangle, \quad j = 1, \ldots, m.$$
+**Stelling:** Zij $A^{(k)}, A^{(k-1)} \in \mathbb{C}^{m \times m}$ Hessenberg-matrices en $Q^{(k)} \in \mathbb{C}^{m \times m}$ unitair die voldoen aan $A^{(k)} = Q^{(k)*} A^{(k-1)} Q^{(k)}$, waarbij de eerste kolom van $Q^{(k)}$ gelijk is aan $p^{(k)}(A^{(k-1)}) \mathbf{e}_1$. Veronderstel dat alle sub-diagonaalelementen van $A^{(k)}$ verschillend van nul zijn. Dan geldt:
 
-Dit is precies deelruimte-iteratie met het product van alle verschuivingsveeltermen — maar met de flexibiliteit om de verschuivingen elke stap te updaten. Hoe beter de verschuivingen eigenwaarden benaderen, hoe sneller de convergentie.
+$$\langle \mathbf{q}_1^{(k)}, \ldots, \mathbf{q}_j^{(k)} \rangle = p^{(k)}(A^{(k-1)}) \langle \mathbf{e}_1, \ldots, \mathbf{e}_j \rangle, \quad j \in \{1, \ldots, m\}.$$
+
+### Bewijs van Stelling 9.2.5
+
+**Doel:** Tonen dat de deelruimte opgespannen door de eerste $j$ kolommen van $Q^{(k)}$ gelijk is aan $p^{(k)}(A^{(k-1)})$ toegepast op $\langle \mathbf{e}_1, \ldots, \mathbf{e}_j \rangle$.
+
+**Stap 1 — Herformuleer (9.18) als een Arnoldi-recursie.**
+
+Schrijf $A^{(k)} = Q^{(k)*} A^{(k-1)} Q^{(k)}$ om als:
+
+$$A^{(k-1)} Q^{(k)} = Q^{(k)} A^{(k)}.$$
+
+Dit is precies de Arnoldi-recursievergelijking (9.8) voor de matrix $A^{(k-1)}$ en de startvector $\mathbf{q}_1^{(k)}$, omdat $A^{(k)}$ een Hessenberg-matrix is. Bijgevolg geldt voor elke $j$:
+
+$$\langle \mathbf{q}_1^{(k)}, \ldots, \mathbf{q}_j^{(k)} \rangle = \mathcal{K}_j\!\left(A^{(k-1)},\, \mathbf{q}_1^{(k)}\right).$$
+
+**Stap 2 — Substitueer de eerste kolom van $Q^{(k)}$.**
+
+Omdat $\mathbf{q}_1^{(k)} = p^{(k)}(A^{(k-1)}) \mathbf{e}_1$:
+
+$$\mathcal{K}_j\!\left(A^{(k-1)},\, p^{(k)}(A^{(k-1)}) \mathbf{e}_1\right) = p^{(k)}(A^{(k-1)})\, \mathcal{K}_j\!\left(A^{(k-1)},\, \mathbf{e}_1\right).$$
+
+→ Dit volgt uit de commutatierelatie $A^{(k-1)} p^{(k)}(A^{(k-1)}) = p^{(k)}(A^{(k-1)}) A^{(k-1)}$: beide zijn veeltermen in dezelfde matrix.
+
+**Stap 3 — Gebruik de Hessenberg-structuur van $A^{(k-1)}$.**
+
+Omdat $A^{(k-1)}$ een Hessenberg-matrix is met alle sub-diagonaalelementen $\neq 0$, geldt:
+
+$$\mathcal{K}_j\!\left(A^{(k-1)},\, \mathbf{e}_1\right) = \langle \mathbf{e}_1, \ldots, \mathbf{e}_j \rangle.$$
+
+→ Immers, $A^{(k-1)} \mathbf{e}_1$ heeft een niet-nul tweede component (sub-diagonaal $\neq 0$), $A^{(k-1)2} \mathbf{e}_1$ heeft een niet-nul derde component, enz.
+
+**Conclusie:** Samenvoeging van de drie stappen geeft het gestelde. $\square$
+
+### Cumulatief effect van $k$ iteraties
+
+Definieer de **cumulatieve transformatie** $\tilde{Q}^{(k)} = Q^{(1)} \cdots Q^{(k)}$, zodat:
+
+$$A^{(k)} = \tilde{Q}^{(k)*} A^{(0)} \tilde{Q}^{(k)}.$$
+
+Schrijf $\tilde{Q}^{(k)} = [\tilde{\mathbf{q}}_1^{(k)} \cdots \tilde{\mathbf{q}}_m^{(k)}]$. Dan geldt voor elke $j$:
+
+$$\langle \tilde{\mathbf{q}}_1^{(k)}, \ldots, \tilde{\mathbf{q}}_j^{(k)} \rangle = \tilde{Q}^{(k-1)} \langle \mathbf{q}_1^{(k)}, \ldots, \mathbf{q}_j^{(k)} \rangle = \tilde{Q}^{(k-1)}\, p^{(k)}(A^{(k-1)})\, \langle \mathbf{e}_1, \ldots, \mathbf{e}_j \rangle.$$
+
+Gebruik nu dat $A^{(k-1)} = \tilde{Q}^{(k-1)*} A^{(0)} \tilde{Q}^{(k-1)}$, zodat:
+
+$$p^{(k)}\!\left(A^{(k-1)}\right) = \tilde{Q}^{(k-1)*}\, p^{(k)}\!\left(A^{(0)}\right)\, \tilde{Q}^{(k-1)}.$$
+
+Substitueren en herhalen van hetzelfde argument voor $k-1, k-2, \ldots, 1$ geeft uiteindelijk:
+
+$$\langle \tilde{\mathbf{q}}_1^{(k)}, \ldots, \tilde{\mathbf{q}}_j^{(k)} \rangle = p^{(k)}\!\left(A^{(0)}\right) \cdots p^{(1)}\!\left(A^{(0)}\right) \langle \mathbf{e}_1, \ldots, \mathbf{e}_j \rangle, \quad j = 1, \ldots, m. \tag{9.16'}$$
+
+**Dit zegt ons:** $k$ stappen van het impliciet verschoven QR-algoritme zijn wiskundig equivalent met deelruimte-iteratie op de volledige ruimte $\mathbb{C}^m$, toegepast met de samengestelde matrix $p^{(k)}(A^{(0)}) \cdots p^{(1)}(A^{(0)})$. Hoe beter de verschuivingen eigenwaarden benaderen, hoe kleiner $|p^{(j)}(\lambda_i)|$ voor de te isoleren eigenwaarden, en hoe sneller de convergentie.
 
 ---
 
 ## Samenvatting en vergelijking van methodes
 
 | Methode | Zoekt | Convergentie | Beste voor |
-|---|---|---|---|
-| **Methode van de machten** | 1 dominante eigenvector | Lineair, $|\lambda_2/\lambda_1|$ | Eén eigenwaarde, matrix-vector product goedkoop |
+| --- | --- | --- | --- |
+| **Methode van de machten** | 1 dominante eigenvector | Lineair, $\left\|\lambda_2/\lambda_1\right\|$ | Eén eigenwaarde, matrix-vector product goedkoop |
 | **Inverse iteratie (+shift)** | Eigenwaarde dichtstbij $\sigma$ | Lineair (kubisch bij Rayleigh) | Verfijnen van een schatting |
-| **Deelruimte-iteratie** | $n$ dominante eigenvectoren | Lineair, $|\lambda_{n+1}/\lambda_n|$ | Meerdere eigenwaarden |
+| **Deelruimte-iteratie** | $n$ dominante eigenvectoren | Lineair, $\left\|\lambda_{n+1}/\lambda_n\right\|$ | Meerdere eigenwaarden |
 | **Arnoldi** | $k$ extreme eigenwaarden | Kwalitatief lineair, extreme eerst | Grote ijle matrices, $k \ll m$ |
 | **Lanczos** | Idem, voor Hermitiaanse $A$ | Idem, maar goedkoper per stap | Grote symmetrische matrices |
 | **Impliciet QR** | Alle $m$ eigenwaarden | Kwadratisch (per blok) | Kleine/middelgrote volle matrices |

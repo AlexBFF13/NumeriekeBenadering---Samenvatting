@@ -55,7 +55,7 @@ Pagina's zonder uitgaande links geven matrix $A$ nul-rijen, waardoor de scorever
 **Aanpassing 2 — Damping factor $\alpha$:**  
 Voeg een convexe combinatie toe met een matrix die overal $\frac{1}{N}$ heeft:
 
-$$\hat{A} = (1 - \alpha)\tilde{A} + \alpha \cdot \frac{1}{N}\mathbf{1}\mathbf{1}^T, \quad \alpha \in (0,1) \text{ klein}. \tag{\text{bv. } \alpha = 0.1}$$
+$$\hat{A} = (1 - \alpha)\tilde{A} + \alpha \cdot \frac{1}{N}\mathbf{1}\mathbf{1}^T, \quad \alpha \in (0,1) \text{ klein}. \quad (\text{bv. } \alpha = 0.1)$$
 
 Dit simuleert een gebruiker die af en toe willekeurig naar een pagina springt (in plaats van altijd op een link te klikken). Matrix $\hat{A}$ is nu ook **irreduceerbaar**: de graaf is sterk geconnecteerd (je kan vanuit elke knoop elke andere knoop bereiken).
 
