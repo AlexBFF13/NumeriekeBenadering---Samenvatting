@@ -1,0 +1,87 @@
+20 Juni 2025
+Beschouw een orthogonale rij veeltermen {φ0(x), φ1(x), φ2(x), . . .} met betrekking tot een scalair product van de vorm (f, g) = ∫w(x)f(x)g(x)dx met w(x) > 0 voor x ∈ [a, b]. (4/16) (bijna helemaal hetzelfde als de modelvraag)
+Wat kan je zeggen over het aantal nulpunten van φn en hun ligging? Een bewijs is niet nodig.
+Bewijs de fundamentele drietermsrecursiebetrekking m.b.v. de eigenschap dat φk(x) orthogonaal staat op veeltermen van lagere graad
+Is het interessanter om drietermsrecursiebetrekking te gebruiken op {φ0(x), φ1(x), φ2(x), . . .} of om de orthogonale rij veeltermen opstellen met GS uit {1,x,x²,...}? Bespreek in functie van scalaire producten. (Basically uitleggen drietermsrecursiebetrekking → O(n) en GS → O(n²)
+Benaderingen via singuliere-waardenontbinding (4/16) (zelfde als 2024)
+Leg uit: rang-k benadering met SWO
+Leid een uitdrukking af voor de spectrale en Frobenius norm van de gemaakte fout van de rang-k benadering. Dus voor norm(A-A_k^{SWO})_2 en norm(A-A_k^{SWO})_F. Wat is het nut van deze uitdrukkingen?
+Bewijs dat rang-k SWO benadering de beste rang-k benadering is voor de spectrale norm. Hint 1: Een rang-k benadering kan voorgesteld worden als M=XY*. Hint 2: norm(M)>=norm(Mv) met norm(v)=1.
+Bespreek zéér kort een andere methode voor een rang-k benadering
+A is een zeer grote en spaarse matrix (10^7x10^7). Hoe ga je te werk voor een rang-k SWO benadering? Geef ook uw motivatie
+Niet-lineair optimalisatieprobleem (4/16) (zelfde als 2024)
+Vergelijk exacte lijnzoekmethode en backtracking. Verklaar de populariteit van backtracking.
+Leg de Armijo-voorwaarde uit en geef de motivatie voor deze voorwaarde.
+Leid een uitdrukking af voor een iteratie van de methode van de steilste helling met de exacte lijnzoekmethode voor f(x) = 1/2*x^T*A*x-x^T*b met A>0 en A=A^T. Begin met de gradient te berekenen.
+Bespreek het begrip kubische spline-functie. (4/16) (bijna helemaal hetzelfde als de modelvraag)
+Geef een definitie in formules en leg je symbolen uit.
+Wat is de dimensie van de bijhorende spline-ruimte? Bewijs dit.
+Definieer en teken een naïeve basis van afgeknotte machtsfuncties en een basis van B-splines.
+Leg gedetailleerd uit hoe je die B-spline basis zou gebruiken voor het benaderen van een experimenteel opgemeten functie.
+Illustreer met een voorbeeld hoe het resulterende lineaire stelsel er uit ziet (spaarsheidspatroon is voldoende, de waarde van de matrixelementen is niet nodig).
+
+
+21 Juni 2024
+Unitaire ruimte, uitgerust met scalair product (4/16) (exact dezelfde als de modelvraag)
+Bespreek Gram-Schmidt algoritme.
+Hoeveelheid rekenwerk?
+Herorthogonalisatie?
+Orthogonale rij veeltermen opstellen met GS en {1,x,x²,...} -> computationeel efficiënt?
+Discreet benaderingsprobleem (4/16) (bijna exact dezelfde als de modelvraag)
+Bewijs dat de oplossing van dit benaderingsprobleem overeenkomt met de benaderende oplossing van het overgedetermineerd stelsel. (Of iets in die aard)
+Toon aan dat oplossing normaalstelsel overeenkomt met oplossing overgedetermineerd stelsel.
+Hoe kan overfitting gedetecteerd worden?
+Geef definitie van (en motivatie voor) ridge regressie.
+Toon aan dat ridge regressie slechts een kleine aanpassing geeft aan het normaalstelsel voor de kkb.
+benaderingen via singuliere-waardenontbinding (4/16)
+Leg uit: rang-k benadering met SWO
+Leid een uitdrukking af voor de spectrale en Frobenius norm van de gemaakte fout van de rang-k benadering. Dus voor norm(A-A_k^{SWO})_2 en norm(A-A_k^{SWO})_F. Wat is het nut van deze uitdrukkingen?
+Bewijs dat rang-k SWO benadering de beste rang-k benadering is voor de spectrale norm (of Frobenius norm, idk). Hint 1: Een rang k benadering kan voorgestel worden als M=XY*. Hint 2: norm(A-XY*)>=norm((A-XY*)v) met norm(v)=1.
+Bespreek zéér kort een andere methode voor een rang-k benadering
+A is een zeer grote en spaarse matrix (10^7x10^7). Hoe ga je te werk voor een rang-k SWO benadering? Geef ook uw motivatie
+niet-lineair optimalisatieprobleem (4/16)
+Bespreek exacte lijnzoekmethode en backtracking. Verklaar de populariteit van backtracking. Leg de Armijo-voorwaarde uit en geef de motivatie voor deze voorwaarde.
+Leid een uitdrukking af voor een iteratie van de methode van de steilste helling voor f(x)=1/2*x^T*A*x+x^T-x*b (ofzoiets) met A>0 en symmetrisch(?). De hint was dat je moest beginnen met de gradient te berekenen.
+7 Juni 2024
+Householder (4/16)
+Leid Fm = Im-2vv*/v*v af.
+Waarom sign(x)?
+Leg het algoritme van Householder uit en geef pseudocode.
+Waarom gebruiken we in lage rang benadering QR factorisatie met kolomwisseling. Geef de eigenschappen van A, P, Q, R in die formule.
+Hoe wordt het bovenstaande toegepast voor datacompressie?
+Graafpartitionering (4/16)
+Hoe komen we tot de formule voor dit probleem?
+Hoe "relaxeren" we dit probleem? (opmerking 8.2 in hb)
+Toon aan dat de oplossing de eigenvector is bij de op een na kleinste eigenwaarde.
+Welk algoritme/methode gebruiken we voor het berekenen van dit probleem
+kleinste kwadraten benadering functies (4/16)
+Welk scalair product beginnen we hiervan?
+Toon aan dat de oplossing van het overgedetermineerd stelsel gelijk is aan de kleinste kwadraten benadering
+Hoe detecteert men overfitting?
+Leid Tikhonov af.
+Iets met Tikhonov en kkw
+Neurale Netwerken (4/16)
+Teken dit neurale netwerk (2 inputs, 2 lagen van 4 neuronen, 2 outputs).
+Leid de formulevorm van dit neurale netwerk af
+Waarom wordt steilste helling vaak voor neurale netwerken gebruikt?
+Wat en waarom de stochastische versie van steilste helling?
+9 Juni 2023
+Bespreek hoe je met Householder-transformaties een gelijkvormige Hessenbergmatrix van A (mxm) kunt maken:
+Wat is de meetkundige betekenis van de uitdrukking: Fm = Im- 2(vv)/(vv) met v = ... Leg uit wat x en v zijn
+Waarom wordt er rekening gehouden met het teken van x1?
+Geef de pseudocode om de Hessenbergmatrix te genereren
+Wat is de kost in functie van enkel m?
+Kan je bovenstaande methode ook gebruiken om een matrix om te vormen tot een bovendriehoeksmatrix?
+Geef het verband met eigenwaardenbenadering
+Beschouw de functionaal I(F) = int(w(x)|f(x)|dx, a, b) met w(x) > 0.
+Bewijs dat I(f) een norm definieert op de ruimte C[a, b] (ruimte van continue functies op het interval [a, b]).
+Is het een strikte norm? Argumenteer.
+Is het een scalaire norm? Gebruik het resultaat uit deelvraag b waar je aantoonde dat I(f) geen strikte norm is.
+Beschouw het overgedetermineerde stelsel Ax ≈ b, waarbij A ∈ R m×n, met m > n.
+Leg uit hoe je met behulp van een QR-factorisatie de kleinste-kwadratenoplossing kan bepalen.
+Heb je voor het berekenen van de oplossing de onvolledige of volledige QR-factorisatie nodig? Verklaar!
+Stel A is van dimensie 10^7 × 10. Welk algoritme zou je voor de QR-factorisatie gebruiken? Waarom?
+Waarom is deze aanpak beter dan rechtstreeks het normaalstelsel op te lossen?
+Beschouw een niet-lineair optimalisatieprobleem.
+Geef de definitie van de Armijo-voorwaarde en leg uit wat de motivatie erachter is.
+Eigenschappen Armijo (niet zeker)

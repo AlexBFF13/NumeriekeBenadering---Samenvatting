@@ -79,7 +79,7 @@ ______|________/_____________ x
 ```
 Nul links van $t_1$, daarna $= (x-t_1)^3$. Elke functie "activeert" in één knooppunt.
 
-**Nadeel:** Numeriek instabiel (slechte conditionering). Gebruik in de praktijk de B-splinebasis.
+**Nadeel:** Numeriek instabiel (slechte conditionering) — dit is de **"slechte basis"** waarnaar in examenvragen verwezen wordt. De volledige afgeknotte-machtsbasis bevat zowel de veeltermbasis $\{1, x, \ldots, x^k\}$ als de afgeknotte functies $\{(x-t_1)_+^k, \ldots, (x-t_{n-1})_+^k\}$ — het weglaten van de veeltermbasis is een veelgemaakte fout. Gebruik in de praktijk de B-splinebasis.
 
 #### B-splinebasis
 
@@ -140,7 +140,7 @@ $$G_{j,i} = \sum_{r=1}^N w_r N_{j,k+1}(x_r) N_{i,k+1}(x_r), \qquad b_j = \sum_{r
 - Aantal en ligging knooppunten $t_0, \ldots, t_n$: te kiezen a.h.v. de data
 - Coëfficiënten $c_i$: bepaald door het normaalstelsel
 
-> ⚠️ **Examentip:** De knooppuntenkeuze is de moeilijkste stap. Te weinig → slechtere fit; te veel → overfitting.
+> ⚠️ **Examentip:** De knooppuntenkeuze is de moeilijkste stap. Te weinig → slechtere fit; te veel → overfitting. Noodzakelijke voorwaarde voor een unieke oplossing: **Schönberg-Whitney-voorwaarde** — er moet minstens één datapunt liggen in elk knooppunteninterval $[t_{i}, t_{i+1})$. Zonder dit kan het stelsel $Gc = b$ singulier worden.
 
 ---
 
@@ -741,6 +741,14 @@ f
 ```
 
 De Armijo-voorwaarde eist dat de nieuwe functiewaarde **onder de gecorrigeerde raaklijn** ligt, wat een voldoende daling garandeert.
+
+**Drie geometrische eigenschappen die Samaey expliciet test:**
+
+1. **Gegarandeerde stop:** De eis is *minder streng* dan de raaklijn van de doelfunctie (die helling $\nabla f \cdot p$ heeft). Omdat $f$ continu is en de raaklijn neerwaarts gaat, is er altijd een $\alpha > 0$ klein genoeg zodat de functiewaarde onder de gecorrigeerde raaklijn (helling $c \cdot \nabla f \cdot p$) valt. Backtracking stopt dus altijd in eindig aantal stappen.
+
+2. **Strenger voor grotere stappen:** Het rechterlid $f(x) + c\alpha \nabla f \cdot p$ groeit lineair in $\alpha$ (daalt lineair, want $\nabla f \cdot p < 0$). Voor grote $\alpha$ is de eis dat $f(x + \alpha p)$ ver genoeg onder $f(x)$ ligt — strenger dan voor kleine $\alpha$. Dit vermijdt te grote stappen die over het minimum springen.
+
+3. **Groot aanvaardingsgebied ver van het optimum:** Ver van het optimum is $|\nabla f \cdot p|$ groot (steile helling), zodat de gecorrigeerde raaklijn snel daalt. Er is een groot bereik aan $\alpha$-waarden die de Armijo-eis voldoen → veel minder halveerstappe nodig → rekenwerk bespaart. Dicht bij het optimum is de daling klein en worden de stappen kleiner, wat verhindert dat het algoritme stopt.
 
 **Vergelijking:**
 

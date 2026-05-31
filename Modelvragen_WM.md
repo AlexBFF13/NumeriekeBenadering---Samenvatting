@@ -298,7 +298,7 @@ $$\hat{R}\hat{x} = b_1. \tag{3}$$
 
 **Uitleg:**
 - De oplossing hangt enkel af van $b_1 = \hat{Q}^T b$ (de eerste $n$ componenten van $Q^T b$).
-- De rest-$b_2$ geeft de minimale fout maar we hebben $b_2$ niet nodig om $\hat{x}$ te berekenen.
+- De rest-$b_2$ geeft de minimale fout maar we hebben $b_2$ niet nodig om $\hat{x}$ te berekenen. **Geometrisch:** $b_2 = (I - \hat{Q}\hat{Q}^T)b$ is de projectie van $b$ op het **orthogonale complement van $\mathcal{R}(A)$** — geen keuze van $x$ kan dit deel elimineren, want $Ax \in \mathcal{R}(A)$ per definitie. Het is de intrinsieke, onvermijdelijke restfout van het benaderingsprobleem.
 - Bijgevolg: men berekent enkel $\hat{Q} \in \mathbb{R}^{m \times n}$ (de eerste $n$ kolommen van $Q$) en $\hat{R} \in \mathbb{R}^{n \times n}$.
 
 **Voordeel onvolledige QR:** Rekenkost $O(mn^2)$ i.p.v. $O(m^2 n)$ voor de volledige factorisatie.
@@ -497,6 +497,28 @@ $$(q_i, q_j) \approx \epsilon_{\text{mach}} \cdot \kappa(A) \quad \text{(verlies
 
 > ⚠️ **Examentip:** "Herorthogonalisatie" = "Gram-Schmidt nogmaals uitvoeren op de uitvoer." De reden: Gram-Schmidt is niet achterwaarts stabiel bij slecht geconditioneerde bases.
 
+#### Gewijzigd Gram-Schmidt (Modified Gram-Schmidt, MGS) — numeriek stabielere variant
+
+**Verschil met klassiek GS:** Bij klassiek GS worden alle componenten $r_{ij} = (q_i, a_j)$ berekend t.o.v. de **originele** vector $a_j$. Bij MGS worden de componenten **stapsgewijs** verwijderd: na het aftrekken van de $q_i$-component, wordt de **bijgewerkte** $v_j$ gebruikt voor de volgende orthogonalisatie.
+
+**Algoritme (Gewijzigd Gram-Schmidt):**
+
+```text
+voor j = 1 tot n:
+    v_j = a_j
+    voor i = 1 tot j-1:
+        r_{ij} = (q_i, v_j)         ← inproduct met bijgewerkte v_j (niet a_j!)
+        v_j = v_j - r_{ij} · q_i   ← onmiddellijk verwijderen
+    r_{jj} = ||v_j||
+    q_j = v_j / r_{jj}
+```
+
+**Waarom stabieler?** Bij KGS propageren kleine afrondingsfouten in elke stap naar alle volgende stappen (de fout op $a_j$ beïnvloedt alle $r_{ij}$ tegelijk). Bij MGS wordt de fout na elke deelstap "opgeschoond" — de gecumuleerde fout op de orthogonaliteit is van orde $\epsilon_{\text{mach}} \cdot \kappa(A)$ in plaats van $\epsilon_{\text{mach}} \cdot \kappa(A)^2$.
+
+**Wiskundig identiek, numeriek beter:** KGS en MGS geven in exacte rekenkunde identieke resultaten. Bij drijvende-kommarekenkunde is MGS significant robuuster, en vervangt in de praktijk steeds het klassieke Gram-Schmidt.
+
+> ⚠️ **Examentip:** Michiels vraagt dit altijd: het woord **Modified Gram-Schmidt (MGS)** moet vallen. Het sleutelwoord is "stapsgewijs verwijderen van componenten t.o.v. de bijgewerkte vector", in tegenstelling tot "alles t.o.v. de originele vector" bij KGS.
+
 ---
 
 ### (d) Orthogonale veeltermen opstellen met Gram-Schmidt: efficiënt?
@@ -687,7 +709,7 @@ $$A = X\Lambda X^{-1}, \quad \Lambda = \text{diag}(\lambda_1,\ldots,\lambda_N).$
 
 Omdat $A$ symmetrisch is, zijn de eigenwaarden reëel en is $X$ orthogonaal ($X^{-1} = X^T$).
 
-**Stap 2:** Bereken de matrixexponentiaal via de eigenwaardenontbinding:
+**Stap 2:** Bereken de matrixexponentiaal via de eigenwaardenontbinding (**spectraal mapping theorema**: als $A = X\Lambda X^{-1}$ diagonaliseerbaar is, dan geldt $f(A) = Xf(\Lambda)X^{-1}$ voor elke functie $f$, waarbij $f$ componentgewijs op de eigenwaarden wordt toegepast):
 $$e^A = Xe^\Lambda X^{-1} = X\begin{pmatrix}e^{\lambda_1}&&\\&\ddots&\\&&e^{\lambda_N}\end{pmatrix}X^T.$$
 
 **Stap 3:** Lees de diagonaalelementen $(e^A)_{ii}$ af.
@@ -776,6 +798,10 @@ $$Q_k^*(A - \theta I)Q_k \mathbf{y} = \mathbf{0} \implies H_k\mathbf{y} = \theta
 
 **Verband met orthogonale projectie:** De Ritz-waarden zijn de eigenwaarden van de **orthogonale projectie** $P_k A P_k$ (geprojecteerd op $\mathcal{K}_k$), d.w.z. $H_k = Q_k^* A Q_k$. Dit is dezelfde constructie als de Galerkin-benadering: eis dat het residu loodrecht staat op de benaderingsruimte.
 
+**Bewijs:** De orthogonale projector op $\mathcal{K}_k$ is $P_k = Q_k Q_k^*$ (want $Q_k$ heeft orthonormale kolommen). Dus:
+$$P_k A P_k = Q_k Q_k^* A Q_k Q_k^* = Q_k H_k Q_k^*.$$
+De eigenwaarden van $Q_k H_k Q_k^*$ zijn gelijk aan die van $H_k$ (unitaire gelijkenis: $Q_k^*(Q_k H_k Q_k^*)Q_k = H_k$). $\square$
+
 **Voordeel in stap $k$:**
 - Eigenwaarden van $A$: $m \times m$ probleem ($m$ groot)
 - Ritz-waarden: $k \times k$ probleem ($k \ll m$) → oplosbaar met het volledige QR-algoritme
@@ -820,205 +846,112 @@ voor i = 1 tot j:
 
 ## V9 – Convergentiegedrag van Arnoldi en eigenwaardenlokalisatie
 
-**Vraag:** Bespreek het convergentiegedrag van het algoritme van Arnoldi, gebruik makend van:
-$$(A - \sigma I)Q_k = Q_k(H_k - \sigma I) + \mathbf{q}_{k+1}\mathbf{e}_k^T h_{k+1,k}$$
-en eigenschap $\hat{p} = \arg\min_{p \in \mathcal{M}_k}\|p(A)\mathbf{b}\|_2 \iff \hat{p}(z) = zI - H_k$.
-
-**Kernidee:** Arnoldi lokaliseert eigenwaarden via een minimalisatieprobleem op veeltermen. De extreme (meest geïsoleerde) eigenwaarden worden het eerst gevonden omdat een veelterm zijn nulpunten makkelijk kan leggen in geïsoleerde punten van het spectrum.
+**Vraag:** Bespreek het convergentiegedrag en hoe Arnoldi eigenwaarden lokaliseert, gebruik makend van $(A - \sigma I)Q_k = Q_k(H_k - \sigma I) + \mathbf{q}_{k+1}\mathbf{e}_k^T h_{k+1,k}$ en $\hat{p} = \arg\min_{p \in \mathcal{M}_k}\|p(A)\mathbf{b}\|_2 \iff \hat{p}(z) = \det(zI - H_k)$. Bewijzen niet nodig.
 
 ---
 
-### Stelling 9.1.2 — Invariantie voor verschuivingen
+### Eigenschap 1 — Verschuivingsinvariantie
 
-**Stelling:** Als Arnoldi toegepast op $(A, \mathbf{b})$ Ritz-waarden $\{\theta_i^{(k)}\}$ geeft, dan geeft Arnoldi op $(A - \sigma I, \mathbf{b})$ Ritz-waarden $\{\theta_i^{(k)} - \sigma\}$.
+De formule $(A - \sigma I)Q_k = Q_k(H_k - \sigma I) + \mathbf{q}_{k+1}\mathbf{e}_k^T h_{k+1,k}$ is een geldige Arnoldi-recursie voor $(A - \sigma I, \mathbf{b})$, met dezelfde $Q_k$ en $H_k - \sigma I$ als Hessenberg-projectie. Omdat $\mathcal{K}_k(A-\sigma I,\mathbf{b}) = \mathcal{K}_k(A,\mathbf{b})$, geeft Arnoldi op $(A-\sigma I)$ Ritz-waarden $\{\theta_i - \sigma\}$.
 
-**Bewijs:** Uit de recursievergelijking (9.8):
-$$(A - \sigma I)Q_k = Q_k H_k + h_{k+1,k}\mathbf{q}_{k+1}\mathbf{e}_k^T - \sigma Q_k = Q_k(H_k - \sigma I) + h_{k+1,k}\mathbf{q}_{k+1}\mathbf{e}_k^T.$$
-
-Dit is de geldige Arnoldi-recursie voor $(A - \sigma I, \mathbf{b})$, met dezelfde $Q_k$ en $H_k - \sigma I$.
-
-Bovendien: $\mathcal{K}_k(A - \sigma I, \mathbf{b}) = \mathcal{K}_k(A, \mathbf{b})$ (de Krylov-ruimte verandert niet door verschuiven).
-
-**Gevolg:** Anders dan de methode van de machten, convergeert Arnoldi zowel naar de grootste als de kleinste eigenwaarde, onafhankelijk van een verschuiving. $\square$
+**Gevolg:** Arnoldi convergeert zowel naar $\lambda_{\min}$ als $\lambda_{\max}$ — in tegenstelling tot de methode van de machten. De stoorterm $h_{k+1,k}$ meet hoe goed $\mathcal{K}_k$ de gezochte eigenruimte benadert: klein $h_{k+1,k}$ $\iff$ Ritz-waarden zijn geconvergeerd.
 
 ---
 
-### Stelling 9.1.3 — Verband met veeltermbenadering
+### Eigenschap 2 — Veeltermbenadering en lokalisatie
 
-**Stelling:** De karakteristieke veelterm $\hat{p}$ van $H_k$ is de unieke oplossing van:
-$$\hat{p} = \arg\min_{p \in \mathcal{M}_k} \|p(A)\mathbf{b}\|_2,$$
-waarbij $\mathcal{M}_k$ de verzameling van **monische** veeltermen van graad $k$ is.
+De karakteristieke veelterm $\hat{p}$ van $H_k$ minimaliseert $\|p(A)\mathbf{b}\|_2$ over alle monische veeltermen van graad $k$. Via de eigenwaardenontbinding $A = X\Lambda X^{-1}$:
 
-**Interpretatie van het minimalisatieprobleem:** We zoeken de monische veelterm $p$ van graad $k$ zodat $p(A)\mathbf{b}$ zo klein mogelijk is. Een nulpunt van $p$ bij eigenwaarde $\lambda_j$ zorgt dat $p(\lambda_j) = 0$ en de $\lambda_j$-component van $p(A)\mathbf{b}$ nul wordt.
-
-**Via eigenwaardenontbinding** ($A = X\Lambda X^{-1}$):
 $$\min_{p \in \mathcal{M}_k}\left\|X\begin{pmatrix}p(\lambda_1)&&\\&\ddots&\\&&p(\lambda_m)\end{pmatrix}X^{-1}\mathbf{b}\right\|_2.$$
 
-Dit maakt expliciet: een nulpunt van $p$ dicht bij $\lambda_j$ vermindert de bijdrage van de $j$-de modus.
+De optimale veelterm plaatst zijn nulpunten zo dat $|p(\lambda_i)|$ klein is voor eigenwaarden die sterk bijdragen aan $\mathbf{b}$.
 
----
-
-### Convergentiegedrag: welke eigenwaarden convergeert Arnoldi eerst?
-
-**De extreme en geïsoleerde eigenwaarden.**
-
-**Intuïtie:** Beschouw de eigenwaarden $\lambda_1, \ldots, \lambda_m$ van $A$. Een monische veelterm van graad $k$ heeft $k$ nulpunten te plaatsen. Als één eigenwaarde $\lambda_j$ sterk geïsoleerd is van de rest, kan één nulpunt van $p$ dicht bij $\lambda_j$ gelegd worden zonder de andere termen te storen. Daardoor wordt $|p(\lambda_j)|$ klein terwijl $\|p(A)\mathbf{b}\|_2$ toch geminimaliseerd wordt.
-
-**Formeel:** Als $\lambda_j$ ver van de rest ligt en een relatief grote component in $X^{-1}\mathbf{b}$ heeft, zal de optimale $p$ snel een nulpunt plaatsen nabij $\lambda_j$ — de overeenkomstige Ritz-waarde convergeert dan snel.
-
-**Wat convergeert niet snel?** Eigenwaarden in het midden van het spectrum, omgeven door andere eigenwaarden, zijn moeilijk te isoleren met een lage-graadsveelterm.
-
----
-
-### Verband met de formule $(A - \sigma I)Q_k = Q_k(H_k - \sigma I) + \ldots$
-
-Deze formule zegt: de matrix $H_k - \sigma I$ is de projectie van $A - \sigma I$ op de Krylov-ruimte. Als $\sigma$ dicht bij een eigenwaarde $\lambda_j$ ligt:
-- De Ritz-waarden van $H_k$ die dicht bij $\sigma$ zitten, convergeren snel (het geïsoleerde gedeelte $\lambda_j - \sigma \approx 0$).
-- De stoorterm $h_{k+1,k}\mathbf{q}_{k+1}\mathbf{e}_k^T$ meet hoe goed $\mathcal{K}_k$ de eigenruimte bij $\sigma$ benadert.
-
-**Gebruik voor convergentiediagnose:** Als de Ritz-waarden $\theta_i^{(k)}$ voor opeenvolgende $k$ nauwelijks veranderen, zijn ze geconvergeerd. De subdiagonaalterm $|h_{k+1,k}(\mathbf{e}_k^T \mathbf{y}_i)|$ (met $\mathbf{y}_i$ de eigenvector van $H_k$) geeft het **residunorm** van de Ritz-waarde $\theta_i$.
-
----
-
-### Praktische conclusies
-
-1. **Extreme eigenwaarden eerst:** grootste en kleinste convergeert het vroegst.
-2. **Geclusterde eigenwaarden last:** vereisen veel iteraties.
-3. **Verschuivingen helpen:** door $A$ te vervangen door $(A - \sigma I)^{-1}$ (inverse iteratie met verschuiving) trekt het spectrum uiteen rond $\sigma$ en convergeert het sneller.
-4. **Afbreken en herstarten:** in de praktijk wordt Arnoldi na $k_{\max}$ stappen herstart (ARPACK-strategie), om geheugengebruik te beperken.
-
-> ⚠️ **Examentip:** De twee formules zijn de kern van dit antwoord. (1) De invariantie voor verschuivingen betekent: Arnoldi ziet extreme eigenwaarden, geen "grootste." (2) Het veeltermbenadering-verband betekent: geïsoleerde eigenwaarden worden als eerste opgepikt als nulpunten van $p$.
+**Welke eigenwaarden convergeren eerst?** De **geïsoleerde eigenwaarden aan de rand van het spectrum**. Als $\lambda_j$ ver van de rest staat, kan één nulpunt van $p$ dicht bij $\lambda_j$ geplaatst worden zonder andere termen te verstoren $\Rightarrow$ snelle convergentie. Geclusterde eigenwaarden in het midden van het spectrum vereisen veel iteraties.
 
 ---
 
 ## V10 – Twee methodes voor lage-rangbenadering van een matrix
 
-**Vraag:** Bespreek in detail twee methodes om een goede lage-rangbenadering van een matrix te bekomen. Vergelijk deze. Sta daarbij ook stil bij de hoeveelheid rekenwerk en de kwaliteit van de benadering.
+**Vraag:** Bespreek twee methodes, vergelijk ze, met aandacht voor rekenkost en kwaliteit.
 
-**Kernidee:** Veel matrices in de praktijk hebben een "lage rang": bijna alle informatie zit in slechts $k$ richtingen. Twee methodes: QR met kolomverwisselingen (snel maar suboptimaal) en de getrunceerde SVD (optimaal maar duurder).
-
----
-
-### Probleemstelling
-
-Gegeven $A \in \mathbb{C}^{m \times n}$ van rang $r$. Zoek de beste benadering $B$ van rang $\leq k$, met $k < r$:
-
-$$\min_{B : \text{rang}(B) \leq k} \|B - A\|.$$
-
-**Waarschuwing:** De verzameling $\mathcal{M}_k(m,n) = \{B : \text{rang}(B) \leq k\}$ is **geen deelruimte** — niet gesloten onder optelling. De theorie van orthogonale projecties (H2–H3) is hier niet rechtstreeks toepasbaar.
+**Probleemstelling:** Gegeven $A \in \mathbb{C}^{m \times n}$ rang $r$, zoek $\min_{\text{rang}(B) \leq k} \|B - A\|$. De verzameling $\mathcal{M}_k = \{B : \text{rang}(B) \leq k\}$ is **geen deelruimte** (niet gesloten onder optelling) $\Rightarrow$ orthogonale projectietheorie niet toepasbaar.
 
 ---
 
-### Methode 1 — QR-factorisatie met kolomverwisselingen
+### Methode 1 — QR met kolomverwisselingen
 
-**Idee:** Pas de QR-factorisatie aan zodat bij elke stap de kolom met **grootste norm** naar voren wordt gepivoteerd.
+Bij elke stap wordt de kolom met grootste norm naar voor gepivoteerd:
+$$AP = QR, \qquad |r_{11}| \geq |r_{22}| \geq \cdots$$
 
-**Algoritme:**
-```
-voor j = 1 tot k:
-    1. Zoek de kolom a_{i*} met grootste norm (i* ≥ j)
-    2. Wissel kolom j en kolom i* (sla permutatie op in P)
-    3. Pas Householder-transformatie toe om nullen te maken onder A[j,j]
-```
+**Rang-$k$ benadering:** $A_k^{qr} = Q_k R_k P^T$ ($Q_k$: eerste $k$ kolommen van $Q$, $R_k$: eerste $k$ rijen van $R$).
 
-**Uitkomst:**
-$$AP = QR, \quad A = QRP^T,$$
+- **Rekenkost:** $O(mnk)$
+- **Kwaliteit:** goed maar **niet gegarandeerd optimaal**
 
-met $Q$ unitair, $P$ permutatiematrix, $R$ bovendriehoeks met $|r_{11}| \geq |r_{22}| \geq \cdots$.
+---
 
-**Rang-$k$ benadering:**
-$$A_k^{qr} = Q_k R_k P^T,$$
+### Methode 2 — Getrunceerde SVD
 
-met $Q_k$ de eerste $k$ kolommen van $Q$ en $R_k$ de eerste $k$ rijen van $R$.
-
-**Eigenschappen van de diagonaalelementen:**
-- $|r_{jj}|$ is de norm van de "resterende" kolom na $j-1$ stappen
-- De diagonaalelementen dalen monotoon: $|r_{11}| \geq |r_{22}| \geq \cdots$
+$$A_k^{svo} = \sum_{i=1}^k \sigma_i \mathbf{u}_i \mathbf{v}_i^* = U_k \Sigma_k V_k^*$$
 
 **Gemaakte fout:**
-$$\|A - A_k^{qr}\|_F^2 = \sum_{i=k+1}^{\min(m,n)} r_{ii}^2.$$
+$$\|A - A_k^{svo}\|_2 = \sigma_{k+1}, \qquad \|A - A_k^{svo}\|_F = \sqrt{\sigma_{k+1}^2 + \cdots + \sigma_r^2}$$
 
-**Rekenkost:** $O(mnk)$ bewerkingen (voor $k \ll \min(m,n)$: significant minder dan volledige QR).
-
-**Voor- en nadelen:**
-- ✓ Snel te berekenen
-- ✓ Eenvoudig algoritme
-- ✗ Niet gegarandeerd optimaal — er bestaat geen bewijs dat dit de beste rang-$k$ benadering is
+- **Rekenkost:** $O(mn^2)$ (duurder)
+- **Kwaliteit:** **optimaal** (Stelling Eckart–Young–Mirsky)
 
 ---
 
-### Methode 2 — Getrunceerde SVD (Singuliere-waardenontbinding)
+### Stelling — Beste rang-$k$ benadering (Eckart–Young–Mirsky)
 
-**Basisidee:** Gebruik de rang-1 ontbinding $A = \sum_{i=1}^r \sigma_i \mathbf{u}_i \mathbf{v}_i^*$ en knip af na $k$ termen.
+$$\|A_k^{svo} - A\|_2 = \min_{B:\,\text{rang}(B)\leq k} \|B - A\|_2$$
 
-**Definitie:** De **getrunceerde SVD** van rang $k$ is:
-$$A_k^{svo} = \sum_{i=1}^k \sigma_i \mathbf{u}_i \mathbf{v}_i^* = U_k \Sigma_k V_k^*,$$
+**Bewijs (spectraalnorm):** Te tonen: voor elke $B = XY^*$ met rang $\leq k$ geldt $\|B - A\|_2 \geq \sigma_{k+1}$.
 
-met $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_k > 0$ de $k$ grootste singuliere waarden, $U_k = [\mathbf{u}_1 \cdots \mathbf{u}_k]$, $V_k = [\mathbf{v}_1 \cdots \mathbf{v}_k]$.
+Zoek $\mathbf{w}$ met $\|\mathbf{w}\|_2 = 1$ in $\text{span}\{\mathbf{v}_1,\ldots,\mathbf{v}_{k+1}\} \cap \mathcal{N}(Y^*)$. Zo'n $\mathbf{w}$ bestaat want $(k+1)+(n-k) = n+1 > n$ (dimensies overlappen).
 
-**Gemaakte fout:**
-$$\|A - A_k^{svo}\|_2 = \sigma_{k+1}, \qquad \|A - A_k^{svo}\|_F = \sqrt{\sigma_{k+1}^2 + \cdots + \sigma_r^2}.$$
-
-**Rekenkost:** De volledige SVD kost $O(\min(m^2n, mn^2))$ bewerkingen. Dit is significant duurder dan de QR-met-pivot aanpak.
+Schrijf $\mathbf{w} = \sum_{i=1}^{k+1} c_i \mathbf{v}_i$ met $\sum c_i^2 = 1$. Dan $B\mathbf{w} = XY^*\mathbf{w} = \mathbf{0}$, dus:
+$$\|B - A\|_2 \geq \|A\mathbf{w}\|_2 = \left\|\sum_{i=1}^{k+1} c_i \sigma_i \mathbf{u}_i\right\|_2 = \sqrt{\sum c_i^2 \sigma_i^2} \geq \sigma_{k+1}\underbrace{\sqrt{\sum c_i^2}}_{=1} = \sigma_{k+1}. \quad\square$$
 
 ---
 
-### Stelling 12.2.1 — Beste rang-$k$ benadering (Eckart–Young–Mirsky)
+### Vergelijking
 
-**Stelling:** De getrunceerde SVD geeft de **beste** rang-$k$ benadering in zowel de spectraalnorm als de Frobeniusnorm:
-$$\|A_k^{svo} - A\|_2 = \min_{B : \text{rang}(B) \leq k} \|B - A\|_2,$$
-$$\|A_k^{svo} - A\|_F = \min_{B : \text{rang}(B) \leq k} \|B - A\|_F.$$
-
-**Bewijs (spectraalnorm):**
-
-**Doel:** Tonen dat voor elke matrix $B$ van rang $\leq k$ geldt: $\|B - A\|_2 \geq \sigma_{k+1}$.
-
-**Stap 1:** Schrijf $B = XY^*$ met $X \in \mathbb{C}^{m \times k}$, $Y \in \mathbb{C}^{n \times k}$.
-
-**Stap 2:** Zoek een eenheidsvector $\mathbf{w} \in \mathbb{C}^n$ die tegelijk in:
-- $\text{span}\{\mathbf{v}_1, \ldots, \mathbf{v}_{k+1}\}$ (dimensie $k+1$), en
-- $\mathcal{N}(Y^*)$ (dimensie $\geq n - k$)
-
-ligt. **Zo'n $\mathbf{w}$ bestaat** want de dimensies tellen op tot $(k+1) + (n-k) = n+1 > n$: de twee ruimten hebben een niet-triviale doorsnede.
-
-**Stap 3:** Schrijf $\mathbf{w} = \sum_{i=1}^{k+1} c_i \mathbf{v}_i$ (met $\sum c_i^2 = 1$).
-
-**Stap 4:** Omdat $\mathbf{w} \in \mathcal{N}(Y^*)$: $B\mathbf{w} = XY^*\mathbf{w} = \mathbf{0}$. Dus:
-$$\|B - A\|_2 \geq \frac{\|(B - A)\mathbf{w}\|_2}{\|\mathbf{w}\|_2} = \|A\mathbf{w}\|_2.$$
-
-**Stap 5:** Bereken:
-$$A\mathbf{w} = \sum_{i=1}^{k+1} c_i A\mathbf{v}_i = \sum_{i=1}^{k+1} c_i \sigma_i \mathbf{u}_i.$$
-
-Omdat $\{\mathbf{u}_i\}$ orthonormaal:
-$$\|A\mathbf{w}\|_2^2 = \sum_{i=1}^{k+1} c_i^2\sigma_i^2 \geq \sigma_{k+1}^2\sum_{i=1}^{k+1} c_i^2 = \sigma_{k+1}^2.$$
-
-**Conclusie:** $\|B - A\|_2 \geq \sigma_{k+1} = \|A_k^{svo} - A\|_2$ voor elke $B$ van rang $\leq k$. Dus $A_k^{svo}$ is optimaal. $\square$
-
-> ⚠️ **Examentip:** Het bewijs via de "ruimtedoorsnede" is elegant. Stap 2 (dimensietelargument), Stap 4 (nulruimte-eigenschap van $B$), en Stap 5 (schatting via monotonie van $\sigma_i$) zijn de drie essentiële stappen.
-
----
-
-### Vergelijking van de twee methodes
-
-| Eigenschap | QR met kolomverwisselingen | Getrunceerde SVD |
+| | QR met kolomverwisselingen | Getrunceerde SVD |
 |---|---|---|
-| **Kwaliteit** | Goed, maar suboptimaal | **Optimaal** (Eckart-Young-Mirsky) |
-| **Rekenkost** | $O(mnk)$ — snel | $O(\min(m^2n, mn^2))$ — duur |
-| **Garantie** | $\|A_k^{qr} - A\| \geq \|A_k^{svo} - A\|$ | Minimale fout gegarandeerd |
-| **Geheugen** | $O((m+n)k)$ | $O((m+n)k)$ (onvolledige SVD) |
-| **Gebruik** | Grote matrices, snelle benadering | Wanneer optimale kwaliteit vereist is |
-| **Fouten** | Afhankelijk van pivotingstrategie | $\|A - A_k^{svo}\|_2 = \sigma_{k+1}$ (exact) |
+| **Kwaliteit** | Suboptimaal | Optimaal (EYM) |
+| **Rekenkost** | $O(mnk)$ | $O(mn^2)$ |
+| **Fout** | Niet precies kwantificeerbaar | $\|A - A_k^{svo}\|_2 = \sigma_{k+1}$ |
+| **Wanneer** | Snelheid primeert | Beste kwaliteit vereist |
 
-**Wanneer welke methode?**
-- **QR met pivot** wanneer snelheid primeert of $m,n$ groot zijn en een goede (niet noodzakelijk beste) benadering volstaat.
-- **Getrunceerde SVD** wanneer de beste mogelijke rang-$k$ benadering vereist is, bijv. bij beeldcompressie, dimensiereductie (PCA), of wetenschappelijke berekeningen.
+---
 
-**Voorbeeld — beeldcompressie:**
-Een $512 \times 512$ grijswaardafbeelding is een matrix $A$ met rang 512. De rang-20 SVD-benadering $A_{20}^{svo}$ slaat slechts $(512 + 1 + 512) \times 20 = 20{,}500$ getallen op i.p.v. $262{,}144$ — een factor $\approx 13$ compressie met visueel aanvaardbare kwaliteit.
+### Geval: gigantische ijle matrix ($A \in \mathbb{R}^{10^7 \times 10^7}$)
 
-**Ander verband:** De **principal component analyse (PCA)** voor dimensiereductie van data is identiek aan de getrunceerde SVD van de gecentreerde datamatrix $X$: de eerste $k$ principale componenten zijn de rechter singuliere vectoren $\mathbf{v}_1,\ldots,\mathbf{v}_k$ van $X$.
+Voor matrices van deze omvang zijn **beide bovenstaande methodes onhaalbaar**:
+- Volledige SVD kost $O(mn^2)$ — bij $m = n = 10^7$ is dit $O(10^{21})$ bewerkingen: volstrekt onhaalbaar.
+- Zelfs de matrix in geheugen opslaan vereist $10^{14}$ getallen — niet mogelijk.
 
-> ⚠️ **Examentip:** Ken het Eckart-Young-Mirsky bewijs en de vergelijkingstabel. Het bewijs via de dimensietelargumenten is elegant en korter dan het lijkt.
+**Oplossing: iteratieve Krylov-methoden** die enkel matrix-vector producten $A\mathbf{v}$ vereisen.
+
+**Specifieke aanpak voor symmetrische matrices — Lanczos-algoritme:**
+
+Het Lanczos-algoritme is de variant van Arnoldi voor **symmetrische** matrices. Omdat $A = A^T$, vereenvoudigt de Hessenbergmatrix $H_k$ tot een **tridiagonale** matrix $T_k$. Na $k$ iteraties:
+$$T_k = Q_k^T A Q_k, \qquad T_k \text{ tridiagonaal.}$$
+
+De $k$ grootste singuliere waarden van $A$ worden benaderd via de **bidiagonalisatie-aanpak** (Golub-Kahan): men past Lanczos toe op $A^T A$ of $AA^T$ via de relatie $\sigma_i(A) = \sqrt{\lambda_i(A^TA)}$.
+
+**Rekenkost:** slechts $k$ matrix-vector producten $A\mathbf{v}$ (elk $O(nnz)$ voor een ijle matrix) + $O(k^2 n)$ voor de eigenwaarden van $T_k$.
+
+**Vergelijking voor grote ijle matrices:**
+
+| Methode | Rekenkost | Geheugen | Toepassbaar bij $10^7 \times 10^7$? |
+|---|---|---|---|
+| Volledige SVD | $O(mn^2)$ | $O(mn)$ | Nee |
+| QR met kolomverwisseling | $O(mnk)$ | $O(mn)$ | Nee |
+| Lanczos/Arnoldi (Krylov) | $O(k \cdot nnz)$ | $O(kn)$ | **Ja** |
+
+> ⚠️ **Examentip:** Zodra Michiels een matrix van orde $10^7$ of meer noemt in de context van SVD of eigenwaarden, is het verwachte antwoord altijd **Krylov-methode (Lanczos voor SVD, Arnoldi voor niet-symmetrisch)**. De sleutelzin: "enkel matrix-vector producten nodig, de matrix hoeft niet expliciet in geheugen."
 
 ---
 
