@@ -1,9 +1,29 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eigenwaarde Methodes Overzicht</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 20px 48px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+      min-height: 100vh;
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  </style>
+</head>
+<body>
 
 <style>
 /* TABS */
-.tab-bar{display:flex;gap:0;flex-wrap:wrap;margin-bottom:22px;border-bottom:2px solid var(--color-border-tertiary)}
-.tab{padding:9px 17px 11px;font-size:13px;cursor:pointer;border:0;background:transparent;color:var(--color-text-secondary);border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;border-radius:0}
-.tab:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.tab-bar{display:flex;gap:0;flex-wrap:wrap;margin-bottom:22px;border-bottom:2px solid #e2e5ec}
+.tab{padding:9px 17px 11px;font-size:13px;cursor:pointer;border:0;background:transparent;color:#6b7280;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;border-radius:0}
+.tab:hover{color:#111111;background:#f8f9fb}
 .tab.on{font-weight:600}
 .tab.t0.on{border-bottom-color:#1E40AF;color:#1E40AF}
 .tab.t1.on{border-bottom-color:#166534;color:#166534}
@@ -12,47 +32,47 @@
 .tab.t4.on{border-bottom-color:#712B13;color:#712B13}
 
 /* CARD */
-.card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
-.card-head{padding:16px 20px 14px;border-bottom:1px solid var(--color-border-tertiary)}
-h3{font-size:17px;font-weight:600;margin:0 0 10px;color:var(--color-text-primary)}
+.card{background:#ffffff;border:1px solid #e2e5ec;border-radius:10px;overflow:hidden}
+.card-head{padding:16px 20px 14px;border-bottom:1px solid #e2e5ec}
+h3{font-size:17px;font-weight:600;margin:0 0 10px;color:#111111}
 .card-body{padding:16px 20px}
 
 /* BADGES */
 .badge{display:inline-block;font-size:11.5px;padding:3px 10px;border-radius:20px;margin-right:5px;margin-bottom:4px;font-weight:500}
 
 /* SECTION LABEL */
-.sec{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--color-text-tertiary);margin:14px 0 8px}
+.sec{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#adb5c0;margin:14px 0 8px}
 
 /* KERNIDEE */
-.kernidee{font-size:13.5px;color:var(--color-text-secondary);line-height:1.65;padding:10px 13px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin:10px 0 4px}
+.kernidee{font-size:13.5px;color:#6b7280;line-height:1.65;padding:10px 13px;background:#f8f9fb;border-radius:6px;margin:10px 0 4px}
 
 /* STEPS */
 .step-row{display:flex;align-items:flex-start;gap:11px;margin:7px 0}
 .step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-.step-txt{font-size:13px;color:var(--color-text-secondary);line-height:1.55;flex:1;padding-top:3px}
+.step-txt{font-size:13px;color:#6b7280;line-height:1.55;flex:1;padding-top:3px}
 
 /* FORMULA */
-.formula{font-family:var(--font-mono);font-size:12.5px;background:var(--color-background-secondary);padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);border-left:3px solid var(--color-border-secondary);color:var(--color-text-primary);margin:8px 0;line-height:1.8;overflow-x:auto;white-space:pre-wrap}
+.formula{font-family:"Menlo", "Monaco", "Courier New", monospace;font-size:12.5px;background:#f8f9fb;padding:12px 14px;border-radius:6px;border:0.5px solid #e2e5ec;border-left:3px solid #c0c4cc;color:#111111;margin:8px 0;line-height:1.8;overflow-x:auto;white-space:pre-wrap}
 
 /* SEPARATOR */
-.sep{border:none;border-top:1px solid var(--color-border-tertiary);margin:16px 0}
+.sep{border:none;border-top:1px solid #e2e5ec;margin:16px 0}
 
 /* PROPERTIES */
 .prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-.prop{padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
-.prop-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin-bottom:4px}
-.prop-val{font-size:13px;color:var(--color-text-primary);font-weight:500}
+.prop{padding:10px 12px;border-radius:6px;border:0.5px solid #e2e5ec;background:#f8f9fb}
+.prop-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#adb5c0;margin-bottom:4px}
+.prop-val{font-size:13px;color:#111111;font-weight:500}
 
 /* PROS/CONS */
 .vs-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.vs-cell{padding:10px 12px;border-radius:var(--border-radius-md);font-size:12.5px;line-height:1.5}
-.good{background:var(--color-background-success);color:var(--color-text-success)}
-.bad{background:var(--color-background-danger);color:var(--color-text-danger)}
+.vs-cell{padding:10px 12px;border-radius:6px;font-size:12.5px;line-height:1.5}
+.good{background:#eefaf3;color:#166534}
+.bad{background:#fef2f2;color:#991b1b}
 
 /* FLOW */
 .flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
-.fnode{padding:5px 11px;border-radius:6px;font-size:12px;font-family:var(--font-mono);font-weight:500}
-.farr{color:var(--color-text-tertiary);font-size:16px}
+.fnode{padding:5px 11px;border-radius:6px;font-size:12px;font-family:"Menlo", "Monaco", "Courier New", monospace;font-weight:500}
+.farr{color:#adb5c0;font-size:16px}
 </style>
 
 <h2 class="sr-only">Overzicht eigenwaarde-methodes: QR, verschoven QR, machtsmethode, deelruimte-iteratie, Lanczos, Arnoldi</h2>
@@ -228,16 +248,16 @@ const panels=[
     <div class="kernidee">Beide methodes bouwen stap voor stap een kleine Hessenberg-matrix H op die dezelfde eigenwaarden heeft als A. Lanczos = Arnoldi voor symmetrische matrices (H wordt dan tridiagonaal).</div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
-      <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:1px solid var(--color-border-tertiary)">
-        <div style="font-size:12px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--color-border-tertiary)">Arnoldi (algemeen)</div>
+      <div style="padding:12px 14px;border-radius:6px;border:1px solid #e2e5ec">
+        <div style="font-size:12px;font-weight:600;color:#111111;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e2e5ec">Arnoldi (algemeen)</div>
         ${step(1,'coral','Start met vector q₁')}
         ${step(2,'coral','w = A·qⱼ')}
         ${step(3,'coral','hᵢⱼ = qᵢᵀ·w voor alle i ≤ j')}
         ${step(4,'coral','w ← w − Σ hᵢⱼ·qᵢ')}
         ${step(5,'coral','qⱼ₊₁ = w/||w||,  hⱼ₊₁,ⱼ = ||w||')}
       </div>
-      <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:1px solid var(--color-border-tertiary)">
-        <div style="font-size:12px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--color-border-tertiary)">Lanczos (symm. A)</div>
+      <div style="padding:12px 14px;border-radius:6px;border:1px solid #e2e5ec">
+        <div style="font-size:12px;font-weight:600;color:#111111;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e2e5ec">Lanczos (symm. A)</div>
         ${step(1,'coral','Start met vector q₁')}
         ${step(2,'coral','w = A·qⱼ')}
         ${step(3,'coral','αⱼ = qⱼᵀ·w &nbsp;(alleen diagonaal!)')}
@@ -271,3 +291,6 @@ function show(i){
 }
 show(0);
 </script>
+
+</body>
+</html>

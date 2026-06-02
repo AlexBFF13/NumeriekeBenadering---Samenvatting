@@ -1,19 +1,39 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verschoven Qr Algoritme</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 20px 48px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+      min-height: 100vh;
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  </style>
+</head>
+<body>
 
 <style>
-.sdot{width:10px;height:10px;border-radius:50%;background:var(--color-border-secondary);display:inline-block;transition:background .3s}
+.sdot{width:10px;height:10px;border-radius:50%;background:#c0c4cc;display:inline-block;transition:background .3s}
 .sdot.on{background:var(--color-text-info)}
-.mc{width:58px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:11px;font-family:var(--font-mono);color:var(--color-text-primary);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);transition:background .4s,color .4s}
+.mc{width:58px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:11px;font-family:"Menlo", "Monaco", "Courier New", monospace;color:#111111;background:#f8f9fb;border:0.5px solid #e2e5ec;transition:background .4s,color .4s}
 .mc.hi{background:var(--color-background-info);color:var(--color-text-info)}
-.mc.hi2{background:var(--color-background-warning);color:var(--color-text-warning)}
-.mc.hi3{background:var(--color-background-success);color:var(--color-text-success)}
+.mc.hi2{background:#fef5e7;color:var(--color-text-warning)}
+.mc.hi3{background:#eefaf3;color:#166534}
 .mc.dim{opacity:.3}
 .mat{display:inline-grid;gap:3px;vertical-align:middle}
-.lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:5px}
+.lbl{font-size:12px;color:#6b7280;margin-bottom:5px}
 .mwrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin:10px 0}
-.fbox{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;font-family:var(--font-mono);color:var(--color-text-primary);margin:8px 0;border:0.5px solid var(--color-border-tertiary)}
-.exp{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin:6px 0}
-.nbtn{padding:8px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;font-size:13px}
-.nbtn:hover{background:var(--color-background-secondary)}
+.fbox{background:#f8f9fb;border-radius:6px;padding:8px 12px;font-size:12px;font-family:"Menlo", "Monaco", "Courier New", monospace;color:#111111;margin:8px 0;border:0.5px solid #e2e5ec}
+.exp{font-size:13px;color:#6b7280;line-height:1.6;margin:6px 0}
+.nbtn{padding:8px 16px;border-radius:6px;border:0.5px solid #c0c4cc;background:transparent;color:#111111;cursor:pointer;font-size:13px}
+.nbtn:hover{background:#f8f9fb}
 .nbtn:disabled{opacity:.35;cursor:default}
 .cbar{height:12px;border-radius:6px;transition:width .6s;margin:4px 0}
 </style>
@@ -21,7 +41,7 @@
 <h2 class="sr-only">Verschoven QR-algoritme: wat, wanneer en hoe werkt de shift?</h2>
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-  <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)" id="stitle">Stap 1: het probleem met gewoon QR</div>
+  <div style="font-size:14px;font-weight:500;color:#111111" id="stitle">Stap 1: het probleem met gewoon QR</div>
   <div style="display:flex;gap:5px" id="dots"></div>
 </div>
 
@@ -89,7 +109,7 @@ function matHTML(M,hiDiag,dimBelow){
 
 function convBar(val,max,cls){
   const pct=Math.min(100,Math.max(2,(1-Math.abs(val)/max)*100));
-  return `<div style="background:var(--color-border-tertiary);border-radius:6px;overflow:hidden;width:160px">
+  return `<div style="background:#e2e5ec;border-radius:6px;overflow:hidden;width:160px">
     <div class="cbar ${cls}" style="width:${pct}%;background:var(--color-text-${cls==='hi3'?'success':'info'})"></div>
   </div>`;
 }
@@ -126,14 +146,14 @@ const stepDefs=[
           <div class="lbl">A origineel</div>
           ${matHTML(A0,false,false)}
         </div>
-        <div style="align-self:center;font-size:18px;color:var(--color-text-secondary)">−</div>
+        <div style="align-self:center;font-size:18px;color:#6b7280">−</div>
         <div>
           <div class="lbl">μI  (shift = ${fmt(mu,2)})</div>
           <div class="mat" style="grid-template-columns:repeat(3,1fr)">
             ${[[mu,0,0],[0,mu,0],[0,0,mu]].flatMap(r=>r.map(v=>`<div class="mc hi2">${fmt(v,2)}</div>`)).join('')}
           </div>
         </div>
-        <div style="align-self:center;font-size:18px;color:var(--color-text-secondary)">=</div>
+        <div style="align-self:center;font-size:18px;color:#6b7280">=</div>
         <div>
           <div class="lbl">A − μI</div>
           ${matHTML(Ashifted,false,false)}
@@ -161,10 +181,10 @@ const stepDefs=[
       <div class="mwrap">
         <div>
           <div class="lbl">Convergentie-orde vergelijking</div>
-          <div style="font-size:12px;color:var(--color-text-secondary);line-height:2">
+          <div style="font-size:12px;color:#6b7280;line-height:2">
             <div>Gewoon QR:&nbsp;&nbsp;&nbsp; lineair &nbsp;&nbsp;|λₙ/λₙ₋₁|ᵏ</div>
             <div>Shift (hoekstuk): kwadratisch</div>
-            <div style="color:var(--color-text-success)">Wilkinson-shift: <strong>kubisch</strong> &nbsp;(veel sneller!)</div>
+            <div style="color:#166534">Wilkinson-shift: <strong>kubisch</strong> &nbsp;(veel sneller!)</div>
           </div>
         </div>
       </div>
@@ -183,23 +203,23 @@ const stepDefs=[
       <div style="overflow-x:auto">
       <table style="width:100%;font-size:12px;border-collapse:collapse">
         <tr>
-          <th style="text-align:left;padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)">Iteratie</th>
-          <th style="padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)">Gewoon QR |subdiag|</th>
-          <th style="padding:6px 8px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)">Verschoven QR |subdiag|</th>
+          <th style="text-align:left;padding:6px 8px;color:#6b7280;font-weight:500;border-bottom:0.5px solid #e2e5ec">Iteratie</th>
+          <th style="padding:6px 8px;color:#6b7280;font-weight:500;border-bottom:0.5px solid #e2e5ec">Gewoon QR |subdiag|</th>
+          <th style="padding:6px 8px;color:#6b7280;font-weight:500;border-bottom:0.5px solid #e2e5ec">Verschoven QR |subdiag|</th>
         </tr>
         ${iters.map(k=>`
-        <tr style="border-bottom:0.5px solid var(--color-border-tertiary)">
-          <td style="padding:5px 8px;color:var(--color-text-secondary)">${k+1}</td>
+        <tr style="border-bottom:0.5px solid #e2e5ec">
+          <td style="padding:5px 8px;color:#6b7280">${k+1}</td>
           <td style="padding:5px 8px">
             <div style="display:flex;align-items:center;gap:8px">
-              <div style="width:100px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden"><div style="height:8px;width:${Math.min(100,plain[k]/maxV*100)}%;background:var(--color-text-secondary);border-radius:4px"></div></div>
-              <span style="font-family:var(--font-mono);font-size:11px">${fmt(plain[k],4)}</span>
+              <div style="width:100px;background:#e2e5ec;border-radius:4px;overflow:hidden"><div style="height:8px;width:${Math.min(100,plain[k]/maxV*100)}%;background:#6b7280;border-radius:4px"></div></div>
+              <span style="font-family:"Menlo", "Monaco", "Courier New", monospace;font-size:11px">${fmt(plain[k],4)}</span>
             </div>
           </td>
           <td style="padding:5px 8px">
             <div style="display:flex;align-items:center;gap:8px">
-              <div style="width:100px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden"><div style="height:8px;width:${Math.min(100,shift[k]/maxV*100)}%;background:var(--color-text-success);border-radius:4px"></div></div>
-              <span style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-success)">${fmt(shift[k],4)}</span>
+              <div style="width:100px;background:#e2e5ec;border-radius:4px;overflow:hidden"><div style="height:8px;width:${Math.min(100,shift[k]/maxV*100)}%;background:#166534;border-radius:4px"></div></div>
+              <span style="font-family:"Menlo", "Monaco", "Courier New", monospace;font-size:11px;color:#166534">${fmt(shift[k],4)}</span>
             </div>
           </td>
         </tr>`).join('')}
@@ -214,26 +234,26 @@ const stepDefs=[
       return `
       <p class="exp">De verschoven QR is in de praktijk bijna altijd de standaardkeuze zodra je het gewone QR-algoritme zou inzetten. Hier is de beslisregel:</p>
       <div style="display:grid;gap:10px;margin:10px 0">
-        <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)">
-          <div style="font-size:13px;font-weight:500;color:var(--color-text-success);margin-bottom:4px">Gebruik verschoven QR wanneer...</div>
-          <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+        <div style="padding:12px 14px;border-radius:6px;border:0.5px solid #e2e5ec;background:#f8f9fb">
+          <div style="font-size:13px;font-weight:500;color:#166534;margin-bottom:4px">Gebruik verschoven QR wanneer...</div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.8">
             · Matrix klein en dicht (n &lt; ~1000) — QR-familie is dan de juiste keuze<br>
             · Eigenwaarden liggen dicht bij elkaar (verhouding λₙ/λₙ₋₁ ≈ 1)<br>
             · Je alle eigenwaarden nodig hebt, niet alleen de grootste<br>
             · Matrix al in Hessenberg-vorm staat (bv. na Arnoldi)
           </div>
         </div>
-        <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)">
+        <div style="padding:12px 14px;border-radius:6px;border:0.5px solid #e2e5ec;background:#f8f9fb">
           <div style="font-size:13px;font-weight:500;color:var(--color-text-warning);margin-bottom:4px">Gebruik iets anders wanneer...</div>
-          <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+          <div style="font-size:12px;color:#6b7280;line-height:1.8">
             · Matrix zeer groot of ijl (n &gt; 1000) → Arnoldi / Lanczos<br>
             · Je alleen de top-k eigenwaarden nodig hebt → deelruimte-iteratie<br>
             · Matrix symmetrisch en groot → Lanczos (snelste optie)
           </div>
         </div>
-        <div style="padding:12px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)">
+        <div style="padding:12px 14px;border-radius:6px;border:0.5px solid #e2e5ec;background:#f8f9fb">
           <div style="font-size:13px;font-weight:500;color:var(--color-text-info);margin-bottom:4px">Combinatie in de praktijk</div>
-          <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+          <div style="font-size:12px;color:#6b7280;line-height:1.8">
             Arnoldi / Lanczos reduceert A naar een kleine Hessenberg-matrix H.<br>
             Daarna lost verschoven QR die kleine H op.<br>
             Zo combineer je het beste van beide werelden.
@@ -256,3 +276,6 @@ function render(){
 function go(d){cur=Math.max(0,Math.min(stepDefs.length-1,cur+d));render();}
 render();
 </script>
+
+</body>
+</html>

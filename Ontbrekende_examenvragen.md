@@ -394,15 +394,17 @@ $$\boldsymbol{\pi}^{(k+1)} = \hat{A}^T \boldsymbol{\pi}^{(k)}, \quad \boldsymbol
 
 ### (a) Methode van de machten
 
-**Doel:** Bereken de dominante eigenwaarde $\lambda_1$ (grootste $|\lambda_i|$) van $A$.
+**Doel:** Bereken de dominante eigenwaarde $\lambda_1$ (grootste $|\lambda_i|$) van $A \in \mathbb{C}^{m \times m}$.
 
-**Iteratie:**
+Stel de eigenwaarden geordend: $|\lambda_1| \geq |\lambda_2| \geq \cdots \geq |\lambda_m|$, met bijbehorende eigenvectoren $\mathbf{v}_1, \ldots, \mathbf{v}_m$.
+
+**Iteratie:** start met willekeurige $\mathbf{x}^{(0)}$, herhaal:
 $$\mathbf{p}^{(k)} = A\mathbf{x}^{(k-1)}, \qquad \mathbf{x}^{(k)} = \frac{\mathbf{p}^{(k)}}{\|\mathbf{p}^{(k)}\|_2}.$$
 
-**Convergentie:** Schrijf $\mathbf{x}^{(0)} = \sum_i c_i \mathbf{x}_i$ (eigenbasis, $c_1 \neq 0$). Dan:
-$$A^k \mathbf{x}^{(0)} = \lambda_1^k \left(c_1 \mathbf{x}_1 + \sum_{i \geq 2} c_i \left(\frac{\lambda_i}{\lambda_1}\right)^k \mathbf{x}_i\right).$$
+**Convergentie:** Schrijf $\mathbf{x}^{(0)} = \sum_i c_i \mathbf{v}_i$ (eigenbasis, $c_1 \neq 0$). Dan:
+$$A^k \mathbf{x}^{(0)} = \lambda_1^k \left(c_1 \mathbf{v}_1 + \sum_{i \geq 2} c_i \left(\frac{\lambda_i}{\lambda_1}\right)^k \mathbf{v}_i\right).$$
 
-Als $|\lambda_1| > |\lambda_2|$: elke term $(\lambda_i/\lambda_1)^k \to 0$, dus $\mathbf{x}^{(k)} \to \mathbf{x}_1/\|\mathbf{x}_1\|$.
+Als $|\lambda_1| > |\lambda_2|$: elke term $(\lambda_i/\lambda_1)^k \to 0$, dus $\mathbf{x}^{(k)} \to \mathbf{v}_1$.
 
 **Convergentiefactor:** $\rho = \left|\dfrac{\lambda_2}{\lambda_1}\right|$ — lineaire convergentie.
 
@@ -430,23 +432,23 @@ Hoe dichter $\sigma$ bij $\lambda_j$, hoe sneller de convergentie.
 
 ### (d) Deelruimte-iteratie
 
-**Doel:** Bereken de $n$ dominante eigenvectoren van $A$ tegelijk (veralgemening van de methode van de machten naar een deelruimte).
+**Doel:** Bereken de $p$ dominante eigenvectoren van $A \in \mathbb{C}^{m \times m}$ tegelijk ($p \ll m$; veralgemening van de methode van de machten naar een deelruimte).
 
-**Iteratie:** start met $Q_0 \in \mathbb{C}^{m \times n}$ (orthonormale kolommen):
+**Iteratie:** start met $Q_0 \in \mathbb{C}^{m \times p}$ (orthonormale kolommen):
 $$P_k = A Q_{k-1}, \qquad Q_k R_k = P_k \quad \text{(QR-factorisatie)}, \quad k = 1, 2, \ldots$$
 
-De QR-stap vervangt de normalisatie uit de methode van de machten: ze herstelt zowel lengte als orthogonaliteit.
+De QR-stap vervangt de normalisatie uit de methode van de machten: ze herstelt zowel lengte als orthogonaliteit van alle $p$ vectoren tegelijk.
 
-**Convergentie:** De kolomruimte van $Q_k$ convergeert naar $\langle \mathbf{x}_1, \ldots, \mathbf{x}_n \rangle$.
+**Convergentie:** De kolomruimte van $Q_k$ convergeert naar $\langle \mathbf{v}_1, \ldots, \mathbf{v}_p \rangle$ (de deelruimte van de $p$ dominante eigenvectoren).
 
-**Convergentiefactor:** $\left|\dfrac{\lambda_{n+1}}{\lambda_n}\right|$ per iteratie — lineaire convergentie.
+**Convergentiefactor:** $\left|\dfrac{\lambda_{p+1}}{\lambda_p}\right|$ per iteratie — lineaire convergentie.
 
 ---
 
 ### (e) Eigenwaarden en -vectoren verkrijgen
 
-Na convergentie ($Q_k \approx [\mathbf{x}_1 \cdots \mathbf{x}_n]$): **Rayleigh-Ritz projectie**:
-$$Q_k^* A Q_k \in \mathbb{C}^{n \times n}.$$
+Na convergentie ($Q_k \approx [\mathbf{v}_1 \cdots \mathbf{v}_p]$): **Rayleigh-Ritz projectie**:
+$$Q_k^* A Q_k \in \mathbb{C}^{p \times p}.$$
 
 Bereken de eigenontbinding van dit kleine stelsel (via het volledige QR-algoritme). De benaderingen zijn:
 

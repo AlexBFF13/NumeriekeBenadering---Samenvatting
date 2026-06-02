@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numerieke Algoritmes — Overzicht</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px 20px 48px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      max-width: 860px;
+      margin: 0 auto 28px;
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      color: #111;
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .alg-container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* NAV BUTTONS */
+    .alg-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .alg-btn {
+      font-size: 12.5px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #dde0e6;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .alg-btn:hover {
+      background: #f0f0f0;
+      border-color: #c0c4cc;
+    }
+
+    .alg-btn.active {
+      background: #EEEDFE;
+      border-color: #7F77DD;
+      color: #3C3489;
+      font-weight: 600;
+    }
+
+    /* CARD */
+    .alg-card {
+      background: #fff;
+      border: 1px solid #e2e5ec;
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .alg-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+      margin: 0 0 6px;
+    }
+
+    .alg-desc {
+      font-size: 13.5px;
+      color: #555;
+      margin: 0 0 20px;
+      line-height: 1.6;
+      padding: 10px 14px;
+      background: #f8f9fb;
+      border-radius: 8px;
+      border-left: 3px solid #7F77DD;
+    }
+
+    /* CODE TABLE */
+    .alg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .alg-table tr {
+      border-bottom: 1px solid #eef0f4;
+    }
+
+    .alg-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .alg-table tr:hover {
+      background: #fafbfc;
+    }
+
+    .alg-table td {
+      padding: 8px 6px;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+
+    .line-num {
+      color: #adb5c0;
+      font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 11.5px;
+      min-width: 28px;
+      text-align: right;
+      padding-right: 14px;
+      user-select: none;
+    }
+
+    .line-code {
+      font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 12.5px;
+      color: #4338CA;
+      white-space: nowrap;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+
+    .line-exp {
+      color: #6b7280;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>Numerieke Algoritmes — Overzicht</h1>
+    <p>Klik op een algoritme om de pseudocode en uitleg te bekijken.</p>
+  </div>
+
+  <div class="alg-container">
+    <div class="alg-nav" id="nav"></div>
+    <div class="alg-card" id="card"></div>
+  </div>
+
+  <script>
+  const algs = [
+    {
+      id: 1, title: "Algoritme 1 — Klassiek Gram-Schmidt",
+      desc: "Zet een reeks vectoren a₁…aₙ om in een orthonormale basis Q via QR-factorisatie. Elke nieuwe vector wordt loodrecht gemaakt op alle vorige.",
+      lines: [
+        ["1", "for j = 1 to n do", "Doorloop elke kolom/vector aⱼ"],
+        ["2", "vⱼ = aⱼ", "Start met de originele vector aⱼ als kandidaat"],
+        ["3", "for i = 1 to j-1 do", "Doorloop alle eerder berekende orthonormale vectoren"],
+        ["4", "rᵢⱼ = qᵢ*aⱼ", "Bereken de projectie van aⱼ op qᵢ (inproduct met origineel aⱼ)"],
+        ["5", "vⱼ = vⱼ - rᵢⱼqᵢ", "Trek de projectie af: verwijder de component langs qᵢ"],
+        ["6", "end for", "Klaar met alle eerdere richtingen"],
+        ["7", "rⱼⱼ = ‖vⱼ‖₂", "Bereken de norm van de resterende vector"],
+        ["8", "qⱼ = vⱼ/rⱼⱼ", "Normaliseer: maak de vector eenheidslang"],
+        ["9", "end for", "Volgende kolom"],
+      ]
+    },
+    {
+      id: 2, title: "Algoritme 2 — Gewijzigd Gram-Schmidt",
+      desc: "Numeriek stabielere variant van klassiek Gram-Schmidt. Projecties worden opeenvolgend op de al bijgewerkte vⱼ uitgevoerd i.p.v. steeds op de originele aⱼ.",
+      lines: [
+        ["1", "for j = 1 to n do", "Doorloop elke kolom"],
+        ["2", "vⱼ = aⱼ", "Start met originele vector"],
+        ["3", "for i = 1 to j-1 do", "Doorloop eerder berekende q-vectoren"],
+        ["4", "rᵢⱼ = qᵢ*vⱼ", "Projectie op qᵢ — nu van de al bijgewerkte vⱼ (verschil met alg. 1)"],
+        ["5", "vⱼ = vⱼ - rᵢⱼqᵢ", "Trek de projectie af van de bijgewerkte vⱼ"],
+        ["6", "end for", "Alle eerdere richtingen verwijderd"],
+        ["7", "rⱼⱼ = ‖vⱼ‖₂", "Norm van resterende vector"],
+        ["8", "qⱼ = vⱼ/rⱼⱼ", "Normaliseer naar eenheidsvector"],
+        ["9", "end for", "Volgende kolom"],
+      ]
+    },
+    {
+      id: 3, title: "Algoritme 3 — QR via Givens-rotaties",
+      desc: "Brengt matrix A naar bovendriehoeksvorm R door herhaaldelijk 2×2 rotatiematrices (Givens) toe te passen die subdiagonale elementen naar nul draaien.",
+      lines: [
+        ["1", "Q = I, R = A", "Q begint als identiteitsmatrix, R als kopie van A"],
+        ["2", "for j = 1 to n do", "Doorloop elke kolom"],
+        ["3", "for i = m downto j+1 do", "Van onderste rij omhoog: nul maken onder diagonaal"],
+        ["4", "c = …, s = …", "Bereken cosinus en sinus zodat rᵢⱼ nul wordt"],
+        ["5", "rᵢⱼ = 0, rᵢ₋₁ⱼ = √(…)", "Stel het te elimineren element op nul, update het element erboven"],
+        ["6", "for k = j+1 to n do", "Pas de rotatie toe op de rest van de rijen in R"],
+        ["7", "[rᵢ₋₁ₖ; rᵢₖ] = G·[rᵢ₋₁ₖ; rᵢₖ]", "Roteer twee rijen van R tegelijk"],
+        ["8", "end for", "Klaar met rijen van R"],
+        ["9", "for k = 1 to m do", "Update ook Q met de inverse rotatie"],
+        ["10","[qₖᵢ₋₁ qₖᵢ] = [qₖᵢ₋₁ qₖᵢ]·Gᵀ", "Pas transponeerde rotatie toe op twee kolommen van Q"],
+        ["11","end for", "Klaar met kolommen van Q"],
+        ["12","end for", "Volgende rij"],
+        ["13","end for", "Volgende kolom"],
+      ]
+    },
+    {
+      id: 4, title: "Algoritme 4 — QR via Householder",
+      desc: "Berekent QR-factorisatie door herhaaldelijk spiegelingstransformaties (Householder-reflecties) toe te passen die een hele kolom onder de diagonaal op nul zetten.",
+      lines: [
+        ["1", "R = A", "R begint als kopie van A"],
+        ["2", "for j = 1 to n do", "Doorloop elke kolom"],
+        ["3", "x = Rⱼ:m,ⱼ", "Neem het subkolom-gedeelte van R (vanaf de diagonaal naar beneden)"],
+        ["4", "vⱼ = x + sign(x₁)‖x‖₂ e₁", "Stel de Householder-vector in: voeg norm toe aan eerste component"],
+        ["5", "vⱼ = vⱼ/‖vⱼ‖₂", "Normaliseer de spiegelingsvector"],
+        ["6", "Rⱼⱼ = −sign(x₁)‖x‖₂, R_{j+1:m,j}=0", "Stel diagonaalelement in, maak subkolom nul"],
+        ["7", "for k = j+1 to n do", "Pas de reflectie toe op alle overige kolommen"],
+        ["8", "Rⱼ:m,k = Rⱼ:m,k − 2(vⱼᵀRⱼ:m,k)vⱼ", "Householder-update: reflecteer het kolomblok"],
+        ["9", "end for", "Klaar met R"],
+        ["10","end for", "Volgende kolom"],
+        ["11","for i = 1 to m do", "Herstel Q door de reflecties achterwaarts toe te passen"],
+        ["12","w = eᵢ", "Start met standaardbasisvector"],
+        ["13","for k = n downto 1 do", "Pas reflecties in omgekeerde volgorde toe"],
+        ["14","wₖ:m = wₖ:m − 2(vₖᵀwₖ:m)vₖ", "Reflecteer met de opgeslagen Householder-vector vₖ"],
+        ["15","end for", "Alle reflecties gedaan"],
+        ["16","Q₁:m,i = w", "Sla i-de kolom van Q op"],
+        ["17","end for", "Volgende kolom van Q"],
+      ]
+    },
+    {
+      id: 5, title: "Algoritme 5 — Gram-Schmidt in unitaire ruimte V",
+      desc: "Generalisatie van klassiek Gram-Schmidt naar een abstracte unitaire ruimte V met inproduct (·,·). Structuur identiek aan alg. 1, maar met abstracte inproducten.",
+      lines: [
+        ["1", "for j = 1 to n do", "Doorloop elke vector āⱼ"],
+        ["2", "v⃗ⱼ = āⱼ", "Kopieer de oorspronkelijke vector"],
+        ["3", "for i = 1 to j-1 do", "Loop over eerder orthonormale vectoren q⃗ᵢ"],
+        ["4", "rᵢⱼ = (q⃗ᵢ, āⱼ)", "Inproduct in V (kan bijv. integraal zijn, geen gewone dot-product)"],
+        ["5", "v⃗ⱼ = v⃗ⱼ − rᵢⱼ q⃗ᵢ", "Trek projectie af"],
+        ["6", "end for", "Alle eerdere richtingen verwijderd"],
+        ["7", "rⱼⱼ = ‖v⃗ⱼ‖", "Norm in V"],
+        ["8", "q⃗ⱼ = v⃗ⱼ/rⱼⱼ", "Normaliseer"],
+        ["9", "end for", "Volgende vector"],
+      ]
+    },
+    {
+      id: 6, title: "Algoritme 6 — Arnoldi",
+      desc: "Bouwt stap voor stap een orthonormale basis voor de Krylov-deelruimte Kⱼ(A,b) = span{b, Ab, A²b, …}. Wordt gebruikt in GMRES.",
+      lines: [
+        ["1", "q₁ = b/‖b‖₂", "Eerste basisvector: genormaliseerde beginvector b"],
+        ["2", "for j = 1,2,3,… do", "Bouw de basis iteratief uit"],
+        ["3", "vⱼ = Aqⱼ", "Vermenigvuldig de laatste basisvector met A"],
+        ["4", "for i = 1 to j do", "Orthogonaliseer t.o.v. alle eerdere basisvectoren"],
+        ["5", "hᵢⱼ = qᵢ*vⱼ", "Projectiecoëfficiënt (Hessenberg-element)"],
+        ["6", "vⱼ = vⱼ − hᵢⱼqᵢ", "Trek projectie af"],
+        ["7", "end for", "vⱼ is nu orthogonaal op q₁…qⱼ"],
+        ["8", "h_{j+1,j} = ‖vⱼ‖₂", "Subdiagonaalelement van de Hessenberg-matrix"],
+        ["9", "q_{j+1} = vⱼ/h_{j+1,j}", "Normaliseer: nieuwe basisvector"],
+        ["10","end for", "Herhaal tot gewenste dimensie of convergentie"],
+      ]
+    },
+    {
+      id: 7, title: "Algoritme 7 — Lanczos",
+      desc: "Vereenvoudigde Arnoldi voor symmetrische/Hermitische matrices A. Doordat A Hermitiaans is, zijn de meeste Hessenberg-elementen nul → drietermrecurrentie.",
+      lines: [
+        ["1", "q₁ = b/‖b‖₂", "Eerste Lanczos-vector, genormaliseerd"],
+        ["2", "v₁ = Aq₁", "Matrixvermenigvuldiging"],
+        ["3", "h₁₁ = q₁*v₁", "Diagonaalelement α₁ van de tridiagonaalmatrix"],
+        ["4", "v₁ = v₁ − h₁₁q₁", "Aftrekken van diagonaalprojectie"],
+        ["5", "h₂₁ = ‖v₁‖₂", "Subdiagonaalelement β₂"],
+        ["6", "q₂ = v₁/h₂₁", "Tweede Lanczos-vector"],
+        ["7", "for j = 2,3,… do", "Iteratieve lus"],
+        ["8", "vⱼ = Aqⱼ", "Matrix-vector product"],
+        ["9", "h_{j-1,j} = h̄_{j,j-1}", "Hermiticiteit: superdiagonaal = geconjugeerde subdiagonaal"],
+        ["10","hⱼⱼ = qⱼ*vⱼ", "Diagonaalelement αⱼ"],
+        ["11","vⱼ = vⱼ − h_{j-1,j}q_{j-1} − hⱼⱼqⱼ", "Drietermrecurrentie: trek twee projecties af"],
+        ["12","h_{j+1,j} = ‖vⱼ‖₂", "Subdiagonaalelement βⱼ₊₁"],
+        ["13","q_{j+1} = vⱼ/h_{j+1,j}", "Normaliseer: nieuwe Lanczos-vector"],
+        ["14","end for", "Herhaal"],
+      ]
+    },
+    {
+      id: 8, title: "Algoritme 8 — Hessenberg-reductie (Householder)",
+      desc: "Brengt een willekeurige matrix A naar Hessenberg-vorm via gelijkvormigheidstransformaties (Householder). Voorbereiding voor eigenwaardebepaling.",
+      lines: [
+        ["1", "H = A", "H is de werkmatrix, begint als A"],
+        ["2", "for j = 1 to m-2 do", "Maak per kolom de subsubdiagonaal nul"],
+        ["3", "x = H_{j+1:m,j}", "Subkolom onder de subdiagonaal"],
+        ["4", "vⱼ = x + sign(x₁)‖x‖₂ e₁", "Householder-vector"],
+        ["5", "vⱼ = vⱼ/‖vⱼ‖₂", "Normaliseer"],
+        ["6", "H_{j+1,j} = −sign(x₁)‖x‖₂, H_{j+2:m,j}=0", "Zet subsubdiagonaal op nul"],
+        ["7", "for k = j+1 to m do", "Update rechterblok van H (gelijkvormige transformatie)"],
+        ["8", "H_{j+1:m,k} = H_{j+1:m,k} − 2(vⱼᵀH_{j+1:m,k})vⱼ", "Reflecteer van links"],
+        ["9", "end for", ""],
+        ["10","for k = 1 to m do", "Update linkerblok (van rechts reflecteren)"],
+        ["11","H_{k,j+1:m} = H_{k,j+1:m} − 2(H_{k,j+1:m}vⱼ)vⱼᵀ", "Reflecteer van rechts — bewaart gelijkvormigheid"],
+        ["12","end for", ""],
+        ["13","end for", "H is nu in Hessenberg-vorm"],
+        ["14","for i = 1 to m do", "Herstel Q"],
+        ["15","w = eᵢ", "Basisvector"],
+        ["16","for k = m-2 downto 1 do", "Pas opgeslagen reflecties omgekeerd toe"],
+        ["17","w_{k+1:m} = w_{k+1:m} − 2(vₖᵀw_{k+1:m})vₖ", "Householder-update"],
+        ["18","end for", ""],
+        ["19","Q_{1:m,i} = w", "Kolom i van Q"],
+        ["20","end for", "Q is de transformatiematrix: Q*AQ = H"],
+      ]
+    },
+    {
+      id: 9, title: "Algoritme 9 — Impliciet verschoven QR (eigenwaarden)",
+      desc: "Past het QR-algoritme iteratief toe op een Hessenberg-matrix om eigenwaarden af te splitsen. Stopt zodra een subdiagonaalelement klein genoeg is.",
+      lines: [
+        ["1", "input A⁽⁰⁾, ℓ, m, ε", "Hessenberg-invoer, iteratieteller, tolerantie"],
+        ["2", "for k = 1, 2, … do", "Itereer tot convergentie"],
+        ["3", "A⁽ᵏ⁾ = … via §9.2.2.2", "Bereken één QR-stap met impliciete verschuivingen (Francis-stap)"],
+        ["4", "if |a₂₁|<ε‖A‖ ∨ … ∨ |aₘ,ₘ₋₁|<ε‖A‖", "Controleer of een subdiagonaalelement verwaarloosbaar klein is"],
+        ["5", "break", "Stop: eigenwaarde afgesplitst (deflatie mogelijk)"],
+        ["6", "end if", ""],
+        ["7", "end for", "Herhaal tot alle eigenwaarden gevonden"],
+      ]
+    },
+    {
+      id: 10, title: "Algoritme 10 — Toegevoegde gradiënten (basis)",
+      desc: "Minimaliseert een gladde functie f(x) langs onderling A-geconjugeerde zoekrichtingen. Basisversie zonder convergentiecriterium.",
+      lines: [
+        ["1", "p⁽⁰⁾ = −∇f(x⁽⁰⁾)", "Beginrichting: negatieve gradient (steilste daling)"],
+        ["2", "for k = 1, 2, … do", "Itereer"],
+        ["3", "α⁽ᵏ⁾ = argmin_α f(x⁽ᵏ⁻¹⁾ + αp⁽ᵏ⁻¹⁾)", "Exacte lijnzoektocht: optimale stapgrootte langs p⁽ᵏ⁻¹⁾"],
+        ["4", "x⁽ᵏ⁾ = x⁽ᵏ⁻¹⁾ + α⁽ᵏ⁾p⁽ᵏ⁻¹⁾", "Update de iteraat"],
+        ["5", "β⁽ᵏ⁾ = ‖∇f(x⁽ᵏ⁾)‖²/‖∇f(x⁽ᵏ⁻¹⁾)‖²", "Fletcher-Reeves coëfficiënt: verhouding gradientnormen"],
+        ["6", "p⁽ᵏ⁾ = −∇f(x⁽ᵏ⁾) + β⁽ᵏ⁾p⁽ᵏ⁻¹⁾", "Nieuwe zoekrichting: gradient + correctie vorige richting"],
+        ["7", "end for", ""],
+      ]
+    },
+    {
+      id: 11, title: "Algoritme 11 — CG voor stelsels (basis)",
+      desc: "Oplost het lineaire stelsel Ax = b met A s.p.d. via toegevoegde gradiënten. Gebruikt residu r = b − Ax i.p.v. gradient.",
+      lines: [
+        ["1", "p⁽⁰⁾ = r⁽⁰⁾ = b, x⁽⁰⁾ = 0", "Start: x=0, residu = b, richting = residu"],
+        ["2", "for k = 1, 2, … do", "Itereer"],
+        ["3", "α⁽ᵏ⁾ = r⁽ᵏ⁻¹⁾ᵀr⁽ᵏ⁻¹⁾ / p⁽ᵏ⁻¹⁾ᵀAp⁽ᵏ⁻¹⁾", "Stapgrootte: exact optimum langs p⁽ᵏ⁻¹⁾"],
+        ["4", "x⁽ᵏ⁾ = x⁽ᵏ⁻¹⁾ + α⁽ᵏ⁾p⁽ᵏ⁻¹⁾", "Update oplossing"],
+        ["5", "r⁽ᵏ⁾ = r⁽ᵏ⁻¹⁾ − α⁽ᵏ⁾Ap⁽ᵏ⁻¹⁾", "Update residu (goedkoper dan opnieuw b−Ax berekenen)"],
+        ["6", "β⁽ᵏ⁾ = r⁽ᵏ⁾ᵀr⁽ᵏ⁾ / r⁽ᵏ⁻¹⁾ᵀr⁽ᵏ⁻¹⁾", "Conjugatiecoëfficiënt"],
+        ["7", "p⁽ᵏ⁾ = r⁽ᵏ⁾ + β⁽ᵏ⁾p⁽ᵏ⁻¹⁾", "Nieuwe A-geconjugeerde zoekrichting"],
+        ["8", "end for", ""],
+      ]
+    },
+    {
+      id: 12, title: "Algoritme 12 — CG voor stelsels (standaard)",
+      desc: "Zelfde als alg. 11 maar met stopcriterium op de residunorm en maximaal k_max iteraties. Praktische implementatie.",
+      lines: [
+        ["1", "p⁽⁰⁾ = r⁽⁰⁾ = B, x⁽⁰⁾ = 0", "Initialisatie (B = beginresidu)"],
+        ["2", "for k = 1,…,k_max do", "Loop met maximumaantal iteraties"],
+        ["3", "α⁽ᵏ⁾ = r⁽ᵏ⁻¹⁾ᵀr⁽ᵏ⁻¹⁾ / p⁽ᵏ⁻¹⁾ᵀAp⁽ᵏ⁻¹⁾", "Optimale stapgrootte"],
+        ["4", "x⁽ᵏ⁾ = x⁽ᵏ⁻¹⁾ + α⁽ᵏ⁾p⁽ᵏ⁻¹⁾", "Update oplossing"],
+        ["5", "r⁽ᵏ⁾ = r⁽ᵏ⁻¹⁾ − α⁽ᵏ⁾Ap⁽ᵏ⁻¹⁾", "Update residu"],
+        ["6", "if ‖r⁽ᵏ⁾‖₂ < ε", "Controleer convergentie"],
+        ["7", "return x⁽ᵏ⁾", "Oplossing gevonden binnen tolerantie"],
+        ["8", "end if", ""],
+        ["9", "β⁽ᵏ⁾ = r⁽ᵏ⁾ᵀr⁽ᵏ⁾ / r⁽ᵏ⁻¹⁾ᵀr⁽ᵏ⁻¹⁾", "Conjugatiecoëfficiënt"],
+        ["10","p⁽ᵏ⁾ = r⁽ᵏ⁾ + β⁽ᵏ⁾p⁽ᵏ⁻¹⁾", "Nieuwe zoekrichting"],
+        ["11","end for", "Maximumaantal iteraties bereikt"],
+      ]
+    },
+  ];
+
+  let current = 0;
+
+  function render() {
+    const a = algs[current];
+    document.getElementById('card').innerHTML = `
+      <p class="alg-title">${a.title}</p>
+      <p class="alg-desc">${a.desc}</p>
+      <table class="alg-table">
+        ${a.lines.map(([num, code, exp]) => `
+          <tr>
+            <td class="line-num">${num}</td>
+            <td class="line-code">${code}</td>
+            <td class="line-exp">${exp}</td>
+          </tr>
+        `).join('')}
+      </table>
+    `;
+    document.querySelectorAll('.alg-btn').forEach((b, i) => b.classList.toggle('active', i === current));
+  }
+
+  const nav = document.getElementById('nav');
+  algs.forEach((a, i) => {
+    const b = document.createElement('button');
+    b.className = 'alg-btn';
+    b.textContent = `Alg. ${a.id}`;
+    b.onclick = () => { current = i; render(); };
+    nav.appendChild(b);
+  });
+  render();
+  </script>
+
+</body>
+</html>

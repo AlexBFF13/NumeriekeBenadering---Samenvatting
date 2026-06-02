@@ -1,7 +1,7 @@
-# Modelvragen Deel Samaey — Volledige Uitgewerkte Antwoorden
+# Modelvragen Deel Samaey — Uitgewerkte Antwoorden
 
-> Gebaseerd op de cursustekst Numerieke Benadering (KU Leuven, 2025–2026).
-> Alle bewijzen zijn volledig uitgeschreven. Gebruik dit document als primaire studiereferentie.
+> KU Leuven, Numerieke Benadering 2025–2026.
+> Aanpak: eerst begrijpen wat en waarom, dan de formules.
 
 ---
 
@@ -9,149 +9,135 @@
 
 ### (a) Definitie
 
-**Intuïtie:** Globale hoge-graadsveeltermen oscilleren sterk tussen knooppunten (Runge-fenomeen). Oplossing: verdeel het interval in stukjes en gebruik op elk stuk een veelterm van lage graad, aaneengekoppeld met de juiste vloeiendheid.
+**Wat is een spline?**
 
-**Definitie 5.2.1 — Splinefunctie van graad $k$:**
+Stel je wil een vloeiende curve tekenen door een reeks punten. Als je één grote veelterm over het hele interval gebruikt, gaat die sterk oscilleren tussen de punten — dat heet het Runge-fenomeen. De oplossing is simpel: verdeel het interval in kleine stukjes en gebruik op elk stukje een lage-graads veelterm. Om ervoor te zorgen dat alles mooi aan elkaar kleeft, eisen we dat de stukjes vloeiend op elkaar aansluiten.
 
-Zij $a = t_0 < t_1 < \cdots < t_{n-1} < t_n = b$ een strikte knooppuntenrij.
+Dat is precies wat een spline doet.
 
-Een **splinefunctie** $s(x)$ van graad $k > 0$ is een functie op $[a,b]$ met:
-1. Op elk deelinterval $[t_{i-1}, t_i]$ is $s(x)$ een **veelterm van graad $\leq k$**.
-2. De functie $s(x)$ en haar afgeleiden $s', s'', \ldots, s^{(k-1)}$ zijn **continu** op $[a,b]$.
+**Formeel (Definitie 5.2.1):**
 
-Een **kubische spline** ($k = 3$) bestaat dus uit stukken van graad $\leq 3$, aaneengekoppeld met $C^2$-continuïteit.
+Zij $a = t_0 < t_1 < \cdots < t_n = b$ een rij van knooppunten die het interval opdelen.
 
-> ⚠️ **Examentip:** Ken de definitie letterlijk. Twee eisen: (1) veelterm per stuk, (2) continuïteit t/m $k-1$-de afgeleide.
+Een **splinefunctie van graad $k$** is een functie $s(x)$ op $[a,b]$ die voldoet aan:
+1. Op elk stukje $[t_{i-1}, t_i]$ is $s(x)$ een **veelterm van graad $\leq k$**.
+2. $s$ en haar afgeleiden $s', s'', \ldots, s^{(k-1)}$ zijn **continu** op het hele interval $[a,b]$.
 
-💡 **Waarom kubisch?** Het menselijk oog kan discontinuïteiten in de **kromming** (de tweede afgeleide) waarnemen. Om visueel vloeiende curves te bekomen, moeten $s$ en $s'$ en $s''$ continu zijn → kubisch ($k = 3$, $C^2$).
+**Waarom kubisch ($k=3$)?**
+
+Het menselijk oog merkt een sprong in de kromming op. Kromming hangt af van $s''$. Door $s''$ continu te eisen, moeten we tot de tweede afgeleide aansluiten — dat vraagt om graad 3 (kubisch). Zo is een kubische spline visueel altijd vloeiend.
+
+> ⚠️ **Examentip:** Ken de twee eisen: (1) veelterm per stuk, (2) continuïteit t/m de $(k-1)$-de afgeleide.
 
 ---
 
 ### (b) Dimensie van de splineruimte
 
-> ⚠️ **Examentip:** Het bewijs is een eenvoudig telbewijs. Leer het van buiten.
+**Wat verwacht je intuïtief?**
 
-**Stelling 5.2.1:** De vectorruimte van splinefuncties van graad $k$ met $n+1$ knooppunten heeft **dimensie $n + k$**.
+Je hebt $n$ stukjes, elk met een kubische veelterm (4 coëfficiënten) → normaal zou je $4n$ vrijheidsgraden hebben. Maar de continuïteitseisen koppelen de stukjes aan elkaar en verminderen dat getal. Het resultaat is $n + k$.
 
 **Bewijs (telbewijs):**
 
-**Stap 1 — Vrijheidsgraden zonder continuïteit:**
+**Stap 1 — Totaal zonder continuïteit:**
+$n$ stukken, elk met $k+1$ coëfficiënten: $\rightarrow n(k+1)$ vrijheidsgraden.
 
-$n$ deelintervallen, op elk stuk een veelterm van graad $\leq k$ → $k+1$ coëfficiënten per stuk:
-$$\text{totaal} = n(k+1) \text{ parameters.}$$
+**Stap 2 — Aftrekken van continuïteitseisen:**
+In elk van de $n-1$ inwendige knooppunten $t_1, \ldots, t_{n-1}$ moeten $k$ afgeleiden overeenkomen:
+$$\text{beperkingen} = (n-1) \cdot k.$$
 
-**Stap 2 — Continuïteitsvoorwaarden:**
-
-In elk van de $n-1$ **inwendige** knooppunten $t_1, \ldots, t_{n-1}$ worden $k$ voorwaarden opgelegd: continuïteit van $s, s', \ldots, s^{(k-1)}$.
-
-$$\text{aantal beperkingen} = (n-1) \cdot k.$$
-
-**Stap 3 — Vrijheidsgraden na de beperkingen:**
-
+**Stap 3 — Resultaat:**
 $$\dim = n(k+1) - (n-1)k = nk + n - nk + k = n + k. \quad \square$$
 
-💡 **Intuïtie:** $n$ stukken + $k$ extra vrijheidsgraden voor het globale gedrag (bijv. $k$ randcondities vrij te kiezen voor een kubische spline: $n + 3$).
+Voor kubische splines ($k=3$): dimensie $= n + 3$.
+
+> ⚠️ **Examentip:** Dit telbewijs staat bijna zeker op het examen. Leer de drie stappen.
 
 ---
 
-### (c) Basis van afgeknotte machtsfuncties en B-splines
+### (c) Twee basissen: afgeknotte machten en B-splines
 
 #### Afgeknotte-machtsbasis
 
-**Definitie:**
+**Wat is het idee?**
+
+Je wil een functie die op een bepaald knooppunt $t_i$ "inschakelt" en daarvoor nul is. Dat lukt met een afgeknotte machtsfunctie: rechts van $t_i$ gedraagt ze zich als een gewone macht, links is ze nul.
+
+**Formule:**
 $$
 (x - t_i)_+^k = \begin{cases} 0 & \text{als } x \leq t_i \\ (x - t_i)^k & \text{als } x > t_i \end{cases}
 $$
 
-De volledige basis bestaat uit:
-$$\{1,\, x,\, x^2,\, \ldots,\, x^k,\, (x-t_1)_+^k,\, \ldots,\, (x-t_{n-1})_+^k\}.$$
-
+**De volledige basis:**
+$$\{1,\, x,\, \ldots,\, x^k,\quad (x-t_1)_+^k,\, \ldots,\, (x-t_{n-1})_+^k\}.$$
 Dat zijn $k+1 + (n-1) = n+k$ functies — klopt met de dimensie.
 
-**Tekening (kubisch, $k=3$, $n=2$):**
-```
-     (x-t₁)³₊
-      |
-      |         ___/
-      |        /
-______|________/_____________ x
-      t₁
-```
-Nul links van $t_1$, daarna $= (x-t_1)^3$. Elke functie "activeert" in één knooppunt.
-
-**Nadeel:** Numeriek instabiel (slechte conditionering) — dit is de **"slechte basis"** waarnaar in examenvragen verwezen wordt. De volledige afgeknotte-machtsbasis bevat zowel de veeltermbasis $\{1, x, \ldots, x^k\}$ als de afgeknotte functies $\{(x-t_1)_+^k, \ldots, (x-t_{n-1})_+^k\}$ — het weglaten van de veeltermbasis is een veelgemaakte fout. Gebruik in de praktijk de B-splinebasis.
+**Nadeel:** Deze basis is numeriek instabiel (slecht geconditioneerd). In de praktijk gebruik je de B-splinebasis.
 
 #### B-splinebasis
 
+**Wat is het idee?**
+
+Een B-spline is een "bobbeltje" dat alleen niet-nul is over een klein stukje van het interval — de zogenaamde **lokale drager**. Dat maakt berekeningen heel efficient: de meeste basisfuncties zijn nul op een gegeven punt.
+
 **Definitie (via gedeelde differentie):**
+$$N_{i,k+1}(x) = (t_{i+k+1} - t_i)\, [t_i, \ldots, t_{i+k+1}]_t\, (t - x)_+^k.$$
 
-De **gewone B-spline** van graad $k$ met knooppunten $t_i < t_{i+1} < \cdots < t_{i+k+1}$:
-$$M_{i,k+1}(x) = [t_i, t_{i+1}, \ldots, t_{i+k+1}]_t\, (t - x)_+^k.$$
+**Hoe bereken je ze? — Recursiebetrekking:**
 
-De **genormaliseerde B-spline:**
-$$\boxed{N_{i,k+1}(x) = (t_{i+k+1} - t_i)\, M_{i,k+1}(x).}$$
+Begin met de eenvoudigste B-splines (graad 0: gewoon 1 op een stukje, 0 elders) en bouw daar hogere graden van op:
+$$N_{i,1}(x) = \begin{cases} 1 & \text{als } x \in [t_i, t_{i+1}) \\ 0 & \text{anders} \end{cases}$$
 
-**Recursiebetrekking** (sleuteleigenschap voor berekening):
 $$N_{i,k+1}(x) = \frac{x - t_i}{t_{i+k} - t_i}\, N_{i,k}(x) + \frac{t_{i+k+1} - x}{t_{i+k+1} - t_{i+1}}\, N_{i+1,k}(x).$$
 
-**Basisgeval** ($k=0$): $N_{i,1}(x) = \mathbf{1}_{[t_i, t_{i+1})}(x)$ (karakteristieke functie).
+Je combineert telkens twee lagere B-splines met gewichten die optellen tot 1.
 
-**Tekening (kubische B-splines, $k=3$):**
-```
-         N_{i,4}
-           /\
-          /  \
-_________/    \_________
-    t_i            t_{i+4}
-```
-Elke B-spline is nul buiten $[t_i, t_{i+k+1}]$ (lokale drager = $k+2$ knooppunten breed).
+**Drie sleuteleigenschappen:**
 
-**Sleuteleigenschappen van genormaliseerde B-splines:**
-
-| Eigenschap | Formule/uitspraak |
+| Eigenschap | Wat het betekent |
 |---|---|
-| Lokale drager | $N_{i,k+1}(x) = 0$ buiten $[t_i, t_{i+k+1}]$ |
-| Positiviteit | $N_{i,k+1}(x) > 0$ voor $x \in (t_i, t_{i+k+1})$ |
-| Partitie van eenheid | $\sum_{i=-k}^{n-1} N_{i,k+1}(x) = 1$ op $[t_0, t_n]$ |
+| Lokale drager | $N_{i,k+1}(x) = 0$ buiten $[t_i, t_{i+k+1}]$ — elke B-spline is slechts op een klein stuk actief |
+| Positiviteit | $N_{i,k+1}(x) > 0$ binnenin die drager |
+| Partitie van eenheid | $\sum_i N_{i,k+1}(x) = 1$ — de B-splines verdelen de "verantwoordelijkheid" keurig |
 
 ---
 
-### (d) B-splinebasis voor benadering van experimentele data
+### (d) B-splinebasis voor benadering van data
 
-**Context:** Gegeven meetpunten $(x_r, f_r)$, $r = 1, \ldots, N$. We zoeken een spline $s(x)$ van graad $k$ die het **gewogen kleinste-kwadratenfout** minimaliseert:
+**Wat is de situatie?**
+
+Je hebt meetpunten $(x_r, f_r)$ en wil een vloeiende splinecurve die zo goed mogelijk door die punten past (kleinste kwadraten).
+
+**Hoe pak je dat aan?**
+
+Schrijf de spline als een lineaire combinatie van B-splines:
+$$s(x) = \sum_i c_i\, N_{i,k+1}(x).$$
+
+Dan zoek je de coëfficiënten $c_i$ die de gewogen fout minimaliseren:
 $$\min_{c} \sum_{r=1}^N w_r\, \bigl(f_r - s(x_r)\bigr)^2.$$
 
-**Voorstelling in B-splinebasis:**
-$$s(x) = \sum_{i=-k}^{n-1} c_i\, N_{i,k+1}(x).$$
+Differentieer naar $c_j$ en stel gelijk aan nul — dat geeft het **normaalstelsel** $Gc = b$:
+$$G_{j,i} = \sum_{r} w_r N_{j}(x_r) N_{i}(x_r), \qquad b_j = \sum_{r} w_r N_{j}(x_r) f_r.$$
 
-**Opstellen van het normaalstelsel:**
+**Keuzes die je moet maken:**
+- Graad $k$: bijna altijd $k=3$ (kubisch)
+- Aantal knooppunten: te weinig → slechte fit, te veel → overfitting
+- Ligging knooppunten: idealiter meer knooppunten waar de data sterk varieert
 
-Substitueer in de kostfunctie:
-$$\min_{c} \sum_{r=1}^N w_r\, \Bigl(f_r - \sum_i c_i N_{i,k+1}(x_r)\Bigr)^2.$$
-
-Differenteer naar $c_j$ en stel gelijk aan nul:
-$$\sum_r w_r N_{j,k+1}(x_r) \Bigl(\sum_i c_i N_{i,k+1}(x_r) - f_r\Bigr) = 0, \quad \forall j.$$
-
-Dit is het normaalstelsel $Gc = b$ met:
-$$G_{j,i} = \sum_{r=1}^N w_r N_{j,k+1}(x_r) N_{i,k+1}(x_r), \qquad b_j = \sum_{r=1}^N w_r N_{j,k+1}(x_r) f_r.$$
-
-**Te kiezen parameters:**
-- Graad $k$: doorgaans $k = 3$ (kubisch)
-- Aantal en ligging knooppunten $t_0, \ldots, t_n$: te kiezen a.h.v. de data
-- Coëfficiënten $c_i$: bepaald door het normaalstelsel
-
-> ⚠️ **Examentip:** De knooppuntenkeuze is de moeilijkste stap. Te weinig → slechtere fit; te veel → overfitting. Noodzakelijke voorwaarde voor een unieke oplossing: **Schönberg-Whitney-voorwaarde** — er moet minstens één datapunt liggen in elk knooppunteninterval $[t_{i}, t_{i+1})$. Zonder dit kan het stelsel $Gc = b$ singulier worden.
+> ⚠️ **Examentip:** **Schönberg-Whitney-voorwaarde** — er moet minstens één datapunt liggen in elk knooppunteninterval. Zonder dit wordt het stelsel singulier.
 
 ---
 
 ### (e) Spaarsheidspatroon van het lineaire stelsel
 
-**Sleuteleigenschap (lokale drager):** $N_{i,k+1}(x) = 0$ buiten $[t_i, t_{i+k+1}]$, een interval van $k+1$ deelintervallen. Daardoor is:
+**Waarom is de matrix niet vol?**
+
+Elke B-spline is alleen niet-nul over $k+1$ deelintervallen. Dat betekent dat twee B-splines $N_i$ en $N_j$ alleen tegelijk niet-nul zijn als hun dragers overlappen — en dat gebeurt alleen als $|i-j| \leq k$.
+
+**Gevolg:** De Grammatrix $G$ is een **bandmatrix** met bandbreedte $2k+1$. Buiten die band zijn alle elementen nul:
 $$G_{j,i} = 0 \quad \text{als } |j - i| > k.$$
 
-Het normaalstelsel is een **bandmatrix** met bandbreedte $2k+1$.
-
-**Spaarsheidspatroon voor $k=3$, $n=5$ (7 B-splines):**
+**Spaarsheidspatroon voor $k=3$ (bandbreedte 7):**
 ```
    [* * * *        ]
    [* * * * *      ]
@@ -161,176 +147,133 @@ Het normaalstelsel is een **bandmatrix** met bandbreedte $2k+1$.
    [    * * * * * *]
    [      * * * * *]
 ```
-(Enkel de 7 diagonalen $|i-j| \leq 3$ zijn niet-nul.)
 
-> ⚠️ **Examentip:** Op het examen is enkel het patroon vereist, niet de waarden. Teken een $N \times N$ bandmatrix met breedte $2k+1$.
+**Praktisch voordeel:** In plaats van $O(N^3)$ bewerkingen voor een vol stelsel, kost Cholesky op een bandmatrix slechts $O(Nk^2)$ — veel sneller!
 
-💡 **Numeriek voordeel:** De bandstructuur laat toe het normaalstelsel in $O(Nk^2)$ bewerkingen op te lossen met Cholesky-factorisatie voor bandmatrices, i.p.v. $O(N^3)$ voor een vol stelsel.
+> ⚠️ **Examentip:** Op het examen: teken gewoon het patroon, je hoeft de waarden niet te kennen.
 
 ---
 
-## V2 — Tweedimensionele veeltermbenaderering
-
-**Probleemstelling:** Gegeven meetdata $f_{i,j} \approx f(x_i, y_j)$ op een rechthoekig rooster ($1 \leq i \leq M$, $1 \leq j \leq N$), met separabele gewichten $w_{i,j} = w_i^{(1)} w_j^{(2)}$. Zoek een benadering
-$$z(x, y) = \sum_{k=0}^m \sum_{l=0}^n c_{k,l}\, x^k y^l.$$
+## V2 — Tweedimensionale veeltermbenaderering
 
 ### (a) Orthogonale basis voor het 2D-benaderingsprobleem
 
-**Intuïtie:** Als we een monomiale basis gebruiken, krijgen we een slecht geconditioneerde Grammatrix (bijna-Hilbert). Oplossing: zoek **orthogonale veeltermen** in 2D.
+**Wat is het probleem?**
 
-**Aanpak — tensorproduct met separabele gewichten:**
+Je hebt meetdata $f_{i,j}$ op een rechthoekig rooster en wil er een 2D-veelterm $z(x,y) = \sum_{k,l} c_{k,l} x^k y^l$ doorheen passen. Als je gewoon monomiale basisfuncties gebruikt, krijg je een enorm slecht geconditioneerd stelsel (bijna-Hilbert). Oplossing: gebruik orthogonale basisfuncties.
 
-> ⚠️ **Examentip:** De sleutel is de separabiliteit van het gewicht. Zonder die eigenschap werkt dit niet.
+**Het slimme inzicht: tensorproduct**
 
-Stel $\phi_{k,l}(x,y) = p_k(x)\, q_l(y)$, waarbij:
-- $\{p_k\}$ orthogonaal zijn t.o.v. discrete sommatie in $x$: $\sum_{i=1}^M w_i^{(1)} p_k(x_i) p_u(x_i) = 0$ voor $k \neq u$
-- $\{q_l\}$ orthogonaal zijn t.o.v. discrete sommatie in $y$: $\sum_{j=1}^N w_j^{(2)} q_l(y_j) q_v(y_j) = 0$ voor $l \neq v$
+Als het gewicht scheidbaar is — $w_{i,j} = w_i^{(1)} w_j^{(2)}$ — dan kan je 2D-orthogonaliteit terugbrengen tot twee keer 1D-orthogonaliteit. Je bouwt de 2D-basisfunctie gewoon als een product:
+$$\phi_{k,l}(x,y) = p_k(x) \cdot q_l(y),$$
+waarbij $\{p_k\}$ orthogonaal zijn in $x$ en $\{q_l\}$ orthogonaal zijn in $y$ (elk apart, via Forsythe).
 
 **Bewijs van 2D-orthogonaliteit:**
+$$\sum_{i,j} w_{i,j}\, \phi_{k,l}(x_i, y_j)\, \phi_{u,v}(x_i, y_j) = \underbrace{\left(\sum_i w_i^{(1)} p_k(x_i) p_u(x_i)\right)}_{=0 \text{ als } k \neq u} \cdot \left(\sum_j w_j^{(2)} q_l(y_j) q_v(y_j)\right).$$
 
-$$\sum_{i=1}^M \sum_{j=1}^N w_{i,j}\, \phi_{k,l}(x_i, y_j)\, \phi_{u,v}(x_i, y_j)$$
-$$= \sum_{i=1}^M \sum_{j=1}^N w_i^{(1)} w_j^{(2)}\, p_k(x_i) q_l(y_j)\, p_u(x_i) q_v(y_j)$$
-$$= \underbrace{\left(\sum_{i=1}^M w_i^{(1)} p_k(x_i) p_u(x_i)\right)}_{=0 \text{ als } k \neq u} \cdot \underbrace{\left(\sum_{j=1}^N w_j^{(2)} q_l(y_j) q_v(y_j)\right)}_{\text{willekeurig}}$$
+Zodra $k \neq u$ (of $l \neq v$) is één van de twee factoren nul → het product is nul → de 2D-basisfuncties zijn orthogonaal. $\square$
 
-Dus: $\langle \phi_{k,l}, \phi_{u,v} \rangle = 0$ zolang $k \neq u$ **of** $l \neq v$.
-
-De som is nul zodra minstens één van beide factoren nul is, d.w.z. zodra $(k,l) \neq (u,v)$. $\square$
-
-**Opbouwen van $p_k$ en $q_l$:** via de Forsythe-methode (drietermsrecursiebetrekking):
-$$p_k(x) = \lambda_k\left[(x - \alpha_k) p_{k-1}(x) - \beta_k p_{k-2}(x)\right],$$
-met discrete recursiecoëfficiënten $\alpha_k$, $\beta_k$ uit de data $\{x_i, w_i^{(1)}\}$.
+> ⚠️ **Examentip:** De sleutel is de scheidbaarheid van het gewicht. Zonder die eigenschap werkt dit niet.
 
 ---
 
 ### (b) Coëfficiënten van de beste benadering
 
-**Stelling:** Met orthogonale basis $\{\phi_{k,l} = p_k q_l\}$ herleiden de normaalstelsel-vergelijkingen zich tot de eenvoudige uitdrukking:
-$$\boxed{a_{k,l} = \frac{\displaystyle\sum_{i=1}^M \sum_{j=1}^N w_i^{(1)} w_j^{(2)}\, f_{i,j}\, p_k(x_i)\, q_l(y_j)}{\|p_k\|^2 \|q_l\|^2}.}$$
+**Waarom worden de coëfficiënten eenvoudig?**
 
-**Bewijs:**
+Normaal moet je een groot normaalstelsel oplossen voor alle coëfficiënten tegelijk. Maar met een orthogonale basis diagonaliseert het normaalstelsel volledig: elke coëfficiënt $a_{k,l}$ kan onafhankelijk van de anderen berekend worden.
 
-Het normaalstelsel voor de coëfficiënten $a_{k,l}$ (in de orthogonale basis) is:
-$$\sum_{k', l'} a_{k',l'}\, \langle \phi_{k',l'}, \phi_{k,l} \rangle = \langle f, \phi_{k,l} \rangle.$$
+**Formule:**
+$$a_{k,l} = \frac{\displaystyle\sum_{i,j} w_i^{(1)} w_j^{(2)}\, f_{i,j}\, p_k(x_i)\, q_l(y_j)}{\|p_k\|^2 \|q_l\|^2}.$$
 
-Door de orthogonaliteit geldt $\langle \phi_{k',l'}, \phi_{k,l} \rangle = 0$ tenzij $(k',l') = (k,l)$. Het stelsel **diagonaliseert volledig**:
-$$a_{k,l} \cdot \langle \phi_{k,l}, \phi_{k,l} \rangle = \langle f, \phi_{k,l} \rangle.$$
+**Herkomst:** Het normaalstelsel is $\sum_{k',l'} a_{k',l'} \langle \phi_{k',l'}, \phi_{k,l} \rangle = \langle f, \phi_{k,l} \rangle$. Door orthogonaliteit zijn alle termen met $(k',l') \neq (k,l)$ nul. Wat overblijft is $a_{k,l} \cdot \|p_k\|^2 \|q_l\|^2 = \langle f, \phi_{k,l} \rangle$, en dus de formule hierboven. $\square$
 
-Uitrekenen:
-$$\langle \phi_{k,l}, \phi_{k,l} \rangle = \sum_{i,j} w_{i,j} p_k(x_i)^2 q_l(y_j)^2 = \left(\sum_i w_i^{(1)} p_k^2(x_i)\right)\left(\sum_j w_j^{(2)} q_l^2(y_j)\right) = \|p_k\|^2 \|q_l\|^2,$$
-
-en $\langle f, \phi_{k,l} \rangle = \sum_{i,j} w_{i,j} f_{i,j} p_k(x_i) q_l(y_j)$.
-
-Delen geeft de formule. $\square$
-
-> ⚠️ **Examentip:** De sleutelboodschap is dat het normaalstelsel diagonaal wordt door de orthogonale basis → elke coëfficiënt kan apart berekend worden.
+> ⚠️ **Examentip:** Kernboodschap: orthogonale basis → diagonaal stelsel → elke coëfficiënt apart te berekenen.
 
 ---
 
 ### (c) Efficiënte berekening van de coëfficiënten
 
-**Sleutelobservatie:** De formule voor $a_{k,l}$ kan gefactoriseerd worden:
-$$a_{k,l} = \frac{\displaystyle\sum_{j=1}^N w_j^{(2)} b_{k,j}\, q_l(y_j)}{\|q_l\|^2}, \qquad \text{waarbij} \quad b_{k,j} = \frac{\displaystyle\sum_{i=1}^M w_i^{(1)} f_{i,j}\, p_k(x_i)}{\|p_k\|^2}.$$
+**Het slimme algoritme: herhaalde 1D-benadering**
 
-⚙️ **Algoritme: herhaalde eendimensionale benadering**
+In plaats van een duur 2D-stelsel op te lossen, kan je de berekening opsplitsen in twee opeenvolgende 1D-stappen:
+
+1. **Stap 1 — langs de $x$-richting:** voor elke kolom $j$ van de data, doe een 1D Forsythe-benadering in $x$:
+$$b_{k,j} = \frac{\displaystyle\sum_i w_i^{(1)} f_{i,j}\, p_k(x_i)}{\|p_k\|^2}.$$
+
+2. **Stap 2 — langs de $y$-richting:** voor elke rij $k$ van de tussenresultaten, doe een 1D Forsythe-benadering in $y$:
+$$a_{k,l} = \frac{\displaystyle\sum_j w_j^{(2)} b_{k,j}\, q_l(y_j)}{\|q_l\|^2}.$$
 
 ```
-Stap 1 — Benadering langs de x-richting:
-  voor j = 1 tot N:
-      bereken b[k,j] = <f(:,j), p_k> / ||p_k||²   voor k = 0,...,m
-      (dit is een 1D Forsythe-benadering van de j-de datarij)
-
-Stap 2 — Benadering langs de y-richting:
-  voor k = 0 tot m:
-      bereken a[k,l] = <b[k,:], q_l> / ||q_l||²   voor l = 0,...,n
-      (dit is een 1D Forsythe-benadering van de k-de coëfficiëntrij)
-```
-
-**Grafische illustratie:**
-```
-Data f[i,j]:           Stap 1:               Stap 2:
-M × N rooster   →  b[k,j] (m+1)×N    →   a[k,l] (m+1)×(n+1)
-                   elke kolom j           elke rij k
-                   Forsythe in x          Forsythe in y
+Data f[i,j] (M×N)  →  b[k,j] ((m+1)×N)  →  a[k,l] ((m+1)×(n+1))
+                       Forsythe in x           Forsythe in y
 ```
 
 ---
 
 ### (d) Vergelijking rekencomplexiteit
 
-**Directe methode (monomiale basis, vol normaalstelsel):**
+**Directe methode:** lost een normaalstelsel op met $(m+1)(n+1)$ onbekenden. Kost $O((mn)^3)$ — extreem duur bij grote graad.
 
-Normaalstelsel: $(m+1)(n+1)$ onbekenden, matrix $(m+1)^2(n+1)^2$ entries.
-- Opstellen: $O(MN(m+1)(n+1))$
-- Oplossen: $O((m+1)^3(n+1)^3)$ — **kubisch in het aantal basisfuncties**
-
-**Methode via herhaalde 1D Forsythe:**
-
-- Stap 1: $N$ keer Forsythe met $M$ punten, graad $m$ → $O(NM(m+1))$
-- Stap 2: $(m+1)$ keer Forsythe met $N$ punten, graad $n$ → $O((m+1)N(n+1))$
-- **Totaal: $O(MN(m+n))$** — **lineair** in het aantal data- en basisfuncties
+**Herhaalde 1D Forsythe:** lineaire complexiteit $O(MN(m+n))$ — veel beter!
 
 | Methode | Rekenkost | Stabiliteit |
 |---|---|---|
-| Directe methode | $O((mn)^3)$ | Slecht (Hilbert-matrix) |
+| Directe methode | $O((mn)^3)$ | Slecht (Hilbert-achtige matrix) |
 | Herhaalde 1D Forsythe | $O(MN(m+n))$ | Uitstekend (diagonaal stelsel) |
 
-> ⚠️ **Examentip:** Het sleutelwoord is "herhaalde eendimensionale benadering". Dankzij separabiliteit reduceert 2D → 1D + 1D.
+> ⚠️ **Examentip:** Sleutelwoord: "herhaalde eendimensionale benadering". Dankzij scheidbaarheid reduceert 2D naar 1D+1D.
 
 ---
 
 ## V3 — Discreet benaderingsprobleem: veeltermbenadering
 
-**Probleemstelling:** Gegeven meetdata $(x_i, f_i)_{i=1}^N$, $a \leq x_1 < \cdots < x_N \leq b$. Zoek een veelterm $y_n(x)$ van graad $n \ll N$.
+### (a) Scalair product voor discrete kleinste kwadraten
 
-### (a) Scalair product voor discrete kleinste-kwadraten
+**Wat is het probleem?**
 
-Het **discrete gewogen scalair product** op de ruimte van discrete functies is:
-$$\boxed{(f, g) = \sum_{i=1}^N w_i\, f(x_i)\, g(x_i), \qquad w_i > 0.}$$
+Je hebt $N$ meetpunten $(x_i, f_i)$ en wil een veelterm van lage graad $n \ll N$ die zo goed mogelijk past — niet door de punten heen (dat geeft interpolatie), maar in de kleinste-kwadratenzin.
 
-De bijhorende norm: $\|f\|^2 = \sum_{i=1}^N w_i f(x_i)^2$.
+**Het discrete scalair product** is het wiskundig gereedschap dat "dicht bij de data" formaliseert:
+$$(f, g) = \sum_{i=1}^N w_i\, f(x_i)\, g(x_i), \qquad w_i > 0.$$
 
-**Benaderingsprobleem:** Minimaliseer
+De gewichten $w_i$ bepalen hoe zwaar elk datapunt meetelt. Het benaderingsprobleem wordt dan: minimaliseer de gewogen fout:
 $$E(c) = \|f - y_n\|^2 = \sum_{i=1}^N w_i (f_i - y_n(x_i))^2.$$
 
 ---
 
 ### (b) Normaalstelsel = overgedetermineerd stelsel
 
-**Aanpak 1 — Normaalstelsel:**
+**Twee kanten van dezelfde medaille**
 
-Schrijf $y_n(x) = \sum_{k=0}^n c_k \phi_k(x)$. De orthogonaliteitsconditie geeft het **normaalstelsel**:
-$$Gc = b, \qquad G_{jk} = (\phi_j, \phi_k) = \sum_{i=1}^N w_i \phi_j(x_i) \phi_k(x_i), \quad b_j = (\phi_j, f) = \sum_{i=1}^N w_i \phi_j(x_i) f_i.$$
+Er zijn twee manieren om hetzelfde probleem te bekijken, en ze geven hetzelfde stelsel.
+
+**Aanpak 1 — Normaalstelsel:**
+Schrijf $y_n(x) = \sum_{k=0}^n c_k \phi_k(x)$. Eis dat de fout loodrecht staat op alle basisfuncties:
+$$Gc = b, \qquad G_{jk} = \sum_i w_i \phi_j(x_i) \phi_k(x_i), \quad b_j = \sum_i w_i \phi_j(x_i) f_i.$$
 
 **Aanpak 2 — Overgedetermineerd stelsel:**
-
-Definieer $D = \text{diag}(\sqrt{w_1}, \ldots, \sqrt{w_N})$ en de matrix $A \in \mathbb{R}^{N \times (n+1)}$ met $A_{ik} = \phi_k(x_i)$.
+Stapel alle vergelijkingen $f_i \approx \sum_k c_k \phi_k(x_i)$ op in matrixvorm: $Ac \approx f$ met $A_{ik} = \phi_k(x_i)$. Weeg ze met $D = \text{diag}(\sqrt{w_i})$: $DAc \approx Df$. De normaalvergelijkingen van dit stelsel zijn $A^T W A c = A^T W f$.
 
 **Bewijs van de equivalentie:**
+$(A^TWA)_{jk} = \sum_i w_i A_{ij} A_{ik} = \sum_i w_i \phi_j(x_i) \phi_k(x_i) = G_{jk}$.
 
-Het overgedetermineerde stelsel is $DAc = Df$ (met $N \gg n+1$ vergelijkingen en $n+1$ onbekenden). De normaalvergelijkingen (i.e. $A^TD^TDAc = A^TD^TDf$) zijn:
-$$A^T W A c = A^T W f, \qquad W = D^2 = \text{diag}(w_1, \ldots, w_N).$$
+Beide formuleringen geven letterlijk hetzelfde stelsel. $\square$
 
-Uitschrijven: $(A^TWA)_{jk} = \sum_i w_i A_{ij} A_{ik} = \sum_i w_i \phi_j(x_i) \phi_k(x_i) = G_{jk}$.
-
-Het zijn **dezelfde stelsels**. $\square$
-
-> ⚠️ **Examentip:** Dit verband is het brugpunt tussen de abstracte normaalstelsel-theorie en de concrete matrixformulering. Ken het.
+> ⚠️ **Examentip:** Dit verband is de brug tussen de abstracte normaalstelsel-theorie en de concrete matrixformulering.
 
 ---
 
 ### (c) Detecteren van overfitting
 
-**Overfitting:** Het model past te nauw aan bij de ruizige trainingsdata. Het leert de ruis, niet de structuur van $f$. Herkenbaar doordat het goed presteert op de trainingspunten maar slecht op nieuwe punten.
+**Wat is overfitting?**
 
-**Detectiemethode — trainings- vs. testfout:**
+Als je een model te complex maakt (te hoge graad), past het perfect op de trainingsdata — inclusief de meetruis. Het model leert de ruis in plaats van de echte structuur. Gevolg: het werkt goed op bekende punten, maar slecht op nieuwe punten.
 
-Splits de data in twee sets:
-- **Trainingsdata:** $\{(x_i, f_i)\}_{i=1}^N$ — voor het opstellen van de benadering
-- **Testdata:** $\{(\tilde{x}_i, \tilde{f}_i)\}$ — voor het evalueren op ongeziene data
+**Hoe herken je het?**
 
-$$E_{\text{train}} = \sum_{i=1}^N w_i (f_i - y_n(x_i))^2, \qquad E_{\text{test}} = \sum_i \tilde{w}_i (\tilde{f}_i - y_n(\tilde{x}_i))^2.$$
+Splits de data in twee groepen: **trainingsdata** (om het model te bouwen) en **testdata** (om het te evalueren). Kijk hoe beide fouten evolueren als je de graad verhoogt:
 
-**Gedrag als functie van de graad $n$:**
 ```
 Fout
  |  E_test
@@ -338,63 +281,58 @@ Fout
  |     \ /   ← optimale graad
  |      *
  |        \_____ E_train
- |_____________________ n
+ |_____________________ graad n
 ```
 
-- **Trainingsfout** daalt **monotoon** (meer vrijheidsgraden → lagere fout).
-- **Testfout** daalt aanvankelijk, maar **stijgt opnieuw** bij te hoge graad → signaal van overfitting.
+- **Trainingsfout $E_{\text{train}}$:** daalt altijd als je de graad verhoogt (meer vrijheidsgraden).
+- **Testfout $E_{\text{test}}$:** daalt eerst, maar stijgt opnieuw bij te hoge graad.
 
-De **optimale graad** minimaliseert $E_{\text{test}}$.
+De **optimale graad** is daar waar $E_{\text{test}}$ minimaal is.
 
 ---
 
 ### (d) Tikhonov regularisatie
 
-**Definitie en motivatie:**
+**Wat is het idee?**
 
-In plaats van de complexiteit (graad) op voorhand te begrenzen, voegen we een **strafterm** toe aan de kostfunctie die grote coëfficiënten ontmoedigt:
+In plaats van de complexiteit te beperken door de graad vast te kiezen, voeg je een **strafterm** toe aan de kostfunctie die grote coëfficiënten ontmoedigt. Grote coëfficiënten geven sterk oscillerende veeltermen — precies wat we willen vermijden.
 
-$$E_{\text{reg}}(c) = \underbrace{\sum_{i=1}^N w_i (f_i - y_n(x_i))^2}_{\text{datafidelity}} + \lambda \underbrace{\|c\|_2^2}_{\text{regularisatie}}, \qquad \lambda > 0.$$
+**De geregulariseerde kostfunctie:**
+$$E_{\text{reg}}(c) = \underbrace{\sum_{i} w_i (f_i - y_n(x_i))^2}_{\text{trouw aan de data}} + \lambda \underbrace{\|c\|_2^2}_{\text{straf op grote coëfficiënten}}, \qquad \lambda > 0.$$
 
-**Motivatie:**
-- Grote coëfficiënten $c_k$ geven aanleiding tot sterk oscillerende veeltermen (overfitting).
-- Door $\lambda \|c\|_2^2$ toe te voegen, worden grote coëfficiënten bestraft.
-- De parameter $\lambda > 0$ regelt de **balans** tussen trouw aan de data en eenvoud van het model.
+De parameter $\lambda$ regelt de balans:
 
 | $\lambda$ | Effect |
 |---|---|
-| $\lambda = 0$ | Geen regularisatie — gewone kleinste-kwadraten |
-| $\lambda$ klein | Lichte afschrikking van grote coëfficiënten |
-| $\lambda \to \infty$ | Alle $c_k \to 0$ (het model vervalt) |
+| $\lambda = 0$ | Geen regularisatie — gewone kleinste kwadraten |
+| $\lambda$ klein | Lichte straf op grote coëfficiënten |
+| $\lambda \to \infty$ | Alle $c_k \to 0$ (het model vervalt volledig) |
 
 ---
 
 ### (e) Wijziging aan het normaalstelsel
 
-**Stelling:** Tikhonovregularisatie geeft slechts een **kleine aanpassing** aan het gewone normaalstelsel: de matrix $A^TWA$ wordt vervangen door $A^TWA + \lambda I$.
+**Wat verandert er?**
 
-**Bewijs (afleiding van het geregulariseerde normaalstelsel):**
+De toevoeging van de strafterm $\lambda\|c\|^2$ geeft slechts één kleine aanpassing aan het normaalstelsel: er wordt $\lambda I$ opgeteld bij de normaalmatrix.
 
-Schrijf $E_{\text{reg}}(c) = \|D(Ac - f)\|_2^2 + \lambda \|c\|_2^2$. Uitwerking:
-$$E_{\text{reg}}(c) = c^T(A^TWA + \lambda I)c - 2f^TWAc + f^TWf.$$
-
-Differenteer naar $c$ en stel gelijk aan nul:
+**Afleiding:**
+Schrijf $E_{\text{reg}} = \|D(Ac - f)\|^2 + \lambda\|c\|^2$. Uitwerken en differentiëren naar $c$:
 $$\nabla_c E_{\text{reg}} = 2(A^TWA + \lambda I)c - 2A^TWf = 0.$$
 
-Het **geregulariseerde normaalstelsel:**
+**Het geregulariseerde normaalstelsel:**
 $$\boxed{(A^TWA + \lambda I)\hat{c} = A^TWf.}$$
 
-**Vergelijking:**
+**Waarom is dit altijd inverteerbaar?**
+De eigenwaarden van $A^TWA + \lambda I$ zijn $\sigma_i^2 + \lambda \geq \lambda > 0$. De matrix is dus altijd positief definiet, zelfs als $A$ niet vol rang heeft.
 
-| | Normaalstelsel | Geregulariseerd |
+| | Gewoon normaalstelsel | Geregulariseerd |
 |---|---|---|
 | Matrix | $A^TWA$ | $A^TWA + \lambda I$ |
-| Inverteerbaar? | Nee (als $A$ niet vol rang) | Ja (voor $\lambda > 0$) |
-| Conditiegetal | Hoog | Lager ($\lambda$ vergroot de minimale eigenwaarde) |
+| Inverteerbaar? | Niet altijd | Altijd (voor $\lambda > 0$) |
+| Conditiegetal | Hoog | Lager |
 
-> ⚠️ **Examentip:** De aanpassing is enkel het optellen van $\lambda I$ op de diagonaal van de normaalmatrix. Dit is een kleine maar cruciale wijziging.
-
-💡 **Waarom altijd inverteerbaar?** De eigenwaarden van $A^TWA + \lambda I$ zijn $\sigma_i^2 + \lambda \geq \lambda > 0$ voor alle $i$. De matrix is dus altijd strikt positief definiet voor $\lambda > 0$.
+> ⚠️ **Examentip:** De aanpassing is enkel $+\lambda I$ op de diagonaal. Klein verschil, grote gevolgen.
 
 ---
 
@@ -402,367 +340,351 @@ $$\boxed{(A^TWA + \lambda I)\hat{c} = A^TWf.}$$
 
 ### (a) Overfitting: definitie en detectie
 
-**Overfitting** treedt op wanneer een model te nauw aansluit bij de **ruizige trainingsdata** in plaats van bij de onderliggende functie $f$:
-- Het model **leert de ruis** $\varepsilon_i$ in plaats van de structuur van $f$.
-- Het presteert goed op de trainingspunten: lage $E_{\text{train}}$.
-- Het presteert **slecht op nieuwe punten**: hoge $E_{\text{test}}$.
+**Simpel gezegd:**
 
-> ⚠️ **Examentip:** Onderscheid overfitting van onderfitting (oversmoothing). Bij onderfitting zijn zowel $E_{\text{train}}$ als $E_{\text{test}}$ hoog.
+Overfitting treedt op als een model te nauw aansluit bij de ruizige trainingsdata in plaats van bij de onderliggende functie. Het leert de ruis in plaats van de structuur.
 
-**Vaststellen via generalisatiefout:**
-- Splits data in trainingsset en testset.
-- Evalueer de testfout $E_{\text{test}}$ als functie van de modelcomplexiteit (graad, aantal knooppunten, etc.).
-- Overfitting treedt op zodra $E_{\text{test}}$ begint te stijgen terwijl $E_{\text{train}}$ blijft dalen.
+Symptomen:
+- Lage fout op de trainingsdata
+- Hoge fout op nieuwe (test)data
 
-**Alternatief:** Leave-one-out kruisvalidatie — stel $N$ modellen op, elk met één punt weggelaten.
+**Hoe vaststelllen:**
+- Splits data in trainings- en testset
+- Evalueer $E_{\text{test}}$ als functie van de modelcomplexiteit
+- Overfitting = $E_{\text{test}}$ stijgt terwijl $E_{\text{train}}$ blijft dalen
+
+**Alternatief:** Leave-one-out kruisvalidatie — bouw $N$ modellen, elk met één punt weggelaten, en evalueer op dat weggelaten punt.
+
+> ⚠️ **Examentip:** Onderscheid van onderfitting: bij onderfitting zijn *beide* fouten hoog.
 
 ---
 
 ### (b) Tikhonov vs. LASSO
 
-Beide methodes regulariseren via een strafterm $\lambda F(c)$ in de kostfunctie, maar de keuze van $F$ geeft heel andere oplossingen.
+**Beide regulariseren, maar op een andere manier**
 
-**Tikhonov (L2-regularisatie / ridge regression):**
-$$F(c) = \|c\|_2^2 = \sum_k c_k^2 \quad \Rightarrow \quad (A^TWA + \lambda I)\hat{c} = A^TWf.$$
+Beide methodes voegen een strafterm $\lambda F(c)$ toe, maar de keuze van $F$ bepaalt het gedrag volledig.
 
-**LASSO (L1-regularisatie):**
-$$F(c) = \|c\|_1 = \sum_k |c_k| \quad \Rightarrow \quad \text{niet-lineair stelsel.}$$
+**Tikhonov (L2-regularisatie):** straft de *grootte* van elke coëfficiënt.
+- Alle coëfficiënten worden kleiner, maar nooit precies nul.
+- Leidt tot een gewoon lineair stelsel: $(A^TWA + \lambda I)\hat{c} = A^TWf$.
 
-**Verschil:**
+**LASSO (L1-regularisatie):** straft de *som van de absolute waarden*.
+- Duwt sommige coëfficiënten naar precies nul — de irrelevante features vallen weg.
+- Leidt tot een niet-lineair stelsel (moet iteratief opgelost worden).
 
 | Eigenschap | Tikhonov (L2) | LASSO (L1) |
 |---|---|---|
-| Coëfficiënten | Klein maar **nooit exact nul** | Vaak **exact nul** (schaarse oplossing) |
-| Optimalisatieprobleem | Lineair stelsel | Niet-lineair (iteratief oplossen) |
-| Differentieerbaar? | Ja | Niet in $c_k = 0$ |
-| Selectie van relevante features | Nee | Ja (automatische variabelenselectie) |
+| Coëfficiënten | Klein maar nooit nul | Vaak exact nul |
+| Stelsel | Lineair | Niet-lineair |
+| Variabelenselectie | Nee | Ja (automatisch) |
 
-**Geometrisch argument (waarom LASSO schaars is):**
+**Waarom is LASSO schaars? — Geometrisch argument:**
 
-Het regularisatieprobleem $\min E(c) + \lambda F(c)$ is equivalent met $\min E(c)$ s.t. $F(c) \leq K$.
+Stel je het optimalisatieprobleem voor als: minimaliseer $E(c)$ met als beperking dat $F(c) \leq K$.
 
 ```
    L2-bol (Tikhonov)          L1-bol (LASSO)
 
          ___                       /\
         /   \                     /  \
-       | c*  |   c* op rand      / c* \   c* in hoek
-        \___/    (geen nulpunt)  \    /   (c₂ = 0)
+       | c*  |   raakpunt         / c* \   raakpunt in hoek
+        \___/    willekeurig     \    /   (c₂ = 0!)
                                   \  /
                                    \/
 ```
 
-- **L2-bol** is glad en rond → raakpunt elliptische niveaukrommen ligt willekeurig op de rand → geen coëfficiënt precies nul.
-- **L1-bol** heeft scherpe hoeken op de assen → niveaukrommen raken de bol het vaakst in een hoekpunt → één (of meer) coëfficiënten exact nul.
+De L1-bol heeft scherpe hoeken op de assen. De elliptische niveaukrommen van $E(c)$ raken de L1-bol bijna altijd in zo'n hoek, waardoor een coëfficiënt precies nul wordt. Bij de gladde L2-bol is dat niet het geval.
 
-> ⚠️ **Examentip:** Ken dit geometrisch argument. Het staat bijna zeker op het examen.
+> ⚠️ **Examentip:** Ken dit geometrisch argument — het staat bijna zeker op het examen.
 
 ---
 
 ### (c) Regularisatie bij diepe neurale netwerken
 
-**Geregulariseerde kostfunctie voor een neuraal netwerk met $L$ lagen:**
+**Waarom regulariseren in neurale netwerken?**
 
-$$\text{Kost}_{\text{reg}}(c) = \frac{1}{N}\sum_{i=1}^N \left\|\mathbf{y}(\mathbf{x}^{(i)}) - \mathbf{a}^{[L]}(\mathbf{x}^{(i)})\right\|_2^2 + \frac{\lambda}{N}\sum_{l=2}^L \|W^{[l]}\|_2^2.$$
+Grote gewichten $W^{[l]}$ maken neuronen gevoelig voor kleine veranderingen in de invoer — een teken van overfitting. Door grote gewichten te bestraffen, wordt het netwerk robuuster.
 
-**Motivatie:** Grote gewichten $W^{[l]}$ maken neuronen gevoelig voor kleine perturbaties in de invoer — dat is een teken van overfitting. Door grote gewichten te penaliseren, wordt het netwerk robuuster en generaliseert het beter.
+**De geregulariseerde kostfunctie:**
+$$\text{Kost}_{\text{reg}} = \frac{1}{N}\sum_{i} \|\mathbf{y}^{(i)} - \mathbf{a}^{[L](i)}\|^2 + \frac{\lambda}{N}\sum_{l=2}^L \|W^{[l]}\|_2^2.$$
 
-**Praktisch:** De gewichten worden "kleiner gehouden", maar de biases $\mathbf{b}^{[l]}$ worden **niet** geregulariseerd (zij bepalen de verschuiving, niet de gevoeligheid).
+**Merk op:** de biases $\mathbf{b}^{[l]}$ worden *niet* geregulariseerd — die bepalen enkel een verschuiving, niet de gevoeligheid.
 
 **Andere technieken:**
 - **Dropout:** willekeurig neuronen tijdelijk uitschakelen tijdens het trainen
 - **Early stopping:** stop zodra $E_{\text{test}}$ begint te stijgen
-- **Data augmentatie:** kunstmatig meer trainingsdata aanmaken (spiegelen, roteren)
+- **Data augmentatie:** kunstmatig meer trainingsdata aanmaken
 
 ---
 
 ## V5 — Diep neuraal netwerk
 
-### (a) Neuraal netwerk: 3 lagen, 2 inputs, 3 verborgen, 2 outputs
+### (a) Architectuur: 3 lagen, 2 inputs, 3 verborgen, 2 outputs
 
+**Visueel:**
 ```
-Invoerlaag [1]       Verborgen laag [2]       Uitvoerlaag [3]
+Invoer [1]     Verborgen [2]     Uitvoer [3]
 
-    x₁ ○————————→ ○ n₂₁ ——→ ○ n₃₁ → y₁
-       |        ↗ ○ n₂₂ ——→ ○ n₃₂ → y₂
-       |       ↗  ○ n₂₃
-    x₂ ○——————
-
-(volledig verbonden tussen elke laag)
+  x₁ ○——————→ ○ n₂₁ ——→ ○ n₃₁ → y₁
+     |        ↗ ○ n₂₂        ↗
+     |       ↗  ○ n₂₃ ——→ ○ n₃₂ → y₂
+  x₂ ○——————
 ```
+(Elke laag is volledig verbonden met de volgende.)
 
-**Dimensies:**
-- Invoerlaag: $\mathbf{x} \in \mathbb{R}^2$ (2 inputs)
-- Verborgen laag [2]: $W^{[2]} \in \mathbb{R}^{3 \times 2}$, $\mathbf{b}^{[2]} \in \mathbb{R}^3$ → **9 parameters**
-- Uitvoerlaag [3]: $W^{[3]} \in \mathbb{R}^{2 \times 3}$, $\mathbf{b}^{[3]} \in \mathbb{R}^2$ → **8 parameters**
+**Aantal parameters:**
+- Laag 2: $W^{[2]} \in \mathbb{R}^{3 \times 2}$ (6 gewichten) + $\mathbf{b}^{[2]} \in \mathbb{R}^3$ (3 biases) = **9 parameters**
+- Laag 3: $W^{[3]} \in \mathbb{R}^{2 \times 3}$ (6 gewichten) + $\mathbf{b}^{[3]} \in \mathbb{R}^2$ (2 biases) = **8 parameters**
 - **Totaal: 17 parameters**
 
 ---
 
 ### (b) Voorwaartse propagatie
 
-**Stap 1 — Verborgen laag:**
-$$\mathbf{z}^{[2]} = W^{[2]} \mathbf{x} + \mathbf{b}^{[2]} \in \mathbb{R}^3$$
-$$\mathbf{a}^{[2]} = \sigma(\mathbf{z}^{[2]}) \in \mathbb{R}^3 \quad \text{(componentgewijs)}$$
+**Wat gebeurt er?**
 
-**Stap 2 — Uitvoerlaag:**
-$$\mathbf{z}^{[3]} = W^{[3]} \mathbf{a}^{[2]} + \mathbf{b}^{[3]} \in \mathbb{R}^2$$
-$$\mathbf{a}^{[3]} = \sigma(\mathbf{z}^{[3]}) = F(\mathbf{x}) \in \mathbb{R}^2$$
+Een invoer $\mathbf{x}$ wordt laag per laag doorheen het netwerk "gepropageerd". In elke laag doe je een lineaire transformatie (gewichten + bias), gevolgd door een niet-lineaire activatiefunctie $\sigma$.
 
-**Dimensies expliciet:**
+**Berekening:**
+
+Laag 2:
+$$\mathbf{z}^{[2]} = W^{[2]} \mathbf{x} + \mathbf{b}^{[2]}, \qquad \mathbf{a}^{[2]} = \sigma(\mathbf{z}^{[2]}).$$
+
+Laag 3:
+$$\mathbf{z}^{[3]} = W^{[3]} \mathbf{a}^{[2]} + \mathbf{b}^{[3]}, \qquad \mathbf{a}^{[3]} = \sigma(\mathbf{z}^{[3]}) = F(\mathbf{x}).$$
+
+**Dimensies expliciet — schrijf deze altijd op bij het examen:**
 $$\underbrace{W^{[2]}}_{3 \times 2} \cdot \underbrace{\mathbf{x}}_{2 \times 1} + \underbrace{\mathbf{b}^{[2]}}_{3 \times 1} = \underbrace{\mathbf{z}^{[2]}}_{3 \times 1} \xrightarrow{\sigma} \underbrace{\mathbf{a}^{[2]}}_{3 \times 1}$$
-
 $$\underbrace{W^{[3]}}_{2 \times 3} \cdot \underbrace{\mathbf{a}^{[2]}}_{3 \times 1} + \underbrace{\mathbf{b}^{[3]}}_{2 \times 1} = \underbrace{\mathbf{z}^{[3]}}_{2 \times 1} \xrightarrow{\sigma} \underbrace{\mathbf{a}^{[3]}}_{2 \times 1}$$
 
-**Volledige samengestelde formule:**
+**Samengestelde formule:**
 $$F(\mathbf{x}) = \sigma\!\Bigl(W^{[3]} \sigma\!\bigl(W^{[2]} \mathbf{x} + \mathbf{b}^{[2]}\bigr) + \mathbf{b}^{[3]}\Bigr).$$
 
-> ⚠️ **Examentip:** Op het examen moet je alle dimensies expliciet benoemen. Schrijf ze bij elke stap.
+> ⚠️ **Examentip:** Schrijf bij elke stap de dimensies expliciet.
 
 ---
 
 ### (c) Trainingsalgoritme bij veel datapunten
 
-**Probleem:** Bij grote $N$ is het berekenen van de volledige gradiënt $\nabla \text{Kost}(c) = \frac{1}{N}\sum_{i=1}^N \nabla C_{\mathbf{x}^{(i)}}(c)$ te duur.
+**Het probleem:**
 
-**Aanbevolen methode: Mini-batch stochastische gradiëntafdaling (mini-batch SGD)**
+De volledige gradiënt over $N$ punten berekenen kost $O(N)$ per stap — veel te duur als $N$ groot is.
 
-⚙️ **Algoritme:**
+**De oplossing: mini-batch SGD**
 
+Gebruik op elke stap slechts een kleine, willekeurige steekproef (mini-batch) van $m \ll N$ punten om de gradiënt te schatten. Dat is veel goedkoper en werkt verrassend goed.
+
+**Algoritme:**
 ```
-Gegeven: trainingsdata, learning rate α, batchgrootte m
 voor elke epoch:
     permuteer de N trainingspunten willekeurig
-    voor k = 1, 2, ..., N/m:
-        kies mini-batch {x^{k₁}, ..., x^{kₘ}} (m willekeurige punten)
-        bereken gradiënt via backpropagation:
-            g = (1/m) Σᵢ ∇C_{x^{kᵢ}}(c^(k))
-        update: c^(k+1) = c^(k) - α · g
+    voor k = 1 tot N/m:
+        kies mini-batch van m punten
+        schat gradiënt via backpropagation: g ≈ (1/m) Σ ∇C(c)
+        update: c ← c - α · g
 ```
 
-**Hyperparameters die te kiezen zijn:**
-- **Learning rate $\alpha > 0$:** beïnvloedt de stapgrootte; te groot → divergentie, te klein → trage convergentie
-- **Batchgrootte $m$:** compromis tussen nauwkeurigheid van de gradiëntschatting ($m$ groot) en snelheid per stap ($m$ klein)
-- **Aantal epochs:** hoeveel keer de volledige dataset doorlopen wordt
-- **Regularisatieparameter $\lambda$:** voor L2-regularisatie
+**Te kiezen hyperparameters:**
+- **Learning rate $\alpha$:** te groot → divergentie; te klein → trage convergentie
+- **Batchgrootte $m$:** grote batch = nauwkeurigere gradiënt maar duurder per stap
+- **Aantal epochs:** hoe vaak je de volledige dataset doorloopt
+- **Regularisatieparameter $\lambda$**
 
-**Voordelen van mini-batch SGD vs. volledige gradiëntafdaling:**
-- Goedkoper per stap: één matrix-vectorproduct per mini-batch ipv $N$
-- Kan beter ontsnappen aan lokale minima (de ruis in de gradiëntschatting helpt)
-- Geschikt voor GPU's (parallelle berekening per mini-batch)
+**Voordeel van mini-batch SGD:** de ruis in de gradiëntschatting helpt paradoxaal genoeg om aan lokale minima te ontsnappen.
 
-> ⚠️ **Examentip:** De gradiënt wordt berekend via **backpropagation** (de kettingregel achterwaarts doorheen de lagen). Ken de terminologie: epoch, mini-batch, learning rate, backpropagation.
+> ⚠️ **Examentip:** Ken de terminologie: epoch, mini-batch, learning rate, backpropagation.
 
 ---
 
-## V6 — Methode van de toegevoegde gradiënten (Conjugate Gradients)
+### (d) Backpropagation: wat en waarom?
 
-**Probleemstelling:** Los op $Ax = b$ met $A \in \mathbb{R}^{m \times m}$ **symmetrisch positief definiet** (SPD).
+**Wat is het?**
+
+Backpropagation is de slimme manier om de gradiënt van de kostfunctie t.o.v. alle gewichten te berekenen. Het past de kettingregel toe, maar dan van achter naar voor doorheen de lagen — zodat tussenresultaten hergebruikt worden.
+
+**Hoe?**
+
+Sla tijdens de voorwaartse pass $\mathbf{z}^{[l]}$ en $\mathbf{a}^{[l]}$ op. Bereken dan achterwaarts de "fout per laag" $\boldsymbol{\delta}^{[l]}$:
+$$\boldsymbol{\delta}^{[L]} = \nabla_{\mathbf{a}^{[L]}} C \odot \sigma'(\mathbf{z}^{[L]}),$$
+$$\boldsymbol{\delta}^{[l]} = \bigl(W^{[l+1]}\bigr)^T \boldsymbol{\delta}^{[l+1]} \odot \sigma'(\mathbf{z}^{[l]}).$$
+
+De gradiënten volgen direct:
+$$\frac{\partial C}{\partial W^{[l]}} = \boldsymbol{\delta}^{[l]} \bigl(\mathbf{a}^{[l-1]}\bigr)^T, \qquad \frac{\partial C}{\partial \mathbf{b}^{[l]}} = \boldsymbol{\delta}^{[l]}.$$
+
+**Waarom zo snel?**
+
+Naïef zou je één voorwaartse pass per parameter nodig hebben: $O(P)$ passes voor $P$ parameters. Backpropagation hergebruikt de $\boldsymbol{\delta}^{[l]}$-waarden en heeft dezelfde kost als **slechts één voorwaartse pass** — ongeacht het aantal parameters.
+
+---
+
+### (e) Waarom stochastische steilste helling?
+
+**Kort antwoord:** de exacte gradiënt over $N$ punten berekenen is $O(N)$ per stap. SGD vervangt dit door een mini-batch van $m \ll N$ punten: $O(m)$ per stap. Daardoor kan je veel meer stappen zetten in dezelfde tijd. Bovendien helpt de ruis in de gradiëntschatting om lokale minima te ontwijken.
+
+---
+
+## V6 — Methode van de Toegevoegde Gradiënten (Conjugate Gradients)
+
+**Probleemstelling:** Los $Ax = b$ op met $A$ **symmetrisch positief definiet** (SPD).
 
 ### (a) Algoritme in pseudocode + uitleg
 
-⚙️ **Algoritme 12 — Conjugate Gradients (standaard):**
+**Wat is CG?**
 
+Stel je probeert een punt te vinden dat een kwadraat functie $f(x) = \frac{1}{2}x^TAx - x^Tb$ minimaliseert. Dat is wiskundig equivalent met $Ax = b$ oplossen (want $\nabla f = Ax - b = 0$). CG doet dit door slim gekozen zoekrichtingen te gebruiken die "toegevoegd" (conjugaat) zijn — ze storen elkaars voortgang niet.
+
+**Pseudocode:**
 ```
-Invoer: A (SPD), b, kmax, ε
-p⁽⁰⁾ = r⁽⁰⁾ = b,   x⁽⁰⁾ = 0
-voor k = 1, 2, ..., kmax:
-    α⁽ᵏ⁾ = (r⁽ᵏ⁻¹⁾ᵀ r⁽ᵏ⁻¹⁾) / (p⁽ᵏ⁻¹⁾ᵀ A p⁽ᵏ⁻¹⁾)
-    x⁽ᵏ⁾ = x⁽ᵏ⁻¹⁾ + α⁽ᵏ⁾ · p⁽ᵏ⁻¹⁾
-    r⁽ᵏ⁾ = r⁽ᵏ⁻¹⁾ - α⁽ᵏ⁾ · A p⁽ᵏ⁻¹⁾
-    als ‖r⁽ᵏ⁾‖₂ < ε: geef x⁽ᵏ⁾ terug
-    β⁽ᵏ⁾ = (r⁽ᵏ⁾ᵀ r⁽ᵏ⁾) / (r⁽ᵏ⁻¹⁾ᵀ r⁽ᵏ⁻¹⁾)
-    p⁽ᵏ⁾ = r⁽ᵏ⁾ + β⁽ᵏ⁾ · p⁽ᵏ⁻¹⁾
+Start: x⁽⁰⁾ = 0,   r⁽⁰⁾ = p⁽⁰⁾ = b
+voor k = 1, 2, ...:
+    α⁽ᵏ⁾ = ‖r⁽ᵏ⁻¹⁾‖² / (p⁽ᵏ⁻¹⁾ᵀ A p⁽ᵏ⁻¹⁾)   ← optimale stapgrootte
+    x⁽ᵏ⁾ = x⁽ᵏ⁻¹⁾ + α⁽ᵏ⁾ · p⁽ᵏ⁻¹⁾             ← stap in zoekrichting
+    r⁽ᵏ⁾ = r⁽ᵏ⁻¹⁾ - α⁽ᵏ⁾ · A p⁽ᵏ⁻¹⁾            ← update residu
+    als ‖r⁽ᵏ⁾‖ < ε: stop
+    β⁽ᵏ⁾ = ‖r⁽ᵏ⁾‖² / ‖r⁽ᵏ⁻¹⁾‖²                ← conjugeringsfactor
+    p⁽ᵏ⁾ = r⁽ᵏ⁾ + β⁽ᵏ⁾ · p⁽ᵏ⁻¹⁾               ← nieuwe zoekrichting
 ```
 
-**Uitleg van elke stap:**
-
-- **$r^{(k)} = b - Ax^{(k)}$:** het **residu** (= de fout op de vergelijking). Gelijk aan de negatieve gradiënt van $f(x) = \frac{1}{2}x^TAx - x^Tb$.
-- **$\alpha^{(k)}$:** de **optimale stapgrootte** langs de zoekrichting $p^{(k-1)}$, gevonden via exacte lijnzoeking.
-- **$p^{(k)} = r^{(k)} + \beta^{(k)} p^{(k-1)}$:** de nieuwe **zoekrichting** is een lineaire combinatie van het huidige residu en de vorige zoekrichting.
-- **$\beta^{(k)}$:** de **conjugeringsfactor** die de zoekrichtingen A-toegevoegd maakt.
-- **Stopcriterium:** $\|r^{(k)}\|_2 < \varepsilon$.
-
-**Verband met optimalisatie:** $Ax = b$ is gelijkwaardig met het minimaliseren van $f(x) = \frac{1}{2}x^TAx - x^Tb$ (want $\nabla f = Ax - b = 0 \Leftrightarrow Ax = b$).
+**Uitleg van de rollen:**
+- $r^{(k)} = b - Ax^{(k)}$: het **residu** — hoe ver we nog van de oplossing zijn
+- $p^{(k)}$: de **zoekrichting** — een mix van het residu en de vorige richting om "zigzag" te vermijden
+- $\alpha^{(k)}$: de **optimale stapgrootte** langs $p^{(k)}$ (exacte lijnzoeking)
+- $\beta^{(k)}$: zorgt dat opeenvolgende richtingen A-toegevoegd blijven
 
 ---
 
-### (b) De methode bouwt een Krylov-ruimte op
+### (b) CG bouwt een Krylov-ruimte op
 
-**Stelling (Eigenschap 11.2):**
+**Wat is een Krylov-ruimte?**
 
-Na $k-1$ stappen geldt:
-$$\mathcal{K}_k(A, b) = \langle b, Ab, \ldots, A^{k-1}b \rangle = \langle p^{(0)}, \ldots, p^{(k-1)} \rangle = \langle r^{(0)}, \ldots, r^{(k-1)} \rangle.$$
+Na $k$ stappen heeft CG alleen vectoren gebruikt die te schrijven zijn als veeltermen in $A$ toegepast op $b$: $b, Ab, A^2b, \ldots$ De ruimte opgespannen door deze vectoren heet de Krylov-ruimte:
+$$\mathcal{K}_k(A, b) = \text{span}\{b, Ab, A^2b, \ldots, A^{k-1}b\}.$$
 
-**Bewijs (door inductie):**
+**Stelling:** Na $k-1$ stappen geldt:
+$$\mathcal{K}_k(A, b) = \text{span}\{p^{(0)}, \ldots, p^{(k-1)}\} = \text{span}\{r^{(0)}, \ldots, r^{(k-1)}\}.$$
 
-**Basisgeval $k=1$:** $p^{(0)} = r^{(0)} = b$, zodat $\mathcal{K}_1(A,b) = \langle b \rangle = \langle p^{(0)} \rangle = \langle r^{(0)} \rangle$. ✓
+**Bewijs (inductie):**
 
-**Inductiestap:** Veronderstel dat de stelling geldt voor stap $k-1$, d.w.z.
-$$\langle p^{(0)}, \ldots, p^{(k-2)} \rangle = \langle r^{(0)}, \ldots, r^{(k-2)} \rangle = \mathcal{K}_{k-1}(A,b).$$
+Basisgeval: $p^{(0)} = r^{(0)} = b$ → $\mathcal{K}_1 = \langle b \rangle$. ✓
 
-Uit de update $r^{(k-1)} = r^{(k-2)} - \alpha^{(k-1)} A p^{(k-2)}$ volgt:
-$$r^{(k-1)} \in r^{(k-2)} + A\, \langle p^{(k-2)} \rangle \subset \mathcal{K}_{k-1}(A,b) + A\, \mathcal{K}_{k-1}(A,b) = \mathcal{K}_k(A,b).$$
+Inductiestap: stel geldig voor stap $k-1$. Dan:
+$$r^{(k-1)} = r^{(k-2)} - \alpha^{(k-1)} A p^{(k-2)} \in \mathcal{K}_{k-1} + A \mathcal{K}_{k-1} = \mathcal{K}_k.$$
+$$p^{(k-1)} = r^{(k-1)} + \beta^{(k-1)} p^{(k-2)} \in \mathcal{K}_k. \quad \square$$
 
-Uit de update $p^{(k-1)} = r^{(k-1)} + \beta^{(k-1)} p^{(k-2)}$ volgt $p^{(k-1)} \in \mathcal{K}_k(A,b)$.
-
-Omgekeerd: $A^{k-1}b \in \mathcal{K}_k(A,b)$ is een lineaire combinatie van $r^{(0)}, \ldots, r^{(k-1)}$ (via de inductiehypothese uitgebreid). $\square$
-
-> ⚠️ **Examentip:** De sleutel is dat $r^{(k)} = r^{(k-1)} - \alpha^{(k)} A p^{(k-1)}$: vermenigvuldiging met $A$ verhoogt de Krylov-graad met 1.
+> ⚠️ **Examentip:** Sleutel: vermenigvuldiging met $A$ verhoogt de Krylov-graad met 1.
 
 ---
 
 ### (c) CG vindt de beste benadering in de Krylov-ruimte
 
-**Stelling 11.3.3 — A-norm minimaliteit:**
+**Wat betekent "beste benadering"?**
 
-Definieer de **fout** $e^{(k)} = x^{(k)} - x^*$ en de **A-norm** $\|x\|_A = \sqrt{x^T A x}$. Dan is $x^{(k)}$ het element van $\mathcal{K}_k(A,b)$ dat de A-norm van de fout minimaliseert:
-$$\|e^{(k)}\|_A^2 = \min_{x \in \mathcal{K}_k(A,b)} \|x - x^*\|_A^2.$$
+$x^{(k)}$ is het element van $\mathcal{K}_k(A,b)$ dat de **A-norm van de fout** minimaliseert:
+$$\|e^{(k)}\|_A = \min_{x \in \mathcal{K}_k(A,b)} \|x - x^*\|_A, \qquad \|v\|_A = \sqrt{v^T A v}.$$
 
 **Bewijs:**
 
-Elke $x \in \mathcal{K}_k(A,b)$ schrijven we als $x = x^{(k)} + \delta x$ met $\delta x \in \mathcal{K}_k(A,b)$:
-$$\|x - x^*\|_A^2 = \|\delta x + e^{(k)}\|_A^2 = \|e^{(k)}\|_A^2 + 2\underbrace{e^{(k)T} A\, \delta x}_{?} + \|\delta x\|_A^2.$$
+Schrijf een willekeurig punt als $x = x^{(k)} + \delta x$ met $\delta x \in \mathcal{K}_k$:
+$$\|x - x^*\|_A^2 = \|e^{(k)}\|_A^2 + 2 e^{(k)T} A\, \delta x + \|\delta x\|_A^2.$$
 
-Nu is $Ae^{(k)} = A(x^{(k)} - x^*) = Ax^{(k)} - b = -r^{(k)}$.
+Nu is $Ae^{(k)} = Ax^{(k)} - b = -r^{(k)}$. De residu's staan loodrecht op de Krylov-ruimte (Eigenschap 11.3): $r^{(k)T} \delta x = 0$.
 
-Uit Eigenschap 11.3 (orthogonaliteit van residu's) geldt: $r^{(k)} \perp \mathcal{K}_k(A,b)$, d.w.z. $r^{(k)T} \delta x = 0$ voor alle $\delta x \in \mathcal{K}_k(A,b)$.
-
-Dus:
-$$e^{(k)T} A \delta x = -r^{(k)T} \delta x = 0.$$
-
-De gekruiste term is altijd nul, en $\|\delta x\|_A^2 \geq 0$. Het minimum wordt bereikt voor $\delta x = 0$, d.w.z. $x = x^{(k)}$. $\square$
+Dus de gekruiste term is nul, en $\|\delta x\|_A^2 \geq 0$ → minimum voor $\delta x = 0$, i.e. $x = x^{(k)}$. $\square$
 
 ---
 
 ### (d) Verband met veeltermbenadering + versnelling
 
-**Stelling 11.3.4:**
+**Het veeltermverband:**
 
-$$\|e^{(k)}\|_A^2 = \min_{p \in \mathcal{N}_k} \|p(A) e^{(0)}\|_A^2,$$
+De A-normfout bij stap $k$ is equivalent met een veeltermbenaderingsprobleem:
+$$\|e^{(k)}\|_A^2 = \min_{p \in \mathcal{N}_k} \|p(A) e^{(0)}\|_A^2, \qquad \mathcal{N}_k = \{p : \deg p \leq k,\ p(0) = 1\}.$$
 
-waarbij $\mathcal{N}_k = \{p \in \mathbb{R}[t],\ \deg p \leq k,\ p(0) = 1\}$.
+**Wat betekent dit praktisch?**
 
-**Bewijs (schets):** Elke $x \in \mathcal{K}_k(A,b)$ geeft $x - x^* = \hat{p}(A) e^{(0)}$ voor een $\hat{p} \in \mathcal{N}_k$ (want $b = Ax^* = -Ae^{(0)}$ en Krylov-vectoren zijn veeltermen in $A$ toegepast op $b$). Het gestelde volgt uit de A-norm-minimaliteitsresultaat.
+De convergentie hangt ervan af hoe goed je de eigenwaarden van $A$ kunt "onderdrukken" met een veelterm die in $0$ gelijk is aan $1$. Dat gaat beter als:
+- $A$ weinig **verschillende eigenwaarden** heeft → CG convergeert exact in $k$ stappen (met $k$ = aantal eigenwaarden)
+- De eigenwaarden **geclusterd** zijn → de veelterm is makkelijker te vinden
 
-**Interpretatie:** Via de eigenwaardenontbinding $A = X\Lambda X^{-1}$:
-$$\|e^{(k)}\|_A^2 \approx \min_{p \in \mathcal{N}_k} \sum_{i=1}^m |p(\lambda_i)|^2 \|x_i^* \text{-component}\|_A^2.$$
+**Preconditioning: hoe convergentie versnellen?**
 
-De convergentie hangt af van hoe goed het spectrum van $A$ **afgedekt** kan worden door een veelterm $p \in \mathcal{N}_k$ die klein is op alle eigenwaarden.
+Kies een inverteerbare matrix $D$ zodat $D^{-1}AD^{-T}$ beter geclusterde eigenwaarden heeft. Los dan het equivalent geconditioneerde stelsel op:
+$$(D^{-1}AD^{-T}) y = D^{-1}b, \qquad y = D^T x.$$
 
-**Implicaties voor convergentie:**
-- Als $A$ slechts **$k$ verschillende eigenwaarden** heeft, convergeert CG exact in $k$ stappen.
-- Als eigenwaarden **geclusterd** zijn, is snelle convergentie te verwachten.
+Een goede preconditioner $D$ maakt het geconditioneerde systeem bijna als de eenheidsmatrix → CG convergeert in weinig iteraties.
 
-**Hoe exploiteren? — Preconditioning:**
-
-Kies een inverteerbare matrix $D$ zodat $D^{-1}AD^{-T}$ beter geclusterde eigenwaarden heeft. Los in plaats van $Ax = b$ het equivalente stelsel op:
-$$(D^{-1}AD^{-T})\underbrace{D^Tx}_{y} = D^{-1}b.$$
-
-Pas CG toe op dit **geconditioneerde stelsel**. Als $D^{-1}AD^{-T}$ eigenwaarden dicht bij 1 heeft, convergeert CG in weinig iteraties.
-
-> ⚠️ **Examentip:** Preconditioning is de praktische toepassing van het veeltermbenaderingsverband. Ken de boodschap: cluster de eigenwaarden → snellere convergentie.
+> ⚠️ **Examentip:** Kernboodschap: cluster de eigenwaarden → snellere convergentie.
 
 ---
 
 ## V7 — Niet-lineair optimalisatieprobleem
 
-**Probleemstelling:** Los $\min_{x \in \mathbb{R}^n} f(x)$ op met $f$ tweemaal continu differentieerbaar.
+### (a) Sterkste daling = richting van de negatieve gradiënt
 
-### (a) Sterkste daling in de richting van de negatieve gradiënt
+**Intuïtie:**
 
-**Claim:** Van alle richtingen $s$ met $\|s\|_2 = 1$ daalt $f$ het sterkst in de richting $-\nabla f(x)$.
+De gradiënt $\nabla f(x)$ staat loodrecht op de niveauverzameling door $x$ en wijst de richting van sterkste *stijging*. De richting van sterkste *daling* is dus $-\nabla f(x)$.
 
-**Bewijs:**
+**Formeel bewijs:**
 
-De **richtingsafgeleide** van $f$ in punt $x$ in richting $s$ (met $\|s\|_2 = 1$) is:
+De richtingsafgeleide in richting $s$ (met $\|s\|_2 = 1$) is:
 $$\frac{d}{d\alpha} f(x + \alpha s)\bigg|_{\alpha=0} = s^T \nabla f(x).$$
 
-We zoeken de richting $s$ waarvoor dit het **meest negatief** is, d.w.z.:
-$$\min_{\|s\|_2 = 1} s^T \nabla f(x).$$
-
-Via de **Cauchy-Schwarz-ongelijkheid**:
+We willen dit zo **negatief mogelijk** maken. Via de Cauchy-Schwarz-ongelijkheid:
 $$s^T \nabla f(x) \geq -\|s\|_2 \cdot \|\nabla f(x)\|_2 = -\|\nabla f(x)\|_2,$$
+met gelijkheid wanneer $s = -\nabla f(x) / \|\nabla f(x)\|_2$.
 
-met gelijkheid wanneer:
-$$s = -\frac{\nabla f(x)}{\|\nabla f(x)\|_2}.$$
-
-**Conclusie:** De richtingsafgeleide is het meest negatief (= sterkste daling) in de richting $s = -\nabla f(x) / \|\nabla f(x)\|_2$, d.w.z. de **negatieve gradiëntrichting**. $\square$
+**Conclusie:** de sterkste daling treedt op in de richting $s = -\nabla f(x)$. $\square$
 
 > ⚠️ **Examentip:** Dit is Eigenschap 11.1. Ken het bewijs: richtingsafgeleide + Cauchy-Schwarz.
-
-💡 **Intuïtie:** De gradiënt $\nabla f(x)$ staat loodrecht op de niveauverzameling door $x$. Door in de richting $-\nabla f(x)$ te gaan, beweeg je loodrecht door de niveauverzamelingen, d.w.z. "het steilst omlaag".
 
 ---
 
 ### (b) Lijnzoekmethode vs. Armijo-backtracking
 
-Beide methodes dienen voor het bepalen van de **stapgrootte** $\alpha^{(k)}$ in de iteratie:
-$$x^{(k)} = x^{(k-1)} + \alpha^{(k)} p^{(k)}, \qquad p^{(k)} = -\nabla f(x^{(k-1)}).$$
+**Wat is het doel?**
+
+Bij gradiëntafdaling moet je de stapgrootte $\alpha^{(k)}$ kiezen in de iteratie $x^{(k)} = x^{(k-1)} - \alpha^{(k)} \nabla f(x^{(k-1)})$.
 
 #### Exacte lijnzoekmethode
 
-**Definitie:**
+**Idee:** kies $\alpha^{(k)}$ zo dat $f$ zo laag mogelijk is langs de gekozen richting:
 $$\alpha^{(k)} = \arg\min_{\alpha > 0} f(x^{(k-1)} + \alpha p^{(k)}).$$
 
-De stapgrootte minimaliseert de doelfunctie **exact** langs de gekozen richting $p^{(k)}$.
+**Nadeel:** vereist een extra optimalisatieprobleem per stap, en geeft bij steilste afdaling zigzag-convergentie (elke stap staat loodrecht op de vorige).
 
-**Eigenschappen:**
-- **Optimaal langs de richting:** men maakt de best mogelijke stap in de richting $p^{(k)}$
-- **Duur:** vereist een bijkomend (scalair) optimalisatieprobleem per iteratie
-- **Zigzag-convergentie bij steilste afdaling:** opeenvolgende richtingen staan loodrecht op elkaar → trage convergentie
-
-**Bewijs van loodrechtheid:** Na exacte lijnzoeking is $\frac{d}{d\alpha}f(x^{(k)}) = \nabla f(x^{(k)})^T p^{(k)} = 0$. Maar $p^{(k+1)} = -\nabla f(x^{(k)})$, dus $p^{(k+1)} \perp p^{(k)}$ — elke nieuwe richting staat loodrecht op de vorige.
+**Bewijs van loodrechtheid:** na exacte lijnzoeking is $\nabla f(x^{(k)})^T p^{(k)} = 0$. Maar de volgende richting is $p^{(k+1)} = -\nabla f(x^{(k)})$, dus $p^{(k+1)} \perp p^{(k)}$.
 
 #### Backtracking met de Armijo-voorwaarde
 
-**Idee:** Geen exacte minimalisatie langs de richting, maar slechts een **voldoende daling** eisen.
+**Idee:** geen exacte minimalisatie — slechts een *voldoende* daling eisen. Dit is goedkoper en werkt in de praktijk even goed.
 
-**Armijo-voorwaarde:**
-$$f\!\left(x^{(k-1)} + \alpha p^{(k)}\right) \leq f\!\left(x^{(k-1)}\right) + c \cdot \alpha \cdot \nabla f(x^{(k-1)})^T p^{(k)}, \qquad c \in (0, 1).$$
+**De Armijo-voorwaarde:**
+$$f\!\left(x + \alpha p\right) \leq f(x) + c \cdot \alpha \cdot \nabla f(x)^T p, \qquad c \in (0, 1).$$
 
-⚙️ **Algoritme (backtracking):**
-```
-α = 1  (startwaarde)
-terwijl Armijo-voorwaarde niet voldaan:
-    α = q · α   (typisch q = 0.5)
-```
+Intuïtief: de nieuwe functiewaarde moet **onder de gecorrigeerde raaklijn** liggen (met helling $c$ keer de richtingsafgeleide).
 
-**Intuïtie:**
-```
-f
-|  f(x) + α·∇f·p  (raaklijn: helling ∇f·p < 0)
-|   \
-|    \  f(x) + c·α·∇f·p  (minder steil, c < 1)
-|     \___
-|         \
-|      f(x + αp)   ← moet hier onder liggen
-|___________________________ α
-```
+**Algoritme:** start met $\alpha = 1$, halveer tot de voorwaarde voldaan is.
 
-De Armijo-voorwaarde eist dat de nieuwe functiewaarde **onder de gecorrigeerde raaklijn** ligt, wat een voldoende daling garandeert.
+**Drie eigenschappen die Samaey test:**
 
-**Drie geometrische eigenschappen die Samaey expliciet test:**
+1. **Stopt altijd:** de raaklijn $f(x) + \alpha \nabla f \cdot p$ heeft negatieve helling (want $\nabla f \cdot p < 0$ bij afdaling). De gecorrigeerde raaklijn is minder steil. Voor kleine genoeg $\alpha$ valt de functiewaarde daar zeker onder → algoritme stopt in eindig aantal stappen.
 
-1. **Gegarandeerde stop:** De eis is *minder streng* dan de raaklijn van de doelfunctie (die helling $\nabla f \cdot p$ heeft). Omdat $f$ continu is en de raaklijn neerwaarts gaat, is er altijd een $\alpha > 0$ klein genoeg zodat de functiewaarde onder de gecorrigeerde raaklijn (helling $c \cdot \nabla f \cdot p$) valt. Backtracking stopt dus altijd in eindig aantal stappen.
+2. **Geen te grote stappen:** het rechterlid daalt lineair in $\alpha$ (want $c \cdot \nabla f \cdot p < 0$). Voor grote $\alpha$ eist de voorwaarde een grote daling in $f$ → vermijdt stappen die over het minimum springen.
 
-2. **Strenger voor grotere stappen:** Het rechterlid $f(x) + c\alpha \nabla f \cdot p$ groeit lineair in $\alpha$ (daalt lineair, want $\nabla f \cdot p < 0$). Voor grote $\alpha$ is de eis dat $f(x + \alpha p)$ ver genoeg onder $f(x)$ ligt — strenger dan voor kleine $\alpha$. Dit vermijdt te grote stappen die over het minimum springen.
-
-3. **Groot aanvaardingsgebied ver van het optimum:** Ver van het optimum is $|\nabla f \cdot p|$ groot (steile helling), zodat de gecorrigeerde raaklijn snel daalt. Er is een groot bereik aan $\alpha$-waarden die de Armijo-eis voldoen → veel minder halveerstappe nodig → rekenwerk bespaart. Dicht bij het optimum is de daling klein en worden de stappen kleiner, wat verhindert dat het algoritme stopt.
+3. **Groot aanvaardingsgebied ver van optimum:** ver van het minimum is $|\nabla f \cdot p|$ groot → de gecorrigeerde raaklijn daalt snel → er is een groot bereik van $\alpha$-waarden die de voorwaarde voldoen → weinig halveerstappen nodig.
 
 **Vergelijking:**
 
 | | Exacte lijnzoeking | Armijo-backtracking |
 |---|---|---|
-| Rekenkost | Hoog (1 extra minimaliseringsprobleem) | Laag (slechts functie-evaluaties) |
+| Rekenkost | Hoog (extra minimaliseringsprobleem) | Laag (enkel functie-evaluaties) |
 | Garantie | Optimale stap langs richting | Voldoende daling |
-| Convergentiesnelheid | Theoretisch optimaal | Praktisch snel genoeg |
 | Zigzag | Ja (bij steilste afdaling) | Minder uitgesproken |
 | Gebruik | Theoretische analyse | Praktische implementaties |
 
-> ⚠️ **Examentip:** Ken de Armijo-voorwaarde letterlijk en weet de intuïtie uitleggen (gecorrigeerde raaklijn). Weet ook het verschil met de exacte lijnzoeking.
-
-💡 **Waarom $c < 1$?** De raaklijn $f(x) + \alpha \nabla f \cdot p$ (met helling $\nabla f \cdot p < 0$) heeft een neerwaartse helling. De Armijo-conditie eist dat we minstens een fractie $c$ van die helling omlaag gaan — vermijdt te kleine stappen (stagnatie) en garandeert monotoniciteit $f(x^{(k)}) < f(x^{(k-1)})$.
+> ⚠️ **Examentip:** Ken de Armijo-voorwaarde letterlijk en weet de drie geometrische eigenschappen te benoemen.
 
 ---
 
@@ -776,7 +698,7 @@ De Armijo-voorwaarde eist dat de nieuwe functiewaarde **onder de gecorrigeerde r
 | 2D-orthogonale coëfficiënten | $a_{k,l} = \frac{\langle f, p_k q_l \rangle}{\|p_k\|^2 \|q_l\|^2}$ |
 | Tikhonov normaalstelsel | $(A^TWA + \lambda I)\hat{c} = A^TWf$ |
 | Voorwaartse propagatie | $\mathbf{a}^{[l]} = \sigma(W^{[l]}\mathbf{a}^{[l-1]} + \mathbf{b}^{[l]})$ |
-| CG-stapgrootte | $\alpha^{(k)} = \frac{r^{(k-1)T}r^{(k-1)}}{p^{(k-1)T}Ap^{(k-1)}}$ |
-| CG-conjugering | $\beta^{(k)} = \frac{r^{(k)T}r^{(k)}}{r^{(k-1)T}r^{(k-1)}}$ |
+| CG-stapgrootte | $\alpha^{(k)} = \frac{\|r^{(k-1)}\|^2}{p^{(k-1)T}Ap^{(k-1)}}$ |
+| CG-conjugering | $\beta^{(k)} = \frac{\|r^{(k)}\|^2}{\|r^{(k-1)}\|^2}$ |
 | Richtingsafgeleide | $\nabla_s f(x) = s^T \nabla f(x)$ |
 | Armijo-voorwaarde | $f(x + \alpha p) \leq f(x) + c\alpha\nabla f^T p$, $c \in (0,1)$ |
