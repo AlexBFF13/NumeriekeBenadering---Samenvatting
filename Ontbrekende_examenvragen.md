@@ -1,7 +1,30 @@
 # Ontbrekende Examenvragen — Uitgewerkte Antwoorden
 
 > Gebaseerd op: *Examenvragen tot 2025 (Maxim Bijnens)* en *proofs (1).pdf*
-> Enkel volledig ontbrekende examenvragen; deelvragen bij bestaande vragen komen later.
+
+---
+
+## Inhoudstafel
+
+### DEEL 1 — Ontbrekende Examenvragen
+
+- **[H2: Benadering van vectoren](#hoofdstuk-2-benadering-van-vectoren1)**
+- **[H3: Benaderen in een unitaire ruimte](#hoofdstuk-3-benaderen-in-een-unitaire-ruimte)**
+- **[H5: Benaderen met splinefuncties](#hoofdstuk-5-benaderen-met-splinefuncties)**
+- **[H8: Grafen en eigenwaarden](#hoofdstuk-8-grafen-en-eigenwaarden)**
+- **[H9: Eigenwaardenalgoritmes](#hoofdstuk-9-eigenwaardenalgoritmes)**
+- **[H12: Ijle representaties en benaderingen](#hoofdstuk-12-ijle-representaties-en-benaderingen)**
+
+### DEEL 2 — Ontbrekende Bewijzen
+
+- **[H2: Benadering van vectoren](#hoofdstuk-2-benadering-van-vectoren)**
+- **[H3: Benaderen in een unitaire ruimte — Bewijzen](#hoofdstuk-3-benaderen-in-een-unitaire-ruimte--bewijzen)**
+- **[H4: Veeltermbenaderingen](#hoofdstuk-4-veeltermbenaderingen)**
+- **[H5: Splinefuncties — Bewijzen](#hoofdstuk-5-benaderen-met-splinefuncties--bewijzen)**
+- **[H8: Grafen en eigenwaarden — Bewijzen](#hoofdstuk-8-grafen-en-eigenwaarden--bewijzen)**
+- **[H9: Eigenwaardenalgoritmes — Bewijzen](#hoofdstuk-9-eigenwaardenalgoritmes--bewijzen)**
+- **[H11: Optimalisatie-algoritmes](#hoofdstuk-11-optimalisatie-algoritmes)**
+- **[H12: Ijle representaties — Bewijzen](#hoofdstuk-12-ijle-representaties--bewijzen)**
 
 ---
 
@@ -9,13 +32,12 @@
 
 ---
 
-## Hoofdstuk 2 & 3: Benadering van vectoren / Benaderen in een unitaire ruimte
-
+## Hoofdstuk 2: Benadering van vectoren1
 ---
 
 ## V-A — QR-factorisatie: vergelijking van drie methodes
 
-**Vraag (H2/H3):** Bespreek de QR-factorisatie en hoe je die kan opstellen.
+**Vraag (H2):** Bespreek de QR-factorisatie en hoe je die kan opstellen.
 - (a) Bespreek de geneste structuur van de QR-factorisatie en waarom deze structuur kan gebruikt worden in de Arnoldi-iteratie.
 - (d) Bespreek kort hoe men met Givensrotaties een QR-factorisatie kan opstellen.
 - (f) Vergelijk de drie methodes op basis van stabiliteit, orthogonaliteit en rekenkost. Bij welk type matrices verkies je elke methode?
@@ -26,13 +48,13 @@
 
 De QR-factorisatie $A = QR$ (of $A = \hat{Q}\hat{R}$ in de onvolledige versie) heeft een **geneste structuur**:
 
-$$\langle q_1, \ldots, q_k \rangle = \langle a_1, \ldots, a_k \rangle, \quad k = 1, \ldots, n.$$
+$$\langle \mathbf{q}_1, \ldots, \mathbf{q}_k \rangle = \langle \mathbf{a}_1, \ldots, \mathbf{a}_k \rangle, \quad k = 1, \ldots, n.$$
 
 Dit betekent dat na $k$ stappen van het Gram-Schmidt algoritme de ruimte opgespannen door de eerste $k$ orthonormale vectoren gelijk is aan de ruimte opgespannen door de eerste $k$ kolomvectoren van $A$.
 
-**Verband met Arnoldi:** De Arnoldi-iteratie bouwt stap per stap een orthonormale basis van de Krylov-ruimte $\mathcal{K}_k(A,b) = \langle b, Ab, \ldots, A^{k-1}b \rangle$ op. Precies zoals bij QR groeit de basis stap voor stap: na iteratie $k$ heeft men een orthonormale basis $\{q_1, \ldots, q_k\}$ voor $\mathcal{K}_k$. De geneste structuur is essentieel: de basis voor $\mathcal{K}_{k+1}$ bevat de volledige basis voor $\mathcal{K}_k$. Dit laat toe om de Arnoldi-iteratie on-the-fly uit te breiden zonder vroegere berekeningen te herhalen.
+**Verband met Arnoldi:** De Arnoldi-iteratie bouwt stap voor stap een orthonormale basis van de Krylov-ruimte $\mathcal{K}_k(A,\mathbf{b}) = \langle \mathbf{b}, A\mathbf{b}, \ldots, A^{k-1}\mathbf{b} \rangle$ op. Precies zoals bij QR groeit de basis stap voor stap: na iteratie $k$ heeft men een orthonormale basis $\{\mathbf{q}_1, \ldots, \mathbf{q}_k\}$ voor $\mathcal{K}_k$. De geneste structuur is essentieel: de basis voor $\mathcal{K}_{k+1}$ bevat de volledige basis voor $\mathcal{K}_k$. Dit laat toe om de Arnoldi-iteratie on-the-fly uit te breiden zonder vroegere berekeningen te herhalen.
 
-> ⚠️ **Examentip:** De Krylov-ruimte heeft de geneste structuur $\mathcal{K}_1 \subset \mathcal{K}_2 \subset \cdots$, precies zoals de geprojecteerde deelruimten bij QR. Arnoldi is dus een QR-factorisatie van de matrix $[b, Ab, A^2b, \ldots]$.
+> ⚠️ **Examentip:** De Krylov-ruimte heeft de geneste structuur $\mathcal{K}_1 \subset \mathcal{K}_2 \subset \cdots$, precies zoals de geprojecteerde deelruimten bij QR. Arnoldi is dus een QR-factorisatie van de matrix $[\mathbf{b},\, A\mathbf{b},\, A^2\mathbf{b},\, \ldots]$.
 
 ---
 
@@ -127,26 +149,26 @@ Als $x_1 \neq x_2$ en $\|x_1\|_2 = \|x_2\|_2 = 1$, dan $\|x_1 - x_2\|_2 > 0$, du
 
 ### (d) Bewijs: beste benadering bestaat en is uniek in strikt genormeerde ruimte
 
-**Stelling:** Zij $\mathcal{D}$ een eindigdimensionale deelruimte van een strikt genormeerde ruimte $V$ en $\vec{v} \in V$. Dan bestaat de beste benadering van $\vec{v}$ in $\mathcal{D}$ en is deze uniek.
+**Stelling:** Zij $\mathcal{D}$ een eindigdimensionale deelruimte van een strikt genormeerde ruimte $V$ en $v \in V$. Dan bestaat de beste benadering van $v$ in $\mathcal{D}$ en is deze uniek.
 
 #### Existentie
 
-Definieer $d = \inf\{\|\vec{v} - \vec{w}\| : \vec{w} \in \mathcal{D}\}$. Volgens de definitie van infimum bestaat er een rij $\{\vec{w}_k\}$ in $\mathcal{D}$ zodat $\|\vec{v} - \vec{w}_k\| \to d$.
+Definieer $d = \inf\{\|v - w\| : w \in \mathcal{D}\}$. Volgens de definitie van infimum bestaat er een rij $\{w_k\}$ in $\mathcal{D}$ zodat $\|v - w_k\| \to d$.
 
-De rij is uniform begrensd: $\|\vec{w}_k\| \leq \|\vec{w}_k - \vec{v}\| + \|\vec{v}\| \leq \|\vec{w}_1 - \vec{v}\| + \|\vec{v}\|$.
+De rij is uniform begrensd: $\|w_k\| \leq \|w_k - v\| + \|v\| \leq \|w_1 - v\| + \|v\|$.
 
-Stel $n = \dim(\mathcal{D})$ en beschouw een basis $\{\vec{a}_1, \ldots, \vec{a}_n\}$. Dan $\vec{w}_k = \sum c_{ki} \vec{a}_i$ en de rij $\{(c_{k1},\ldots,c_{kn})\}$ is begrensd. Volgens **Weierstrass-Bolzano** bestaat een convergente deelrij met limiet $(\hat{c}_1, \ldots, \hat{c}_n)$. Definieer $\vec{\zeta} = \sum \hat{c}_i \vec{a}_i \in \mathcal{D}$. Dan:
-$$\|\vec{v} - \vec{\zeta}\| \leq \underbrace{\|\vec{v} - \vec{w}_k\|}_{\to d} + \underbrace{\|\vec{w}_k - \vec{\zeta}\|}_{\to 0} \to d.$$
-Dus $\|\vec{v} - \vec{\zeta}\| = d$: de beste benadering bestaat.
+Stel $n = \dim(\mathcal{D})$ en beschouw een basis $\{a_1, \ldots, a_n\}$. Dan $w_k = \sum c_{ki} a_i$ en de rij $\{(c_{k1},\ldots,c_{kn})\}$ is begrensd. Volgens **Weierstrass-Bolzano** bestaat een convergente deelrij met limiet $(\hat{c}_1, \ldots, \hat{c}_n)$. Definieer $\hat{w} = \sum \hat{c}_i a_i \in \mathcal{D}$. Dan:
+$$\|v - \hat{w}\| \leq \underbrace{\|v - w_k\|}_{\to d} + \underbrace{\|w_k - \hat{w}\|}_{\to 0} \to d.$$
+Dus $\|v - \hat{w}\| = d$: de beste benadering bestaat.
 
 #### Uniciteit
 
-Bewijs uit het ongerijmde. Veronderstel twee beste benaderingen $\vec{v}_1 \neq \vec{v}_2$ met $\|\vec{v} - \vec{v}_1\| = \|\vec{v} - \vec{v}_2\| = d$.
+Bewijs uit het ongerijmde. Veronderstel twee beste benaderingen $v_1 \neq v_2$ met $\|v - v_1\| = \|v - v_2\| = d$.
 
-Definieer $\vec{e}_i = \frac{1}{d}(\vec{v} - \vec{v}_i)$ op de eenheidsbol, $\vec{e}_1 \neq \vec{e}_2$. Omdat de norm **strikt** is:
-$$\left\|\vec{v} - \frac{\vec{v}_1 + \vec{v}_2}{2}\right\| = d \left\|\frac{1}{2}\vec{e}_1 + \frac{1}{2}\vec{e}_2\right\| < d.$$
+Definieer $e_i = \frac{1}{d}(v - v_i)$ op de eenheidsbol, $e_1 \neq e_2$. Omdat de norm **strikt** is:
+$$\left\|v - \frac{v_1 + v_2}{2}\right\| = d \left\|\frac{1}{2}e_1 + \frac{1}{2}e_2\right\| < d.$$
 
-Maar $\frac{\vec{v}_1+\vec{v}_2}{2} \in \mathcal{D}$ is een **betere** benadering dan $\vec{v}_1$ — tegenspraak. $\square$
+Maar $\frac{v_1+v_2}{2} \in \mathcal{D}$ is een **betere** benadering dan $v_1$ — tegenspraak. $\square$
 
 > ⚠️ **Examentip:** Existentie via Weierstrass-Bolzano; uniciteit via het middelpunt in een strikte norm.
 
@@ -250,25 +272,25 @@ c_j^[0]
 
 **Graaf-Laplaciaan:** $L = D - A$, waarbij $D$ de graadmatrix (diagonaal) en $A$ de verbindingsmatrix.
 
-**Partitievector:** $x \in \{-1, +1\}^N$ met $x_i = +1$ als $i \in K_1$ en $x_i = -1$ als $i \in K_2$.
+**Partitievector:** $\mathbf{x} \in \{-1, +1\}^N$ met $x_i = +1$ als $i \in K_1$ en $x_i = -1$ als $i \in K_2$.
 
-**Gelijke deelgrafen:** $\mathbf{1}^T x = 0$.
+**Gelijke deelgrafen:** $\mathbf{1}^T\mathbf{x} = 0$.
 
 **Aantal doorgeknippen bogen:**
-$$\frac{1}{4} x^T L x = \frac{1}{4} \sum_{i,j} L_{ij} x_i x_j = \frac{1}{2} \sum_{(i,j) \in B} (-x_i x_j + x_i^2) = \#(B_x).$$
+$$\frac{1}{4} \mathbf{x}^T L \mathbf{x} = \frac{1}{4} \sum_{i,j} L_{ij} x_i x_j = \frac{1}{2} \sum_{(i,j) \in B} (-x_i x_j + 1) = \#(B_\mathbf{x}).$$
 
 **Optimaliseringsprobleem:**
-$$\min_{x \in \{-1,+1\}^N} \frac{1}{4} x^T L x \quad \text{o.v.v.} \quad \mathbf{1}^T x = 0.$$
+$$\min_{\mathbf{x} \in \{-1,+1\}^N} \frac{1}{4} \mathbf{x}^T L \mathbf{x} \quad \text{o.v.v.} \quad \mathbf{1}^T\mathbf{x} = 0.$$
 
 ---
 
 ### (b) Relaxatie
 
 De binaire beperking maakt het probleem NP-hard. **Relaxatie:**
-$$x \in \{-1,+1\}^N \;\longrightarrow\; \|x\|_2^2 = N.$$
+$$\mathbf{x} \in \{-1,+1\}^N \;\longrightarrow\; \|\mathbf{x}\|_2^2 = N.$$
 
 Het gerelaxeerde probleem:
-$$\min_{x \in \mathbb{R}^N} \frac{1}{4} x^T L x \quad \text{o.v.v.} \quad \|x\|_2^2 = N,\; \mathbf{1}^T x = 0.$$
+$$\min_{\mathbf{x} \in \mathbb{R}^N} \frac{1}{4} \mathbf{x}^T L \mathbf{x} \quad \text{o.v.v.} \quad \|\mathbf{x}\|_2^2 = N,\; \mathbf{1}^T\mathbf{x} = 0.$$
 
 ---
 
@@ -276,26 +298,28 @@ $$\min_{x \in \mathbb{R}^N} \frac{1}{4} x^T L x \quad \text{o.v.v.} \quad \|x\|_
 
 **Bewijs:**
 
-Omdat $L$ symmetrisch is: $L = V\Lambda V^T$, met $V$ orthogonaal.
+Omdat $L$ symmetrisch is: $L = V\,\text{diag}(\lambda_1,\ldots,\lambda_N)\,V^T$, met $V$ orthogonaal.
 
-**Eigenwaarde 0:** $L\mathbf{1} = \mathbf{0}$, dus $\lambda_N = 0$ met $v_N = \frac{1}{\sqrt{N}}\mathbf{1}$.
+**Eigenwaarde 0:** $L\mathbf{1} = \mathbf{0}$, dus $\lambda_N = 0$ met $\mathbf{v}_N = \frac{1}{\sqrt{N}}\mathbf{1}$.
 
-**Substitutie** $x = Vy$: de eis $\mathbf{1}^T x = 0$ wordt $v_N^T Vy = [0 \cdots 0 \; 1]y = y_N = 0$.
+**Substitutie** $\mathbf{x} = V\mathbf{y}$: de eis $\mathbf{1}^T\mathbf{x} = 0$ wordt $\mathbf{v}_N^T V\mathbf{y} = y_N = 0$.
 
 Het probleem transformeert:
-$$\min \frac{1}{4} \sum_{i=1}^N \lambda_i y_i^2 \quad \text{o.v.v.} \quad \|y\|_2^2 = N,\; y_N = 0.$$
+$$\min \frac{1}{4} \sum_{i=1}^N \lambda_i y_i^2 \quad \text{o.v.v.} \quad \|\mathbf{y}\|_2^2 = N,\; y_N = 0.$$
 
 Om $\sum \lambda_i y_i^2$ te minimaliseren onder $\sum y_i^2 = N$ en $y_N = 0$: geef al het gewicht aan de kleinste vrije eigenwaarde $\lambda_{N-1}$:
-$$y = [0 \cdots 0 \; \sqrt{N} \; 0]^T \implies x = Vy = \sqrt{N}\, v_{N-1}. \quad \square$$
+$$\mathbf{y} = [0 \cdots 0 \; \sqrt{N} \; 0]^T \implies \mathbf{x} = V\mathbf{y} = \sqrt{N}\,\mathbf{v}_{N-1}. \quad \square$$
 
-**Praktische partitie:** $x_i = \text{sign}\bigl((v_{N-1})_i\bigr)$.
+**Praktische partitie:**
+$$K_1 = \{i : (\mathbf{v}_{N-1})_i \geq 0\}, \quad K_2 = \{i : (\mathbf{v}_{N-1})_i < 0\}.$$
 
 ---
 
 ### (d) Algoritme: Lanczos
 
 Omdat $L$ **symmetrisch en spaars** is en we slechts de tweede-kleinste eigenwaarde nodig hebben, gebruiken we het **Lanczos-algoritme** (variant van Arnoldi voor symmetrische matrices):
-- Enkel matrix-vector producten $Lv$ vereist ($O(nnz)$ per stap).
+
+- Enkel matrix-vector producten $L\mathbf{v}$ vereist ($O(nnz)$ per stap).
 - Na $k \ll N$ iteraties benadert de Fiedler-eigenwaarde van $T_k = Q_k^T L Q_k$.
 
 ---
@@ -314,46 +338,42 @@ Omdat $L$ **symmetrisch en spaars** is en we slechts de tweede-kleinste eigenwaa
 
 **Graaf:** Knopen = webpagina's, gerichte bogen = hyperlinks.
 
-**Rank-definitie:** Een pagina is centraal als ze veel inkomende links heeft van zelf centrale pagina's. De **link-matrix** $\hat{A}$:
-$$\hat{A}_{ij} = \frac{1}{k_j} \quad \text{als } j \to i \text{ (met } k_j \text{ totale uitlinks van } j\text{)}, \quad 0 \text{ anders.}$$
+**Rank-definitie:** Een pagina is centraal als ze veel inkomende links heeft van zelf centrale pagina's. De **link-matrix** $A$:
+$$A_{ij} = \frac{1}{N_i} \quad \text{als pagina } P_i \text{ een link heeft naar } P_j \text{ (met } N_i \text{ uitlinks van } P_i\text{)}, \quad 0 \text{ anders.}$$
 
-De rank voldoet aan $\hat{A} r = r$ (eigenvector met eigenwaarde 1).
+$A$ is **rij-stochastisch**. De rank-vector $\boldsymbol{\pi}$ voldoet aan $A^T \boldsymbol{\pi} = \boldsymbol{\pi}$ (eigenvector met eigenwaarde 1).
 
 ---
 
 ### (b) Benaderend eigenwaardeprobleem
 
-De rank-vector $r$ is een **eigenvector van $\hat{A}$ met eigenwaarde 1**.
+De rank-vector $\boldsymbol{\pi}$ is een **eigenvector van $A^T$ met eigenwaarde 1**.
 
 **Problemen:**
-1. **Dangling nodes:** Pagina's zonder uitlinks → nulkolom → matrix niet stochastisch.
+
+1. **Dangling nodes:** Pagina's zonder uitlinks → nulrij → matrix niet stochastisch.
 2. **Niet-samenhangende graaf:** Eigenwaarde 1 niet uniek.
 
 ---
 
 ### (c) Omvorming tot volwaardig eigenwaardeprobleem
 
-**Stap 1 — Dangling nodes:** Vervang nulkolommen door $\frac{1}{N}\mathbf{1}$:
-$$\tilde{A}_{ij} = \hat{A}_{ij} + \frac{d_j}{N}, \quad d_j = 1 \text{ als } j \text{ geen uitlinks heeft, anders } 0.$$
+**Stap 1 — Dangling nodes:** Vervang nulrijen door $\frac{1}{N}\mathbf{1}^T$:
+$$\tilde{A}_{ij} = A_{ij} + \frac{d_i}{N}, \quad d_i = 1 \text{ als pagina } i \text{ geen uitlinks heeft, anders } 0.$$
+$\tilde{A}$ is rij-stochastisch.
 
-**Stap 2 — Google-matrix (teleportatie):**
-$$G = (1-\alpha)\tilde{A} + \frac{\alpha}{N}\mathbf{1}\mathbf{1}^T, \quad \alpha \approx 0.15.$$
+**Stap 2 — Teleportatie (Google-matrix):**
+$$\hat{A} = (1-\alpha)\tilde{A} + \frac{\alpha}{N}\mathbf{1}\mathbf{1}^T, \quad \alpha \approx 0.1.$$
 
-$G$ is nu een **primitieve stochastische matrix**: eigenwaarde 1 is enkelvoudig en dominant (Perron-Frobenius). De aanpassingen hebben weinig effect op de ranking ($\alpha$ is klein).
+$\hat{A}$ is nu een **irreduceerbare rij-stochastische matrix**: eigenwaarde 1 is enkelvoudig en dominant (Perron-Frobenius). De aanpassingen hebben weinig effect op de ranking ($\alpha$ is klein).
 
 ---
 
 ### (d) Algoritme: methode van de machten
 
-```
-r^(0) = (1/N) * 1       ← uniforme beginvector
-herhaal:
-    r^(k+1) = G * r^(k) ← matrix-vector product (O(nnz) voor ijle matrices)
-    normaliseer r^(k+1)
-totdat convergentie
-```
+$$\boldsymbol{\pi}^{(k+1)} = \hat{A}^T \boldsymbol{\pi}^{(k)}, \quad \boldsymbol{\pi}^{(0)} = \frac{1}{N}\mathbf{1}.$$
 
-**Convergentiefactor:** $|\lambda_2(G)| \leq 1 - \alpha$ — typisch $50$–$100$ iteraties.
+**Convergentiefactor:** $|\lambda_2(\hat{A}^T)| \leq 1 - \alpha$ — typisch $50$–$100$ iteraties.
 
 ---
 
@@ -374,69 +394,64 @@ totdat convergentie
 
 ### (a) Methode van de machten
 
-**Doelstelling:** Bereken de dominante eigenwaarde $\lambda_1$ (grootste $|\lambda_i|$) van $A$.
+**Doel:** Bereken de dominante eigenwaarde $\lambda_1$ (grootste $|\lambda_i|$) van $A$.
 
-**Basisiteratie:**
-```
-kies b^(0) met ||b^(0)||₂ = 1
-voor k = 1, 2, ...:
-    z^(k) = A b^(k-1)
-    b^(k) = z^(k) / ||z^(k)||₂
-```
+**Iteratie:**
+$$\mathbf{p}^{(k)} = A\mathbf{x}^{(k-1)}, \qquad \mathbf{x}^{(k)} = \frac{\mathbf{p}^{(k)}}{\|\mathbf{p}^{(k)}\|_2}.$$
 
-**Convergentiebewijs:**
+**Convergentie:** Schrijf $\mathbf{x}^{(0)} = \sum_i c_i \mathbf{x}_i$ (eigenbasis, $c_1 \neq 0$). Dan:
+$$A^k \mathbf{x}^{(0)} = \lambda_1^k \left(c_1 \mathbf{x}_1 + \sum_{i \geq 2} c_i \left(\frac{\lambda_i}{\lambda_1}\right)^k \mathbf{x}_i\right).$$
 
-Schrijf $b^{(0)} = \sum_i c_i x_i$ met $\{x_i\}$ de eigenbasis. Dan:
-$$A^k b^{(0)} = \lambda_1^k \left(c_1 x_1 + \sum_{i \geq 2} c_i \left(\frac{\lambda_i}{\lambda_1}\right)^k x_i\right).$$
+Als $|\lambda_1| > |\lambda_2|$: elke term $(\lambda_i/\lambda_1)^k \to 0$, dus $\mathbf{x}^{(k)} \to \mathbf{x}_1/\|\mathbf{x}_1\|$.
 
-Als $|\lambda_1| > |\lambda_2|$ en $c_1 \neq 0$: $\left(\frac{\lambda_i}{\lambda_1}\right)^k \to 0$ voor $i \geq 2$, dus $b^{(k)} \to \frac{x_1}{\|x_1\|}$.
-
-**Convergentiefactor:** $\left|\dfrac{\lambda_2}{\lambda_1}\right|$ — lineaire convergentie.
+**Convergentiefactor:** $\rho = \left|\dfrac{\lambda_2}{\lambda_1}\right|$ — lineaire convergentie.
 
 ---
 
 ### (b) Dominante eigenwaarde schatten
 
 Via het **Rayleigh-quotiënt**:
-$$\mu^{(k)} = (b^{(k)})^* A b^{(k)} \xrightarrow{k\to\infty} \lambda_1.$$
+$$r(\mathbf{x}^{(k)}) = \frac{(\mathbf{x}^{(k)})^* A\, \mathbf{x}^{(k)}}{(\mathbf{x}^{(k)})^* \mathbf{x}^{(k)}} \xrightarrow{k\to\infty} \lambda_1.$$
 
-De convergentie is **kwadratisch** voor Hermitische matrices.
+Convergentie is **kwadratisch** voor Hermitische matrices (want $\mathbf{x}^{(k)}$ convergeert lineair en het Rayleigh-quotiënt is een tweedeordesbenadering).
 
 ---
 
 ### (c) Kleinste modulus / dichtst bij $\sigma$
 
-**Kleinste eigenwaarde (inverse iteratie):** Pas de methode van de machten toe op $A^{-1}$. De dominante eigenwaarde van $A^{-1}$ is $\lambda_m^{-1}$ (kleinste modulus van $A$). In elke stap: los $Az^{(k)} = b^{(k-1)}$ op via LU-factorisatie.
+**Kleinste eigenwaarde — inverse iteratie:** Pas de methode van de machten toe op $A^{-1}$: los in elke stap $A\mathbf{p}^{(k)} = \mathbf{x}^{(k-1)}$ op (via vooraf berekende LU). De dominante eigenwaarde van $A^{-1}$ is $1/\lambda_{\min}$.
 
-**Eigenwaarde dichtst bij $\sigma$ (verschuiving):** Pas inverse iteratie toe op $(A - \sigma I)^{-1}$. Hoe dichter $\sigma$ bij $\lambda_j$, hoe sneller de convergentie:
-$$\text{convergentiefactor} = \left|\frac{\lambda_j - \sigma}{\lambda_{\text{tweede dichtste}} - \sigma}\right|.$$
+**Eigenwaarde dichtst bij $\sigma$ — verschuiving:** Pas inverse iteratie toe op $(A - \sigma I)^{-1}$:
+$$\rho = \left|\frac{\lambda_j - \sigma}{\lambda_{\text{tweede dichtste}} - \sigma}\right|.$$
+
+Hoe dichter $\sigma$ bij $\lambda_j$, hoe sneller de convergentie.
 
 ---
 
 ### (d) Deelruimte-iteratie
 
-**Doelstelling:** Bereken de $n$ dominante eigenvectoren van $A$.
+**Doel:** Bereken de $n$ dominante eigenvectoren van $A$ tegelijk (veralgemening van de methode van de machten naar een deelruimte).
 
-**Algoritme:**
-```
-kies Z^(0) ∈ ℂ^(m×n) met orthonormale kolommen
-voor k = 1, 2, ...:
-    Z̃^(k) = A Z^(k-1)            ← matrix-matrixproduct
-    Z̃^(k) = Z^(k) R^(k)          ← QR-factorisatie (herorthogonalisatie)
-```
+**Iteratie:** start met $Q_0 \in \mathbb{C}^{m \times n}$ (orthonormale kolommen):
+$$P_k = A Q_{k-1}, \qquad Q_k R_k = P_k \quad \text{(QR-factorisatie)}, \quad k = 1, 2, \ldots$$
 
-**Convergentie:** De kolomruimte van $Z^{(k)}$ convergeert naar $\langle x_1, \ldots, x_n \rangle$.
+De QR-stap vervangt de normalisatie uit de methode van de machten: ze herstelt zowel lengte als orthogonaliteit.
 
-**Convergentiefactor:** $\left|\dfrac{\lambda_{n+1}}{\lambda_n}\right|^k$.
+**Convergentie:** De kolomruimte van $Q_k$ convergeert naar $\langle \mathbf{x}_1, \ldots, \mathbf{x}_n \rangle$.
+
+**Convergentiefactor:** $\left|\dfrac{\lambda_{n+1}}{\lambda_n}\right|$ per iteratie — lineaire convergentie.
 
 ---
 
 ### (e) Eigenwaarden en -vectoren verkrijgen
 
-Na convergentie: **Rayleigh-Ritz projectie**:
-$$H^{(k)} = (Z^{(k)})^* A Z^{(k)} \in \mathbb{C}^{n \times n}.$$
+Na convergentie ($Q_k \approx [\mathbf{x}_1 \cdots \mathbf{x}_n]$): **Rayleigh-Ritz projectie**:
+$$Q_k^* A Q_k \in \mathbb{C}^{n \times n}.$$
 
-Bereken eigenwaarden van $H^{(k)}$ via het volledige QR-algoritme (klein stelsel). De eigenvectoren van $A$ zijn $Z^{(k)} y_i$ met $y_i$ de eigenvectoren van $H^{(k)}$.
+Bereken de eigenontbinding van dit kleine stelsel (via het volledige QR-algoritme). De benaderingen zijn:
+
+- **Eigenwaarden van $A$:** eigenwaarden van $Q_k^* A Q_k$.
+- **Eigenvectoren van $A$:** $Q_k \mathbf{y}_i$, met $\mathbf{y}_i$ de eigenvectoren van $Q_k^* A Q_k$.
 
 ---
 
@@ -549,11 +564,12 @@ $$\|A\|_F = \sqrt{\sum_{i,j} |A_{ij}|^2} = \sqrt{\sum_i \sigma_i^2(A)}.$$
 **Doel:** Reduceer de dimensie van een dataset door de belangrijkste richtingen te behouden.
 
 **Procedure:**
-1. **Datamatrix** $X \in \mathbb{R}^{n \times N}$ (gecentreerd: $\sum x^{(i)} = 0$).
+
+1. **Datamatrix** $X \in \mathbb{R}^{m \times n}$, gecentreerd ($m$ observaties, $n$ variabelen, gemiddelde per kolom = 0).
 2. **SVD:** $X = U\Sigma V^T$.
-3. **Principale componenten** $r_i = v_i$ (rechtersinguliere vectoren — richtingen van maximale variantie).
-4. **Projectie op $k$ componenten:** $\tilde{X} = V_k^T X \in \mathbb{R}^{k \times N}$ (lage-dimensionale representatie).
-5. **Reconstructie:** $\hat{X} = V_k\tilde{X} = U_k\Sigma_k V_k^T = X_k^{svo}$ (getrunceerde SVD).
+3. **Principale componenten** $r_j = v_j$ (rechtersinguliere vectoren — richtingen van maximale variantie).
+4. **Projectie op $k$ componenten:** $\tilde{X} = XV_k \in \mathbb{R}^{m \times k}$ (lage-dimensionale coördinaten).
+5. **Reconstructie:** $\hat{X} = \tilde{X}V_k^T = U_k\Sigma_k V_k^T = X_k^{svo}$ (getrunceerde SVD).
 
 **Reconstructiefout:** $\|X - \hat{X}\|_F^2 = \sigma_{k+1}^2 + \cdots + \sigma_r^2$.
 
@@ -571,38 +587,36 @@ $$\|A\|_F = \sqrt{\sum_{i,j} |A_{ij}|^2} = \sqrt{\sum_i \sigma_i^2(A)}.$$
 
 ## Bewijs 2 — Karakterisatie van de beste benadering
 
-**Stelling:** $\hat{y}$ is een beste benadering in deelruimte $\mathcal{D}$ voor $b$ als en alleen als $b - \hat{y} \perp \mathcal{D}$.
+**Stelling:** $\hat{\mathbf{y}}$ is een beste benadering in deelruimte $\mathcal{D}$ voor $\mathbf{b}$ als en alleen als $\mathbf{b} - \hat{\mathbf{y}} \perp \mathcal{D}$.
 
-**Bewijs ($\Rightarrow$):** Neem willekeurige $y \in \mathcal{D}$. Vermits $y - \hat{y} \in \mathcal{D}$ en $b - \hat{y} \perp \mathcal{D}$, staan $(b-\hat{y})$ en $(y-\hat{y})$ loodrecht. Via **Pythagoras**:
-$$\|b - y\|_2^2 = \|b - \hat{y}\|_2^2 + \|\hat{y} - y\|_2^2 \geq \|b - \hat{y}\|_2^2.$$
-Dus $\hat{y}$ benadert $b$ minstens even goed als elke $y \in \mathcal{D}$.
-
-**Bewijs ($\Leftarrow$):** Als $\hat{y}$ een beste benadering is maar $b - \hat{y} \not\perp \mathcal{D}$, bestaat $z \in \mathcal{D}$ met $(b-\hat{y}, z) \neq 0$. Dan biedt $\hat{y} + tz$ voor gepaste $t$ een kleinere afstand — tegenspraak. $\square$
+**Bewijs:** Neem willekeurige $\mathbf{y} \in \mathcal{D}$. Vermits $\mathbf{y} - \hat{\mathbf{y}} \in \mathcal{D}$ en $\mathbf{b} - \hat{\mathbf{y}} \perp \mathcal{D}$, staan $(\mathbf{b}-\hat{\mathbf{y}})$ en $(\mathbf{y}-\hat{\mathbf{y}})$ loodrecht. Via **Pythagoras**:
+$$\|\mathbf{b} - \mathbf{y}\|_2^2 = \|\mathbf{b} - \hat{\mathbf{y}}\|_2^2 + \|\hat{\mathbf{y}} - \mathbf{y}\|_2^2 \geq \|\mathbf{b} - \hat{\mathbf{y}}\|_2^2.$$
+Dus $\mathbf{y}$ benadert $\mathbf{b}$ niet beter dan $\hat{\mathbf{y}}$. Omwille van het volgende resultaat kunnen we spreken van de beste benadering.
 
 ---
 
 ## Bewijs 3 — Beste benadering bestaat en is uniek via $P_\mathcal{D}$
 
-**Stelling:** De beste benadering in $\mathcal{D}$ voor $b$ is $\hat{y} = P_\mathcal{D} b$.
+**Stelling:** De beste benadering in $\mathcal{D}$ voor $\mathbf{b}$ is $\hat{\mathbf{y}} = P_\mathcal{D} \mathbf{b}$.
 
-**Bewijs:** Ontbind $b = P_\mathcal{D} b + (I - P_\mathcal{D}) b$. Dan:
-$$b - \hat{y} = (I - P_\mathcal{D}) b \in \mathcal{N}(P_\mathcal{D}) = \mathcal{D}^\perp \implies b - \hat{y} \perp \mathcal{D}.$$
-Uit Bewijs 2: $\hat{y}$ is een beste benadering.
+**Bewijs:** Ontbind $\mathbf{b} = P_\mathcal{D} \mathbf{b} + (I - P_\mathcal{D}) \mathbf{b}$. Dan:
+$$\mathbf{b} - \hat{\mathbf{y}} = (I - P_\mathcal{D}) \mathbf{b} \in \mathcal{N}(P_\mathcal{D}) = \mathcal{D}^\perp \implies \mathbf{b} - \hat{\mathbf{y}} \perp \mathcal{D}.$$
+Uit Bewijs 2: $\hat{\mathbf{y}}$ is een beste benadering.
 
-**Uniciteit:** Als ook $y \in \mathcal{D}$ een beste benadering is:
-$$\|b - y\|_2^2 = \|b - \hat{y}\|_2^2 + \|y - \hat{y}\|_2^2 \geq \|b - \hat{y}\|_2^2,$$
-met gelijkheid enkel als $\|y - \hat{y}\|_2 = 0$, dus $y = \hat{y}$. $\square$
+**Uniciteit:** Als ook $\mathbf{y} \in \mathcal{D}$ een beste benadering is:
+$$\|\mathbf{b} - \mathbf{y}\|_2^2 = \|\mathbf{b} - \hat{\mathbf{y}}\|_2^2 + \|\mathbf{y} - \hat{\mathbf{y}}\|_2^2 \geq \|\mathbf{b} - \hat{\mathbf{y}}\|_2^2,$$
+met gelijkheid enkel als $\|\mathbf{y} - \hat{\mathbf{y}}\|_2 = 0$, dus $\mathbf{y} = \hat{\mathbf{y}}$. $\square$
 
 ---
 
 ## Bewijs 4 — Normaalstelsel
 
-**Stelling:** $\hat{x}$ is oplossing van $\min\|Ax-b\|_2$ $\Leftrightarrow$ $A^*A\hat{x} = A^*b$.
+**Stelling:** $\hat{\mathbf{x}}$ is oplossing van $\min\|A\mathbf{x}-\mathbf{b}\|_2$ $\Leftrightarrow$ $A^*A\hat{\mathbf{x}} = A^*\mathbf{b}$.
 
-**Bewijs ($\Rightarrow$):** Stel $A\hat{x} = \hat{y} = P_\mathcal{D} b$. Dan $(b - A\hat{x}) \perp \mathcal{D} = \mathcal{R}(A)$, dus voor alle $i$:
-$$a_i^*(b - A\hat{x}) = 0 \implies A^*(b - A\hat{x}) = 0 \implies A^*A\hat{x} = A^*b.$$
+**Bewijs ($\Rightarrow$):** Stel $A\hat{\mathbf{x}} = \hat{\mathbf{y}} = P_\mathcal{D} \mathbf{b}$. Dan $(\mathbf{b} - A\hat{\mathbf{x}}) \perp \mathcal{D} = \mathcal{R}(A)$, dus voor alle $i$:
+$$\mathbf{a}_i^*(\mathbf{b} - A\hat{\mathbf{x}}) = 0 \implies A^*(\mathbf{b} - A\hat{\mathbf{x}}) = \mathbf{0} \implies A^*A\hat{\mathbf{x}} = A^*\mathbf{b}.$$
 
-**Bewijs ($\Leftarrow$):** Uit $A^*A\hat{x} = A^*b$ volgt $A^*(A\hat{x} - b) = 0$, dus $(A\hat{x} - b) \perp \mathcal{R}(A)$. Via Bewijzen 2 en 3: $A\hat{x}$ is de beste benadering. $\square$
+**Bewijs ($\Leftarrow$):** Uit $A^*A\hat{\mathbf{x}} = A^*\mathbf{b}$ volgt $A^*(A\hat{\mathbf{x}} - \mathbf{b}) = \mathbf{0}$, dus $(A\hat{\mathbf{x}} - \mathbf{b}) \perp \mathcal{R}(A)$. Via Bewijzen 2 en 3: $A\hat{\mathbf{x}}$ is de beste benadering. $\square$
 
 ---
 
@@ -612,10 +626,10 @@ $$a_i^*(b - A\hat{x}) = 0 \implies A^*(b - A\hat{x}) = 0 \implies A^*A\hat{x} = 
 
 ## Bewijs 5 — Genormeerde ruimte impliceert metrische ruimte
 
-**Stelling:** $\rho(\vec{x}, \vec{y}) = \|\vec{x} - \vec{y}\|$ is een afstand.
+**Stelling:** $\rho(x, y) = \|x - y\|$ is een afstand.
 
-**Bewijs:** Niet-negativiteit, nulvector en symmetrie volgen onmiddellijk uit de normeigenschappen. **Driehoeksongelijkheid:** stel $\vec{\alpha} = \vec{x} - \vec{z}$ en $\vec{\beta} = \vec{z} - \vec{y}$:
-$$\|\vec{x} - \vec{y}\| = \|\vec{\alpha} + \vec{\beta}\| \leq \|\vec{\alpha}\| + \|\vec{\beta}\| = \|\vec{x} - \vec{z}\| + \|\vec{z} - \vec{y}\|. \quad \square$$
+**Bewijs:** Niet-negativiteit, nulvector en symmetrie volgen onmiddellijk uit de normeigenschappen. **Driehoeksongelijkheid:** stel $\alpha = x - z$ en $\beta = z - y$:
+$$\|x - y\| = \|\alpha + \beta\| \leq \|\alpha\| + \|\beta\| = \|x - z\| + \|z - y\|. \quad \square$$
 
 ---
 
@@ -627,34 +641,82 @@ Zie **V-B, deelvraag (d)** — volledig bewijs staat daar.
 
 ## Bewijs 7 — Unitaire ruimte impliceert genormeerde ruimte
 
-**Stelling:** $\|\vec{x}\| = \sqrt{(\vec{x}, \vec{x})}$ is een norm.
+**Stelling:** $\|x\| = \sqrt{(x, x)}$ is een norm.
 
-**Bewijs:** Normeigenschappen 1–3 volgen onmiddellijk. **Driehoeksongelijkheid** (voor $\vec{x}+\vec{y} \neq \vec{0}$) via **Cauchy-Schwarz**:
-$$0 \leq (\vec{x}+\vec{y}, \vec{x}+\vec{y}) = (\vec{x}, \vec{x}+\vec{y}) + (\vec{y}, \vec{x}+\vec{y})$$
-$$\leq \sqrt{(\vec{x},\vec{x})}\sqrt{(\vec{x}+\vec{y},\vec{x}+\vec{y})} + \sqrt{(\vec{y},\vec{y})}\sqrt{(\vec{x}+\vec{y},\vec{x}+\vec{y})}.$$
-Delen door $\|\vec{x}+\vec{y}\| > 0$: $\|\vec{x}+\vec{y}\| \leq \|\vec{x}\| + \|\vec{y}\|$. $\square$
+**Bewijs:** Normeigenschappen 1–3 volgen onmiddellijk. **Driehoeksongelijkheid** (voor $x+y \neq 0$) via **Cauchy-Schwarz**:
+$$0 \leq (x+y, x+y) = (x, x+y) + (y, x+y)$$
+$$\leq \sqrt{(x,x)}\sqrt{(x+y,x+y)} + \sqrt{(y,y)}\sqrt{(x+y,x+y)}.$$
+Delen door $\|x+y\| > 0$: $\|x+y\| \leq \|x\| + \|y\|$. $\square$
+
+---
+
+## Bewijs 8 — Genormeerde ruimte is unitair $\Leftrightarrow$ parallellogramgelijkheid
+
+**Stelling:** Een genormeerde vectorruimte is unitair (met scalair product dat de norm induceert) als en slechts als de norm voldoet aan de **parallellogramgelijkheid**:
+$$\|x+y\|^2 + \|x-y\|^2 = 2\!\left(\|x\|^2 + \|y\|^2\right).$$
+
+**Bewijs ($\Rightarrow$, noodzakelijkheid):**
+
+Als de norm geïnduceerd wordt door een scalair product, dan:
+$$\|x+y\|^2 + \|x-y\|^2 = (x+y,x+y) + (x-y,x-y) = 2(x,x) + 2(y,y). \quad \square$$
+
+**Bewijs ($\Leftarrow$, voldoenheid, reëel geval):**
+
+Men definieert het kandidaat-scalair product via de **polarisatie-identiteit**:
+$$(x,y) = \tfrac{1}{4}\!\left\{\|x+y\|^2 - \|x-y\|^2\right\}.$$
+
+Men toont aan dat dit inderdaad een scalair product is en dat de bijbehorende geïnduceerde norm gelijk is aan de oorspronkelijke norm. Het bewijs is vrij technisch en wordt in de cursus achterwege gelaten.
+
+> ⚠️ **Examentip:** De noodzakelijkheidsrichting is examenstof en eenvoudig: expansie van de twee normen via het scalair product. De voldoendheidsrichting hoef je niet volledig te kennen. Het corollarium is belangrijk: $\|\cdot\|_p$ voor $p \neq 2$ is **geen** scalair product (parallellogramgelijkheid geldt er niet).
 
 ---
 
 ## Bewijs 9 — Eenheidsbol in unitaire ruimte is strikt convex
 
-**Stelling:** Als $\vec{x}_1 \neq \vec{x}_2$ en $\|\vec{x}_1\| = \|\vec{x}_2\| = 1$, dan $\|\vec{x}_1 + \vec{x}_2\| < 2$.
+**Stelling:** Als $x_1 \neq x_2$ en $\|x_1\| = \|x_2\| = 1$, dan $\|x_1 + x_2\| < 2$.
 
 **Bewijs:** Via de parallellogramgelijkheid:
-$$\|\vec{x}_1 + \vec{x}_2\|^2 = 4 - \|\vec{x}_1 - \vec{x}_2\|^2 < 4 \quad (\text{want } \vec{x}_1 \neq \vec{x}_2). \quad \square$$
+$$\|x_1 + x_2\|^2 = 4 - \|x_1 - x_2\|^2 < 4 \quad (\text{want } x_1 \neq x_2). \quad \square$$
 
 ---
 
 ## Bewijs 10 — Grammatrix is HPD $\Leftrightarrow$ lineaire onafhankelijkheid
 
-**Stelling:** $G_{jk} = (\vec{a}_j, \vec{a}_k)$ is Hermitisch positief definiet $\Leftrightarrow$ $\{\vec{a}_1, \ldots, \vec{a}_n\}$ zijn lineair onafhankelijk.
+**Stelling:** $G_{jk} = (a_j, a_k)$ is Hermitisch positief definiet $\Leftrightarrow$ $\{a_1, \ldots, a_n\}$ zijn lineair onafhankelijk.
 
 **Bewijs:** Voor willekeurige $v$:
-$$v^* G v = \left\|\sum_k v_k \vec{a}_k\right\|^2.$$
+$$v^* G v = \left\|\sum_k v_k a_k\right\|^2.$$
 
-**($\Rightarrow$)** Lineair onafhankelijk: als $v \neq 0$ dan $\sum v_k \vec{a}_k \neq 0$, dus $v^*Gv > 0$.
+**($\Rightarrow$)** Lineair onafhankelijk: als $v \neq 0$ dan $\sum v_k a_k \neq 0$, dus $v^*Gv > 0$.
 
-**($\Leftarrow$)** Lineair afhankelijk: $\exists\, \hat{v} \neq 0$ met $\sum \hat{v}_k \vec{a}_k = 0$, dus $\hat{v}^*G\hat{v} = 0$ → $G$ singulier. $\square$
+**($\Leftarrow$)** Lineair afhankelijk: $\exists\, \hat{v} \neq 0$ met $\sum \hat{v}_k a_k = 0$, dus $\hat{v}^*G\hat{v} = 0$ → $G$ singulier. $\square$
+
+---
+
+## Bewijs 11 — Orthogonale projector in unitaire ruimte: $(Pw, v) = (w, Pv)$
+
+**Stelling:** Een projector $P$ is orthogonaal als en alleen als
+$$\forall\, v, w \in V: \quad (Pw, v) = (w, Pv).$$
+
+**Bewijs ($\Rightarrow$, noodzakelijkheid):**
+
+Als $R(P) \perp N(P)$, dan geldt voor alle $v, w \in V$:
+$$\bigl(Pw,\ (I-P)v\bigr) = 0 \quad \text{en} \quad \bigl((I-P)w,\ Pv\bigr) = 0.$$
+
+Uitschrijven van de eerste gelijkheid: $(Pw, v) - (Pw, Pv) = 0$, dus $(Pw, v) = (Pw, Pv)$.
+
+Uitschrijven van de tweede gelijkheid: $(w, Pv) - (Pw, Pv) = 0$, dus $(w, Pv) = (Pw, Pv)$.
+
+Samenvoegen: $(Pw, v) = (Pw, Pv) = (w, Pv)$. $\square$
+
+**Bewijs ($\Leftarrow$, voldoenheid):**
+
+Neem willekeurige $x = Pu \in R(P)$ en $y \in N(P)$. Dan:
+$$(x, y) = (Pu, y) = (u, Py) = (u, 0) = 0.$$
+
+De ruimten $R(P)$ en $N(P)$ zijn dus orthogonaal, zodat $P$ een orthogonale projector is. $\square$
+
+> ⚠️ **Examentip:** Dit is de abstracte versie van Bewijs 1 (in $\mathbb{C}^m$: $P$ orthogonaal $\Leftrightarrow$ $P = P^*$). Hier, in een unitaire ruimte, vervangt de zelfgeadjungeerdheidseis $P = P^*$ door de equivalent: $(Pw, v) = (w, Pv)$.
 
 ---
 
@@ -683,6 +745,16 @@ Omdat $x\phi_l$ graad $l+1$ heeft en $\phi_{k-1} \perp$ alle veeltermen van graa
 Slechts drie termen blijven over:
 $$x\phi_{k-1} = b_{k-2}\phi_{k-2} + b_{k-1}\phi_{k-1} + b_k\phi_k$$
 $$\implies \phi_k = \frac{1}{b_k}\left[(x - b_{k-1})\phi_{k-1} - b_{k-2}\phi_{k-2}\right]. \quad \square$$
+
+---
+
+## Bewijs 14 — Orthogonale veelterm $\phi_k$ heeft $k$ enkelvoudige reële nulpunten in $(a,b)$
+
+**Bewijs uit het ongerijmde:** Veronderstel dat $\phi_k$ slechts $m < k$ tekenwisselingen heeft in $(a,b)$, in punten $x_1, \ldots, x_m$. Dan wisselt
+$$\psi(x) = \phi_k(x)\,(x-x_1)\cdots(x-x_m)$$
+nergens van teken (elke tekenwisseling van $\phi_k$ wordt opgeheven door de corresponderende factor). Dus:
+$$\int_a^b w(x)\,\phi_k(x)\,(x-x_1)\cdots(x-x_m)\,dx \neq 0.$$
+Maar $(x-x_1)\cdots(x-x_m)$ heeft graad $m < k$, dus is deze integraal nul door orthogonaliteit van $\phi_k$ — tegenspraak. $\square$
 
 ---
 
@@ -800,5 +872,91 @@ Voor $j < k-1$: nul via Eigenschap 1 en inductiehypothese.
 Voor $j = k-1$: nul als $\beta^{(k)} = -\dfrac{p^{(k-1)T} Ar^{(k)}}{p^{(k-1)T} Ap^{(k-1)}}$ — consistent met het algoritme. $\square$
 
 > ⚠️ **Examentip:** De residu's zijn onderling orthogonaal; de zoekrichtingen zijn $A$-toegevoegd. Dit is wat "conjugate gradients" betekent.
+
+---
+
+## Bewijs 28 — CG minimaliseert de fout in de $A$-norm over de Krylov-ruimte
+
+> **Staat al in Modelvragen_Samaey.md (§ CG, deelvraag c) — volledig bewijs aanwezig.** Hieronder een samenvatting.
+
+**Stelling:** Als $r^{(k-1)} \neq 0$, dan geldt:
+$$\|e^{(k)}\|_A^2 = \min_{x \in \mathcal{K}_k(A,b)} \|x - x^*\|_A^2.$$
+
+**Bewijs:**
+
+Schrijf elke $x \in \mathcal{K}_k(A,b)$ als $x = x^{(k)} + \delta x$ met $\delta x \in \mathcal{K}_k(A,b)$:
+$$\|x - x^*\|_A^2 = \|\delta x + e^{(k)}\|_A^2 = \|e^{(k)}\|_A^2 + 2\, e^{(k)T} A\, \delta x + \|\delta x\|_A^2.$$
+
+Merk op dat $Ae^{(k)} = Ax^{(k)} - b = -r^{(k)}$. Uit Bewijs 27 geldt $r^{(k)} \perp \mathcal{K}_k(A,b)$, dus:
+$$e^{(k)T} A\, \delta x = -r^{(k)T} \delta x = 0.$$
+
+De kruisterm is altijd nul en $\|\delta x\|_A^2 \geq 0$. Het minimum wordt bereikt voor $\delta x = 0$, d.w.z. $x = x^{(k)}$. $\square$
+
+**Gevolg:** $\|e^{(k)}\|_A \leq \|e^{(k-1)}\|_A$ (monotone daling) en $e^{(n)} = 0$ voor een $n \leq m$.
+
+---
+
+## Bewijs 29 — CG als veeltermbenadering
+
+**Stelling:** Als $r^{(k-1)} \neq 0$, dan geldt:
+$$\|e^{(k)}\|_A^2 = \min_{p \in \mathcal{N}_k} \|p(A)\, e^{(0)}\|_A^2,$$
+met $\mathcal{N}_k = \{p \in \mathbb{R}[t] : \deg p \leq k,\ p(0) = 1\}$.
+
+**Bewijs:**
+
+Elke $x \in \mathcal{K}_k(A,b)$ kan geschreven worden als:
+$$x = c_1 b + c_2 Ab + \cdots + c_k A^{k-1}b$$
+voor bepaalde $c_1, \ldots, c_k \in \mathbb{R}$. Omdat $b = Ax^* = -Ae^{(0)}$ (want $e^{(0)} = x^{(0)} - x^*$ en $x^{(0)} = 0$ impliceert $b = -Ae^{(0)}$), geldt:
+$$x - x^* = \bigl(I - c_1 A - c_2 A^2 - \cdots - c_k A^k\bigr) e^{(0)} =: \hat{p}(A)\, e^{(0)},$$
+waarbij $\hat{p}(t) = 1 - c_1 t - c_2 t^2 - \cdots - c_k t^k \in \mathcal{N}_k$ (graad $\leq k$ en $\hat{p}(0) = 1$). Omgekeerd geeft elke $\hat{p} \in \mathcal{N}_k$ een $x = x^* + \hat{p}(A)e^{(0)} \in \mathcal{K}_k(A,b)$.
+
+Er is dus een bijectie tussen $\mathcal{K}_k(A,b)$ en $\mathcal{N}_k$, en het gestelde volgt direct uit Bewijs 28:
+$$\|e^{(k)}\|_A^2 = \min_{x \in \mathcal{K}_k(A,b)} \|x - x^*\|_A^2 = \min_{\hat{p} \in \mathcal{N}_k} \|\hat{p}(A)\, e^{(0)}\|_A^2. \quad \square$$
+
+> ⚠️ **Examentip:** Dit verband verklaart de convergentie van CG via het spectrum van $A$. Zijn alle eigenwaarden geclusterd of zijn er slechts $k$ verschillende eigenwaarden, dan convergeert CG snel (in $\leq k$ stappen). Het Chebyshev-veelterm-argument geeft de scherpste bovengrens op de convergentiesnelheid.
+
+---
+
+## Hoofdstuk 12: Ijle representaties — Bewijzen
+
+---
+
+## Bewijs 30 — Beste rang-$k$ benadering (Eckart–Young–Mirsky)
+
+> **Spectraalnorm-bewijs staat ook in Modelvragen_WM.md (§ rang-k benadering).** Hieronder het volledige bewijs voor beide normen.
+
+**Stelling:** De getrunceerde SVD $A_k^{svo} = \sum_{i=1}^k \sigma_i u_i v_i^*$ voldoet aan:
+$$\|A_k^{svo} - A\|_2 = \min_{B \in \mathcal{M}_k} \|B - A\|_2 \qquad \text{en} \qquad \|A_k^{svo} - A\|_F = \min_{B \in \mathcal{M}_k} \|B - A\|_F,$$
+waarbij $\mathcal{M}_k$ de verzameling van alle rang-$\leq k$ matrices is.
+
+---
+
+### Bewijs voor de spectraalnorm
+
+Neem een willekeurige $B \in \mathcal{M}_k$. Schrijf $B = XY^*$ met $X \in \mathbb{C}^{m \times k}$, $Y \in \mathbb{C}^{n \times k}$.
+
+**Sleutelargument:** De ruimte $\langle v_1, \ldots, v_{k+1} \rangle$ heeft dimensie $k+1$ en $\mathcal{N}(Y^*)$ heeft dimensie $n - k$. Omdat $(k+1) + (n-k) = n+1 > n$, bestaat er een $w$ met $\|w\|_2 = 1$ zodat:
+$$w \in \langle v_1, \ldots, v_{k+1} \rangle \cap \mathcal{N}(Y^*).$$
+
+Schrijf $w = \sum_{i=1}^{k+1} c_i v_i$ met $\sum_{i=1}^{k+1} c_i^2 = 1$. Omdat $w \in \mathcal{N}(Y^*)$ geldt $Bw = XY^*w = 0$, dus:
+$$\|B - A\|_2 \geq \|(B-A)w\|_2 = \|Aw\|_2 = \left\|\sum_{i=1}^{k+1} c_i \sigma_i u_i\right\|_2 = \sqrt{\sum_{i=1}^{k+1} c_i^2 \sigma_i^2} \geq \sigma_{k+1} \underbrace{\sqrt{\sum_{i=1}^{k+1} c_i^2}}_{=1} = \sigma_{k+1}.$$
+
+Vergelijking met $\|A_k^{svo} - A\|_2 = \sigma_{k+1}$ toont dat $B$ niet beter kan zijn. $\square$
+
+---
+
+### Bewijs voor de Frobeniusnorm
+
+We tonen eerst de hulpstelling $\sigma_i(B - A) \geq \sigma_{k+i}(A)$ voor $i = 1, \ldots, p-k$ (met $p = \min(m,n)$).
+
+Noteer met superscript $\mathrm{svo}$ de beste rang-$\ell$ benadering in de spectraalnorm. Dan:
+$$\sigma_i(B - A) = \|(A - B) - (A - B)^{\mathrm{svo}}_{i-1}\|_2 = \|A - \underbrace{(B + (A-B)^{\mathrm{svo}}_{i-1})}_{\text{rang} \leq k + (i-1)}\|_2 \geq \|A - A^{\mathrm{svo}}_{k+i-1}\|_2 = \sigma_{k+i}(A).$$
+
+Hieruit volgt:
+$$\|B - A\|_F^2 = \sum_{i=1}^p \sigma_i(B-A)^2 \geq \sum_{i=1}^{p-k} \sigma_i(B-A)^2 \geq \sum_{i=1}^{p-k} \sigma_{k+i}(A)^2 = \sum_{i=k+1}^p \sigma_i(A)^2 = \|A_k^{svo} - A\|_F^2.$$
+
+Bijgevolg is $B$ geen betere Frobenius-benadering dan $A_k^{svo}$. $\square$
+
+> ⚠️ **Examentip:** De spectraalnormbewijzen vragen dimensietelling om een geschikte $w$ te vinden. Het Frobenius-bewijs gebruikt de hulpstelling $\sigma_i(B-A) \geq \sigma_{k+i}(A)$ recursief.
 
 ---
