@@ -563,23 +563,77 @@ $$\|A\|_F = \sqrt{\sum_{i,j} |A_{ij}|^2} = \sqrt{\sum_i \sigma_i^2(A)}.$$
 
 ### PCA voor datacompressie
 
-**Doel:** Reduceer de dimensie van een dataset door de belangrijkste richtingen te behouden.
+**Setting:** $X \in \mathbb{R}^{m \times n}$ — $m$ observaties, elk een vector in $\mathbb{R}^n$ ($n$ variabelen). Typisch $m \gg n$ of omgekeerd, maar altijd $\mathrm{rang}(X) = r \leq \min(m,n)$.
 
-**Procedure:**
+**Stap 0 — Centreren:** Trek het gemiddelde per kolom af zodat elke kolom gemiddelde 0 heeft. Dit is noodzakelijk: PCA zoekt richtingen van maximale *variantie*, niet van maximale absolute waarden.
 
-1. **Datamatrix** $X \in \mathbb{R}^{m \times n}$, gecentreerd ($m$ observaties, $n$ variabelen, gemiddelde per kolom = 0).
-2. **SVD:** $X = U\Sigma V^T$.
-3. **Principale componenten** $r_j = v_j$ (rechtersinguliere vectoren — richtingen van maximale variantie).
-4. **Projectie op $k$ componenten:** $\tilde{X} = XV_k \in \mathbb{R}^{m \times k}$ (lage-dimensionale coördinaten).
-5. **Reconstructie:** $\hat{X} = \tilde{X}V_k^T = U_k\Sigma_k V_k^T = X_k^{svo}$ (getrunceerde SVD).
+**Stap 1 — SVD:**
+$$X = U\Sigma V^T, \quad \Sigma = \mathrm{diag}(\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_r > 0).$$
 
-**Reconstructiefout:** $\|X - \hat{X}\|_F^2 = \sigma_{k+1}^2 + \cdots + \sigma_r^2$.
+De rechtersinguliere vectoren $\mathbf{v}_1, \ldots, \mathbf{v}_r \in \mathbb{R}^n$ zijn de **principale componenten** — richtingen in de variabelenruimte $\mathbb{R}^n$ geordend naar afnemende variantie. De variantie langs $\mathbf{v}_j$ is evenredig met $\sigma_j^2$.
 
-**Motivatie:** Fysische systemen zijn inherent laag-dimensionaal; de data liggen nabij een laag-dimensionale manifold.
+**Stap 2 — Projectie op $k$ componenten:**
+
+Definieer $V_k = [\mathbf{v}_1 \mid \cdots \mid \mathbf{v}_k] \in \mathbb{R}^{n \times k}$. Dan:
+$$\tilde{X} = X V_k \in \mathbb{R}^{m \times k}.$$
+
+Elke rij van $\tilde{X}$ is de lage-dimensionale coördinaatvector van de overeenkomstige observatie: $\tilde{X}_{ij}$ is de coördinaat van observatie $i$ langs principale component $\mathbf{v}_j$.
+
+**Stap 3 — Reconstructie:**
+$$\hat{X} = \tilde{X}V_k^T = XV_kV_k^T = U_k\Sigma_k V_k^T =: X_k^{\mathrm{svo}} \in \mathbb{R}^{m \times n}.$$
+
+Dit is de **getrunceerde SVD van rang $k$** — dezelfde matrix als in de beste rang-$k$ benadering (Eckart–Young). PCA is dus de *optimale* lage-rang compressie in de Frobeniusnorm.
+
+**Reconstructiefout:**
+$$\|X - \hat{X}\|_F^2 = \sigma_{k+1}^2 + \cdots + \sigma_r^2.$$
+
+**Keuze van $k$:** kies $k$ zodat de **verklaarde variantie** voldoende is:
+$$\frac{\sum_{j=1}^k \sigma_j^2}{\sum_{j=1}^r \sigma_j^2} \geq \text{drempel (bv. 95\%)}.$$
+
+**Motivatie:** Fysische systemen zijn inherent laag-dimensionaal; de data liggen nabij een laag-dimensionale deelruimte. De singuliere waarden $\sigma_j$ vallen snel af zodra dat het geval is.
 
 ---
 
 ## DEEL 2 — Ontbrekende Bewijzen
+
+---
+
+## Prioriteitstabel bewijzen
+
+> Gebaseerd op **wiki_examenvragen** (echte examens 2023–2025) + Modelvragen_Samaey.md en Modelvragen_WM.md.
+
+| Prio | Bewijs | Naam | H | Bewijs gevraagd in |
+|:---:|:---:|---|:---:|---|
+| 1 | 30 | Eckart–Young–Mirsky (spectraalnorm) | 12 | **Juni 2024 + Juni 2025** — elk jaar opnieuw, hint gegeven in opgave |
+| 2 | 4 | Normaalstelsel $\Leftrightarrow$ overgedetermineerd stelsel | 2 | **Juni 2023 + 2024 (beide sessies)** — "toon aan dat oplossingen overeenkomen" |
+| 3 | 13 | Drietermsrecursiebetrekking | 4 | **Juni 2025** — bewijs m.b.v. orthogonaliteit op lagere-graadsveeltermen |
+| 4 | 24 | Graafpartitionering: Fiedler-vector | 8 | **7 Juni 2024** — "toon aan dat oplossing de eigenvector is bij $\lambda_{N-1}$" |
+| 5 | 27 | CG-orthogonaliteitseigenschappen | 11 | Modelvraag Samaey V6 ("bijna exact dezelfde als modelvraag") |
+| 6 | 28 | CG minimaliseert $A$-norm over Krylov | 11 | Modelvraag Samaey V6(c) — volledig bewijs |
+| 7 | 11 | Orthogonale projector: $P = P^*$ | 3 | Modelvraag WM V1(c) ("exact dezelfde als modelvraag") |
+| 8 | 8 | Norm unitair $\Leftrightarrow$ parallellogramgelijkheid | 3 | **Juni 2023** (is $I(f)$ een scalaire norm?) + Modelvraag WM V4(c) |
+| 9 | 2 | Karakterisatie beste benadering | 2 | Impliciet in elk kleinste-kwadraten bewijs — Pythagoras, 3 regels |
+| 10 | 29 | CG als veeltermbenadering | 11 | Modelvraag Samaey V6(d) — bijectie $\mathcal{K}_k \leftrightarrow \mathcal{N}_k$ |
+| 11 | 14 | $\phi_k$ heeft $k$ enkelvoudige reële nulpunten | 4 | **Juni 2025** — "bewijs is niet nodig" maar structuur wordt gevraagd; WM V6(a) wél bewijs |
+| 12 | 3 | Beste benadering bestaat en is uniek via $P_\mathcal{D}$ | 2 | Modelvraag WM V1 — uniciteit via Pythagoras |
+| 13 | 9 | Eenheidsbol unitaire ruimte is strikt convex | 3 | **Juni 2023** (is $I(f)$ strikt?) + Modelvraag WM V4(b) |
+| 14 | 26 | Lokaal minimum via Hessiaan | 11 | Modelvraag Samaey V7 — maar Armijo zelf is elk jaar gevraagd |
+| 15 | 16 | Equioscillatiestelling | 4 | Modelvraag WM V6(c) context — zelfde structuur als Bewijs 14 |
+| 16 | 10 | Grammatrix HPD $\Leftrightarrow$ lin. onafhankelijk | 3 | Modelvraag WM V5 — $v^*Gv = \|\cdot\|^2$ truc |
+| 17 | 25 | Impliciet QR $\Leftrightarrow$ deelruimte-iteratie | 9 | Staat in V-G(d) — nog niet gezien in wiki, maar conceptueel zwaar |
+| 18 | 7 | Unitaire ruimte $\Rightarrow$ genormeerde ruimte | 3 | Modelvraag WM V4 context — Cauchy-Schwarz |
+| 19 | 6 | Beste benadering in strikt genormeerde ruimte | 3 | Staat al volledig in V-B(d) |
+| 20 | 22 | De Boor-algoritme | 5 | Staat al volledig in V-C(c) |
+| 21 | 5 | Norm $\Rightarrow$ metriek | 3 | Bijna triviaal, enkel driehoeksongelijkheid telt |
+| 22 | 12 | Orthogonale veeltermen vormen basis | 4 | Triviaal: dim $= n+1$, lineaire onafhankelijkheid direct |
+| 23 | 20 | Positiviteit: $M_{i,k+1} > 0$ | 5 | Inductie via recursie — zelden apart gevraagd |
+| 24 | 30 | Eckart–Young–Mirsky (Frobeniusnorm) | 12 | Hulpstelling $\sigma_i(B-A) \geq \sigma_{k+i}(A)$ — technischer; soms gevraagd naast spectraalnorm |
+| 25 | 17 | $M_{i,k+1}$ en $N_{i,k+1}$ zijn splinefuncties | 5 | Technisch, definitieel — nooit apart gezien |
+| 26 | 19 | Lokale drager: $M_{i,k+1} = 0$ buiten $[t_i, t_{i+k+1}]$ | 5 | Technisch, bijna definitie |
+| 27 | 23 | Afgeleide van splinefunctie | 5 | Technisch indexwerk, nooit apart gevraagd |
+| 28 | 21 | Grensafgeleiden zijn nul | 5 | Volgt onmiddellijk uit continuïteit — laagste prioriteit |
+
+> **Legende:** Prio 1–4 = op examen geweest in 2023–2025; 5–8 = staat in modelvragen als "exact dezelfde vraag"; 9–16 = sterk verwant; 17–28 = achtergrond of technisch detail.
 
 ---
 

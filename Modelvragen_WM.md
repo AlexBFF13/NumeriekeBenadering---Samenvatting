@@ -702,17 +702,6 @@ $$\|A - A_k^{svo}\|_2 = \sigma_{k+1}, \qquad \|A - A_k^{svo}\|_F = \sqrt{\sigma_
 
 ---
 
-### Stelling — Beste rang-$k$ benadering (Eckart–Young–Mirsky)
-
-**Wat zegt het?** Er bestaat geen rang-$k$ matrix die $A$ beter benadert dan $A_k^{svo}$.
-
-**Bewijs:** Voor elke rang-$k$ matrix $B = XY^*$ zoek je een $\mathbf{w}$ met $\|\mathbf{w}\|_2 = 1$ in zowel $\text{span}\{\mathbf{v}_1,\ldots,\mathbf{v}_{k+1}\}$ als $\mathcal{N}(Y^*)$. Zo'n $\mathbf{w}$ bestaat (dimensies overlappen: $(k+1)+(n-k) = n+1 > n$).
-
-Schrijf $\mathbf{w} = \sum_{i=1}^{k+1} c_i \mathbf{v}_i$ met $\sum c_i^2 = 1$. Dan $B\mathbf{w} = 0$, dus:
-$$\|B - A\|_2 \geq \|A\mathbf{w}\|_2 = \sqrt{\sum c_i^2 \sigma_i^2} \geq \sigma_{k+1}. \quad\square$$
-
----
-
 ### Vergelijking
 
 | | QR met kolomverwisselingen | Getrunceerde SVD |
